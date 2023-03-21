@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "712166233581",
+    "project_id": "dronahealth-9833f",
+    "storage_bucket": "dronahealth-9833f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:712166233581:android:c055d57e0cd7767b1403e4",
+        "android_client_info": {
+          "package_name": "com.dronahealth"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "712166233581-5jebj8ctoss86sogkmb1v9tfblvcs8ul.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkv7OUNbIsCNZ4em-Kpwus5vQj2BmKKmU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "712166233581-5jebj8ctoss86sogkmb1v9tfblvcs8ul.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

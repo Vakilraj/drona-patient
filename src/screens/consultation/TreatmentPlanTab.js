@@ -112,8 +112,7 @@ class medicalHistory extends React.Component {
 			treatmentArr: [{}], // This is remain when API implementation will done
 			addedNewTreatmentGuid: '',
 			dynamicTop: 0,
-			isEditable: true,
-			isDeleteTreatmentModal: false
+
 
 
 		};
@@ -123,8 +122,8 @@ class medicalHistory extends React.Component {
 		let { signupDetails } = this.props;
 		//
 		let timeRange = Trace.getTimeRange();
-		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Treatment_Plan_List', signupDetails.firebaseLocation)
-		Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Treatment_Plan_List", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Treatment_Plan_List',  signupDetails.firebaseLocation)
+		Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Treatment_Plan_List", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
 		//
 		appoinmentGuid = this.props.data && this.props.data.pastAppointmentGuid ? this.props.data.pastAppointmentGuid : signupDetails.appoinmentGuid
 		appointmentStatus = this.props.item && this.props.item.appointmentStatus ? this.props.item.appointmentStatus : '';
@@ -136,11 +135,11 @@ class medicalHistory extends React.Component {
 		let tempClinicArr = DRONA.getClinicList();
 		clinicDetails = tempClinicArr[0];
 		console.log("Clinic details " + JSON.stringify(clinicDetails))
-		setTimeout(() => {
+		setTimeout(()=>{
 			this.getTreatmentMainList();
-		}, 500)
+		},500)
 	}
-	componentWillUnmount() {
+	componentWillUnmount(){
 		Trace.stopTrace()
 	}
 	Refresh = (count) => {
@@ -169,19 +168,19 @@ class medicalHistory extends React.Component {
 						let data = newProps.responseData.data;
 						if (data.length > 0 && data != null) {
 							try {
-								if (data[0].registrationNumber.includes(",")) {
+								if(data[0].registrationNumber.includes(",")){
 									let tempArr = data[0].registrationNumber.split(',');
 									doctorRegistrationNo = tempArr[0];
-									doctorDegree = tempArr[1] ? ', ' + tempArr[1] : '';
+									doctorDegree = tempArr[1] ?  ', '+ tempArr[1]:'';
 								}
-								else {
+								else{
 									doctorRegistrationNo = data[0].registrationNumber
 								}
 							} catch (error) {
-
+								
 							}
-
-
+							
+							
 							//alert(data[0].registrationNumber)
 							if (Object.keys(data[data.length - 1]).length != 0) {
 								data.push({})
@@ -244,10 +243,10 @@ class medicalHistory extends React.Component {
 		let { signupDetails } = this.props;
 		//
 		let timeRange = Trace.getTimeRange();
-		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Add_Treatment_Popup', signupDetails.firebaseLocation)
-		Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Add_Treatment_Popup", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Add_Treatment_Popup',  signupDetails.firebaseLocation)
+		Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Add_Treatment_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
 		this.callAPIForGettingTreatmentList();
-
+		
 	}
 	callAPIForGettingTreatmentList = () => {
 		let { actions, signupDetails } = this.props;
@@ -322,7 +321,7 @@ class medicalHistory extends React.Component {
 	}
 	typeToothNumber = (text) => {
 		if (text) {
-			if (Validator.isNumberWithComma(text) && !text.startsWith(',') && !text.includes(',,')) {
+			if (Validator.isNumberWithComma(text) && !text.startsWith(',') && !text.includes(',,') ) {
 				this.setState({ toothNumberTxt: text })
 			}
 		} else {
@@ -364,18 +363,18 @@ class medicalHistory extends React.Component {
 
 	}
 	goToSummary = async (item, index) => {
-		let doctorFullName = '';
-		let { signupDetails } = this.props;
+		let doctorFullName  =  '';
+		let {signupDetails } = this.props;
 		//console.log(JSON.stringify(this.state.treatmentArr[index].treatmentAppointment))
 		sessionData = this.state.treatmentArr[index].treatmentAppointment;
-		sessionCount = sessionData != null ? sessionData.length.toString() : '0';
+		sessionCount = sessionData != null ?  sessionData.length.toString() : '0';
 		totalAmount = this.state.treatmentArr[index].cost;
 		dueAmount = this.state.treatmentArr[index].balanceAmount;
 		paidAmount = this.state.treatmentArr[index].paid;
-		if (signupDetails.fullName.includes("Dr.") || signupDetails.fullName.includes("dr."))
-			doctorFullName = signupDetails.fullName
+        if(signupDetails.fullName.includes("Dr.") || signupDetails.fullName.includes("dr."))
+		doctorFullName = signupDetails.fullName
 		else
-			doctorFullName = 'Dr. ' + signupDetails.fullName
+		doctorFullName = 'Dr. ' +  signupDetails.fullName
 		if (this.state.treatmentArr[index].shareIconUrl) {
 			pdfIconArr = this.state.treatmentArr[index].shareIconUrl
 		}
@@ -405,14 +404,14 @@ class medicalHistory extends React.Component {
 			<td style = "width:40%;vertical-align: top">
 			 <h2 style="color: #5019CF;">` + signupDetails.clinicName + `</h2>
 			 <p style=""> ` + clinicDetails.clinicAddress + `</p>
-			 <p style=""> ` + clinicDetails.clinicCity + ", " + clinicDetails.clinicState + `</p>
+			 <p style=""> ` + clinicDetails.clinicCity + ", " + clinicDetails.clinicState +`</p>
 			 <p style="">` + clinicDetails.clinicNumber + `</p>
 			 </td>
 			 <td style = "vertical-align: top; width:10%">
 			<img width="25" height: auto src= `+ pdfIconArr[4].url + `}/>
 			</td>
 			 <td style = "width:40%">
-			 <h2 style="color: #5019CF">` + doctorFullName + doctorDegree + `</h2>
+			 <h2 style="color: #5019CF">` + doctorFullName  +  doctorDegree +  `</h2>
 			 <p style="">` + signupDetails.drSpeciality + `</p>
 			 <p style="">Reg.No.    ` + doctorRegistrationNo + `</p>
 			 </td>
@@ -552,7 +551,7 @@ class medicalHistory extends React.Component {
 		 <p style = "text-align : right; padding-top : 20px ">Total Amount Paid</p>
 		 </td>
 		 <td style = "width:25%">
-		 <p style = "text-align : right ; padding-right : 30px; padding-top : 20px; font-size : 20px"><b>` + paidAmount + `</b></p>
+		 <p style = "text-align : right ; padding-right : 30px; padding-top : 20px; font-size : 20px"><b>` + paidAmount  + `</b></p>
 		 </td>
 </tr>
 
@@ -600,7 +599,7 @@ class medicalHistory extends React.Component {
 					};
 
 					if (data) {
-
+						
 						Share.open(shareOptions)
 							.then((res) => {
 								console.log("m,m,m,m,")
@@ -618,41 +617,15 @@ class medicalHistory extends React.Component {
 	}
 
 
-	clickOnItem = (item, isEditable, index) => {
-		if (isEditable === "isEditable") {
-			this.setState({
-				treatmentName: item.treatmentName,
-				addedNewTreatmentGuid: item.treatmentGuid,
-				costTxt: item.cost.toString(), toothNumberTxt: '',
-				toothNumberTxt: item?.toothNumber,
-				isEditable: true
-			})
-		} else {
-			this.setState({
-				treatmentName: item.treatmentName,
-				addedNewTreatmentGuid: item.treatmentGuid,
-				costTxt: item.cost.toString(), toothNumberTxt: '',
-				isEditable: false
-			})
-		}
+	clickOnItem = (item, index) => {
+		this.setState({
+			treatmentName: item.treatmentName,
+			addedNewTreatmentGuid: item.treatmentGuid,
+			costTxt: item.cost.toString(), toothNumberTxt: ''
+		})
 		this.setState({ isModalShowAddTreatment: false });
 		setTimeout(() => {
 			console.log('Name and Guid =====>>>> ' + this.state.treatmentName + ' --- ' + this.state.addedNewTreatmentGuid)
-			this.setState({ addTreatmentModal: true });
-		}, 500)
-	}
-
-	clickOnDeleteTreatment = () => {
-		this.setState({ addTreatmentModal: false });
-		setTimeout(() => {
-			this.setState({ isDeleteTreatmentModal: true });
-		}, 500)
-
-	}
-
-	cancelDeleteTreatment = () => {
-		this.setState({ isDeleteTreatmentModal: false })
-		setTimeout(() => {
 			this.setState({ addTreatmentModal: true });
 		}, 500)
 	}
@@ -678,18 +651,13 @@ class medicalHistory extends React.Component {
 					}}>
 						<Text style={{ fontWeight: CustomFont.fontWeight600, color: Color.primary, fontFamily: CustomFont.fontNameSemiBold, fontSize: CustomFont.font14, }}>Add Treatment</Text>
 					</TouchableOpacity> :
-					<View style={{
+					<TouchableOpacity onPress={() => this.goToNextScreen(item, index)} style={{
 						padding: responsiveWidth(2), borderRadius: responsiveWidth(2), borderWidth: 1, borderColor: '#EFE1FB',
 						marginTop: responsiveHeight(3), marginLeft: responsiveWidth(1.5), marginRight: responsiveWidth(1.5), marginTop: responsiveWidth(4)
 					}}>
 						<View style={{ flexDirection: 'row', marginTop: responsiveHeight(.5) }}>
 							<Text style={{ flex: 11, fontFamily: CustomFont.fontName, fontSize: CustomFont.font14, color: Color.optiontext }}>{item.treatmentName}</Text>
-							<TouchableOpacity onPress={() => this.clickOnItem(item, isEditable = "isEditable", index)} style={{alignItems: 'center', justifyContent: 'center', marginRight: responsiveWidth(20), padding: 6}}>
-									<Image source={edit_new} style={{ height: responsiveWidth(4), width: responsiveWidth(4) }} />
-							</TouchableOpacity>
-							<TouchableOpacity onPress={() => this.goToNextScreen(item, index)} style={{padding: 5}}>
-								<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center'}}><Image style={{ resizeMode: 'contain', height: responsiveFontSize(2.5), width: responsiveFontSize(2.5) }} source={arrow_right} /></View>
-							</TouchableOpacity>
+							<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><Image style={{ resizeMode: 'contain', height: responsiveFontSize(2.5), width: responsiveFontSize(2.5) }} source={arrow_right} /></View>
 						</View>
 						<View style={{ marginTop: responsiveHeight(1.5) }}>
 							<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font12, color: Color.optiontext }}>Tooth Number: {item.toothNumber}</Text>
@@ -713,7 +681,7 @@ class medicalHistory extends React.Component {
 							<Image source={WhatsAppIcon} style={{ height: responsiveHeight(5), width: responsiveWidth(5), resizeMode: 'contain' }} />
 							<Text style={{ marginLeft: responsiveWidth(4), fontFamily: CustomFont.fontName, fontSize: CustomFont.font16, color: Color.primary, fontWeight: CustomFont.fontWeightBold }}>Share Summary via WhatsApp</Text>
 						</TouchableOpacity>
-					</View>
+					</TouchableOpacity>
 			}
 
 		</View>
@@ -763,7 +731,8 @@ class medicalHistory extends React.Component {
 						<View style={{ margin: 20, marginBottom: responsiveHeight(26) }}>
 							<View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
 								<Text style={styles.addtxt}>Add Treatment</Text>
-								<TouchableOpacity onPress={() => {
+								<TouchableOpacity onPress={() => 
+								{
 									Trace.stopTrace();
 									this.setState({ isModalShowAddTreatment: false })
 								}}>
@@ -832,7 +801,7 @@ class medicalHistory extends React.Component {
 										}
 									} else
 										this.setState({ costTxt });
-								}} value={this.state.costTxt} keyboardType="number-pad" returnKeyType="done" maxLength={7} />
+									}} value={this.state.costTxt} keyboardType="number-pad" returnKeyType="done" maxLength={7} />
 							<TouchableOpacity
 								onPress={() => {
 									this.callCreateNewTreatmentAPI();
@@ -854,12 +823,12 @@ class medicalHistory extends React.Component {
 							<View style={{ marginTop: this.state.dynamicTop }}>
 								<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
 									<View style={{ padding: 7 }}>
-										<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font18, color: Color.black, fontWeight: '700', marginLeft: 10 }}> {this.state.isEditable ? "Edit Treatment" : "Add Treatment"}</Text>
+										<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font18, color: Color.black, fontWeight: '700', marginLeft: 10 }}>Add Treatment</Text>
 									</View>
-									<TouchableOpacity style={{ padding: 7, marginRight: responsiveWidth(5) }} onPress={() => {
+									<TouchableOpacity style={{ padding: 7 }} onPress={() => {
 										this.setState({ addTreatmentModal: false });
 									}}>
-										<Image style={{ resizeMode: 'contain', height: responsiveFontSize(2.5), width: responsiveFontSize(2.5), marginRight: 5 }} source={CloseIcon} />
+										<Image source={cross_new} style={{ height: responsiveWidth(4), width: responsiveWidth(4), marginRight: 10, resizeMode: 'contain' }} />
 									</TouchableOpacity>
 								</View>
 								<View style={{ marginTop: responsiveHeight(4), marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3) }}>
@@ -905,13 +874,13 @@ class medicalHistory extends React.Component {
 								<View style={{ borderRadius: 10, borderColor: '#EFE1FB', padding: responsiveWidth(2), paddingTop: responsiveHeight(2), paddingBottom: responsiveHeight(2), borderWidth: 1, marginTop: responsiveHeight(6), marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3) }}>
 									<Text style={{ color: Color.fontColor, fontFamily: CustomFont.fontName, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeightBold }}>Cost</Text>
 									<TextInput returnKeyType="done" onChangeText={costTxt => {
-										if (costTxt) {
-											if (Validator.isMobileValidate(costTxt)) {
-												this.setState({ costTxt });
-											}
-										} else
-											this.setState({ costTxt });
-									}} style={{
+															if (costTxt) {
+																if (Validator.isMobileValidate(costTxt)) {
+																	this.setState({ costTxt });
+																}
+															} else
+																this.setState({ costTxt });
+															}} style={{
 										height: responsiveHeight(7),
 										fontSize: CustomFont.font14,
 										color: Color.fontColor,
@@ -936,11 +905,6 @@ class medicalHistory extends React.Component {
 										keyboardType={'number-pad'}
 									/>
 								</View>
-								{
-									this.state.isEditable ? <TouchableOpacity style={{ marginTop: responsiveHeight(5), marginLeft: responsiveWidth(4) }} onPress={() => this.clickOnDeleteTreatment()}>
-										<Text style={{ color: Color.primaryBlue, fontFamily: CustomFont.fontName, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeightBold }}>Delete treatment plan</Text>
-									</TouchableOpacity> : null
-								}
 
 								<View style={{ marginLeft: responsiveWidth(2), marginRight: responsiveWidth(2), marginBottom: responsiveHeight(20), marginTop: responsiveHeight(10) }}>
 									<TouchableOpacity style={{ marginBottom: responsiveHeight(1), marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), borderRadius: responsiveWidth(1.5), width: responsiveWidth(90), justifyContent: 'center', alignItems: 'center', alignItems: 'center', height: responsiveHeight(5.5), backgroundColor: Color.primaryBlue, marginTop: responsiveWidth(4) }}
@@ -993,34 +957,6 @@ class medicalHistory extends React.Component {
 							</View>
 						</ScrollView>
 
-					</View>
-				</Modal>
-
-				<Modal isVisible={this.state.isDeleteTreatmentModal} onPress={() => {
-					this.setState({ isDeleteTreatmentModal: false });
-				}}>
-					<View style={styles.modelViewDeleteTreatment}>
-						<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveWidth(4) }}>
-							<View style={{ padding: 7 }}>
-								<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font18, color: Color.black, fontWeight: '700', marginLeft: responsiveWidth(6) }}> Delete Treatment Plan</Text>
-							</View>
-							<TouchableOpacity style={{ padding: 7, marginRight: responsiveWidth(4) }} onPress={() => {
-								this.setState({ isDeleteTreatmentModal: false });
-							}}>
-								<Image style={{ resizeMode: 'contain', height: responsiveFontSize(2.5), width: responsiveFontSize(2.5), marginRight: 5 }} source={CloseIcon} />
-							</TouchableOpacity>
-						</View>
-						<View style={{ marginLeft: responsiveWidth(10), marginTop: responsiveWidth(4), paddingRight: 4 }}>
-							<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font16, color: Color.black, fontWeight: '600' }}>Are you sure you want to delete treatment plan?</Text>
-						</View>
-						<View style={{ marginLeft: responsiveWidth(2), marginRight: responsiveWidth(2), marginTop: responsiveHeight(5) }}>
-							<TouchableOpacity style={{ marginBottom: responsiveHeight(1), marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), borderRadius: responsiveWidth(1.5), width: responsiveWidth(90), justifyContent: 'center', alignItems: 'center', alignItems: 'center', height: responsiveHeight(5.5), backgroundColor: Color.primaryBlue, marginTop: responsiveWidth(2) }}>
-								<Text style={{ fontWeight: CustomFont.fontWeightBold, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, marginLeft: responsiveWidth(0), color: Color.white, }}>Delete</Text>
-							</TouchableOpacity>
-							<TouchableOpacity style={{ marginBottom: responsiveHeight(1), marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), borderRadius: responsiveWidth(1.5), width: responsiveWidth(90), justifyContent: 'center', alignItems: 'center', alignItems: 'center', height: responsiveHeight(5.5), backgroundColor: Color.calenderCancelBtnBg, marginTop: responsiveWidth(4) }} onPress={() => this.cancelDeleteTreatment()}>
-								<Text style={{ fontWeight: CustomFont.fontWeightBold, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, marginLeft: responsiveWidth(0), color: Color.primary, }}>Cancel</Text>
-							</TouchableOpacity>
-						</View>
 					</View>
 				</Modal>
 			</View>

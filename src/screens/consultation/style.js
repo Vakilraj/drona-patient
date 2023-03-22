@@ -311,15 +311,6 @@ modelViewAddTreatment: {
   // position : 'absolute',
 },
 
-modelViewDeleteTreatment: {
-  backgroundColor: Color.white,
-  borderTopStartRadius: 20,
-  borderTopEndRadius: 20,
-  height: responsiveHeight(50),
-  width: responsiveWidth(101),
-  marginStart: -20,
-  bottom: responsiveHeight(-35),
-},
 
 optionButton: {
   justifyContent: "center",
@@ -397,13 +388,7 @@ card:{
     paddingBottom :responsiveHeight(2), 
     },
   cardHeaderView:{
-    backgroundColor : Color.white, 
-    borderTopLeftRadius : 10,
-    borderTopRightRadius : 10,
-    paddingLeft : responsiveHeight(2),
-    paddingRight : responsiveHeight(2),
-    paddingTop : responsiveHeight(2),
-    paddingBottom : responsiveHeight(2),
+    flex:1,margin:responsiveWidth(3)
     },
   bottomCard : {
   backgroundColor : Color.white, 

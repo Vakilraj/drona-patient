@@ -134,7 +134,7 @@ class ClinicSetupIndex extends React.Component {
 		let params = {
 			"RoleCode": signupDetails.roleCode,
 			"UserGuid": signupDetails.UserGuid,
-			"ClinicGuid":signupDetails.clinicGuid,// signupDetails.clinicGuid, DRONA.getClinicGuid()
+			"ClinicGuid":DRONA.getClinicGuid(),// signupDetails.clinicGuid,
 			"DoctorGuid": signupDetails.doctorGuid,
 			"Version": "",
 			"Data": null
@@ -183,7 +183,7 @@ class ClinicSetupIndex extends React.Component {
 						{/* <TouchableOpacity style={{ flex: .8, alignItems: 'center', justifyContent: 'center' }} onPress={() => this.props.navigation.navigate('ClinicList')}>
 							<Image source={downKey} style={{ height: responsiveFontSize(1.6), width: responsiveFontSize(1.6), resizeMode: 'contain' }} />
 						</TouchableOpacity> */}
-						{!signupDetails.isAssistantUser ?
+						{!signupDetails.isAssistantUser && DRONA.getClinicGuid()?
 							<TouchableOpacity style={{ flex: .8, alignItems: 'center', justifyContent: 'center' }} onPress={() => this.props.navigation.navigate('AddNewClinicDetails', { from: 'edit' })}>
 								<Image source={Edit} style={{ height: responsiveFontSize(2), width: responsiveFontSize(2), resizeMode: 'contain' }} />
 							</TouchableOpacity> : null}
@@ -208,7 +208,7 @@ class ClinicSetupIndex extends React.Component {
 
 						<BasicDetailsClinic tabLabel={'Fees & Timings'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} />
 						{this.state.resData ? <BankAccountDetails resData={this.state.resData} tabLabel={'Assistant & Bank Details'} nav={{ navigation: this.props.navigation, popupOpenStatus: from }} style={{ flex: 1 }} /> : <BankAccountDetails resData={this.state.resData} tabLabel={'Assistant & Bank Details'} nav={{ navigation: this.props.navigation, popupOpenStatus: from }} style={{ flex: 1 }} />}
-						<GoogleReview tabLabel={'Review Link'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} />
+						<GoogleReview tabLabel={'Google Review Link'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} />
 
 					</ScrollableTabView>
 

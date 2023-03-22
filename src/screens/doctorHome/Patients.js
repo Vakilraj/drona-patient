@@ -23,7 +23,8 @@ import _ from 'lodash';
 import vector_phone from '../../../assets/vector_phone.png';
 import down from '../../../assets/down.png';
 import Trace from '../../service/Trace'
-
+const signalR = require("@microsoft/signalr");
+let connection=null;
 let dateArr = [], selectedIndex = 1;
 class Patients extends React.PureComponent {
 
@@ -72,9 +73,22 @@ class Patients extends React.PureComponent {
 
 		Keyboard.dismiss(0);
 
+		connection = new signalR.HubConnectionBuilder()
+		.withUrl("https://mnkdronaqueuefuncappdev.azurewebsites.net/api")
+		.build();
+	
+	connection.on('UpdatePatientList_' + signupDetails.UserGuid, data => {
+		// console.log('---------'+JSON.stringify(data));
+		 alert('--'+JSON.stringify(data));
+		 this.getSearchData();
+	});
+	connection.start()
+		.then(() => connection.invoke("currentUser", "Hello"));
 	}
 
 	componentWillUnmount(){
+		if(connection)
+		connection.stop();
         Trace.stopTrace();
 		// console.log('patient tab');
     }

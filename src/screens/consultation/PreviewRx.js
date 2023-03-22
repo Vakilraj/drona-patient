@@ -347,11 +347,12 @@ class PreviewRx extends React.Component {
         return temp
     }
 
+
     MedicineList = (item, index) => {
         return (
             <View style={{ flex: 1, flexDirection: 'row' }}>
                 <View style={{ flex: 4, borderColor: '#ddd', borderWidth: 1 }}>
-                <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12,   marginRight: responsiveWidth(2) }}>• <Text style={{fontWeight:'bold'}}>{item.medicineName + ' ' + item.strength + '\n'}</Text> (<Text style={{fontStyle: 'italic'}}>{item.medicineDesc}</Text>)</Text>
+                <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12,   marginRight: responsiveWidth(2) }}>• <Text style={{fontWeight:'bold'}}>{item.medicineName + ' ' + item.strength + '\n'}</Text> <Text style={{fontStyle: 'italic'}}>({item.medicineDesc})</Text></Text>
                 </View>
                 <View style={{ flex: 3, borderColor: '#ddd', borderWidth: 1 }}>
                 <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(2) }}>{item.dosagePattern} {item.medicineTimingFrequency == 'No Preference' ? null : ' (' + item.medicineTimingFrequency + ')'} { '\n' + 'dose: ' + item.dosages + ', ' + item.durationValue + ' ' + item.durationType}</Text>

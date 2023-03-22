@@ -372,7 +372,7 @@ class ClinicSetupStep2 extends React.Component {
 		let params = {
 			"RoleCode": signupDetails.roleCode ? signupDetails.roleCode : 10,
 			"UserGuid": signupDetails.UserGuid,
-			"ClinicGuid": signupDetails.clinicGuid, //signupDetails.clinicGuid, DRONA.getClinicGuid()
+			"ClinicGuid": DRONA.getClinicGuid(),
 			"DoctorGuid": signupDetails.doctorGuid,
 			"Data": null
 		}

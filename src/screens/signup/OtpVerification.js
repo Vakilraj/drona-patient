@@ -50,12 +50,7 @@ class OtpVerification extends React.Component {
 		};
 	}
 	componentDidMount() {
-		// let from= this.props.navigation.state.params.from;
-		// if(from && from=='createAccount'){
-		// 	this.startTimer();
-		// }else{
 			this.resentOTP();
-		//}
 	}
 
 	startTimer = () => {

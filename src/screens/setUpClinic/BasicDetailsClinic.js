@@ -464,7 +464,7 @@ consultationFeeVir = ''; followUpFeeVir = ''; followUpValidForVir = '0'; slotLen
 		let params = {
 			"RoleCode": signupDetails.roleCode,
 			"UserGuid": signupDetails.UserGuid,
-			"ClinicGuid": signupDetails.clinicGuid,//signupDetails.clinicGuid, DRONA.getClinicGuid()
+			"ClinicGuid": DRONA.getClinicGuid(),
 			"DoctorGuid": signupDetails.doctorGuid,
 			"Version": "",
 			"Data": null

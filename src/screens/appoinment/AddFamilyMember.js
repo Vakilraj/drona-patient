@@ -59,8 +59,8 @@ class AddFamily extends React.Component {
 		item = this.props.navigation.state.params.item;
 		console.log('add family parent data ====>s' + JSON.stringify(item));
 		if (item) {
-			let tempDobArr = item.dateOfBirth.split(' ');
-			tempDob = tempDobArr[0];
+			// let tempDobArr = item.dateOfBirth.split(' ');
+			// tempDob = tempDobArr[0];
 			if (item.relationName)
 				this.selectPatientType(item.relationName);
 		}

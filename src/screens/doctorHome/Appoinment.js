@@ -34,11 +34,12 @@ import vector_phone from '../../../assets/vector_phone.png';
 import CalendarPicker from 'react-native-calendar-picker';
 import { setLogEvent, setLogShare } from '../../service/Analytics';
 import Trace from '../../service/Trace';
-
+const signalR = require("@microsoft/signalr");
 let sendPaymentLinkAppointmentGuid = '';
 let dateArr = [], selectedIndex = 1;
 let selectedDay = '', currentDate = '';
 let fullArrayCheckIn = [], fullArrayCompleted = [], fullArrayWalikIn = [], fullArrayCancel = [], fullArrayNoShow = [];
+let connection=null;
 class Appoinment extends React.Component {
 
 	constructor(props) {
@@ -88,41 +89,35 @@ class Appoinment extends React.Component {
 		currentDate = Moment(new Date()).format('YYYY-MM-DD');
 
 		selectedDay = currentDate;
-		//alert(Moment('01:40 PM', 'hh:mm').subtract(30, 'minutes').format('LTS'));
-		//alert(Moment('2021-01-25', "YYYY-MM-DD").add(7, 'days').format('YYYY-MM-DD'));
-
-		// dateArr = [];
-		// var today = new Date()
-		// var previousDay = new Date(today.setDate(today.getDate() - 1)).toString()
-		// dateArr.push(Moment(today).format("YYYY-MM-DD"));
-		// var today2 = new Date()
-		// dateArr.push(Moment(new Date()).format("YYYY-MM-DD"));
-		// var nextDay = new Date(today2.setDate(today2.getDate() + 1)).toString()
-		// dateArr.push(Moment(today2).format("YYYY-MM-DD"));
-		// let temparr = [];
-		// //alert(nextDay)
-		// if (previousDay.includes(" ")) {
-		// 	let str = previousDay.split(" ");
-		// 	temparr.push(str[0] + ', ' + str[2] + ' ' + str[1])
-		// 	//this.setState({datetab1})
-		// }
-		// if (new Date().toString().includes(" ")) {
-		// 	let str = new Date().toString().split(" ");
-		// 	temparr.push('Today, ' + str[2] + ' ' + str[1])
-		// }
-		// if (nextDay.includes(" ")) {
-		// 	let str = nextDay.split(" ");
-		// 	temparr.push(str[0] + ', ' + str[2] + ' ' + str[1])
-		// }
-		// this.setState({ tab1: temparr[0], tab2: temparr[1], tab3: temparr[2] });
-
-		// this.hasTabChanged(1);
-		// this.setState({ showHeaderDate: Moment(new Date()).format('DD MMM YYYY') })
-
 		this.clickOnDone();
+
+		// socket IO
+
+	 connection = new signalR.HubConnectionBuilder()
+    .withUrl("https://mnkdronaqueuefuncappdev.azurewebsites.net/api")
+    .build();
+
+connection.on('UpdatePatientList_' + signupDetails.UserGuid, data => {
+    // console.log('---------'+JSON.stringify(data));
+	 alert('--++--'+JSON.stringify(data));
+	this.getAppoinmentedList();
+});
+connection.start()
+    .then(() => connection.invoke("currentUser", "Hello"));
+
+// setTimeout(()=>{
+// 	connection.stop().then(function() {
+// 		alert('kl')
+//         console.log('Closed');
+//         connection = null;    
+//     });
+// },5000)
+
 	}
 	componentWillUnmount()
 	{
+		if(connection)
+		connection.stop();
 		Trace.stopTrace();
 	}
 	sendPaymentLink = () => {

@@ -96,7 +96,7 @@ class PastEncountersDetail extends React.Component {
           //this.setState({ duplicateModal: true });
           Snackbar.show({ text: 'Duplicate Rx successfully', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
           setTimeout(()=>{
-            this.props.navigation.navigate('ConsultationTab', { data: item, vitalMasterStatus: this.props.navigation.getParam("vitalMasterStatus"), from: 'Past Encounters', item: this.props.navigation.getParam("item"), date: this.props.navigation.getParam("date"),tabIndex:0 })
+            this.props.navigation.navigate('ConsultationTab', { data: item, from: 'Past Encounters', item: this.props.navigation.getParam("item"),tabIndex:0 })
           },1000)
         }else{
           Snackbar.show({ text: newProps.responseData.statusMessage, duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
@@ -246,7 +246,7 @@ class PastEncountersDetail extends React.Component {
                       }
                     }
                     else {
-                      this.props.navigation.navigate('ConsultationTab', { data: item, vitalMasterStatus: this.props.navigation.getParam("vitalMasterStatus"), from: 'Past Encounters', item: this.props.navigation.getParam("item"), date: this.props.navigation.getParam("date"), tabIndex: 0 })
+                      this.props.navigation.navigate('ConsultationTab', { data: item, from: 'Past Encounters', item: this.props.navigation.getParam("item"), tabIndex: 0 })
                     }
                   }}
                     style={{ paddingTop: 15, paddingBottom: 10, flex: 1, justifyContent: 'center', alignItems: 'center' }}>

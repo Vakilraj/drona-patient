@@ -119,9 +119,19 @@ class GoogleReview extends React.Component {
 
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: responsiveWidth(3), alignItems: 'center' }}>
                                 {
-                                    !this.state.isUrlTextEditable && this.state.googleReviewUrlData ?
-                                        <TouchableOpacity onPress={()=>{ Linking.openURL(this.state.googleReviewUrlData)} }>
-                                            <Text  style={{ borderWidth: 1, borderColor: this.state.fld8, padding: 10, width: responsiveWidth(88), height: responsiveHeight(12), fontSize: CustomFont.font14, borderRadius: 5, marginLeft: responsiveHeight(0), marginRight: responsiveHeight(0), textAlignVertical: 'top', color: Color.optiontext, marginTop: 10 }}>{this.state.googleReviewUrlData}</Text>
+                                    !this.state.isUrlTextEditable ?
+                                        <TouchableOpacity onPress={()=>{
+                                             Linking.openURL(this.state.googleReviewUrlData)
+                                             } }>
+                                            <Text style={{ borderWidth: 1, borderColor: this.state.fld8,
+                                                     padding: 10, 
+                                                     width: responsiveWidth(88),
+                                                      height: responsiveHeight(12),
+                                                       fontSize: CustomFont.font14,
+                                                        borderRadius: 5, marginLeft: responsiveHeight(0),
+                                                         marginRight: responsiveHeight(0), 
+                                                         textAlignVertical: 'top', 
+                                                         color: Color.optiontext, marginTop: 10 }}>{this.state.googleReviewUrlData}</Text>
                                         </TouchableOpacity> :
                                         <TextInput blurOnSubmit={false} returnKeyType="next"
                                             editable={this.state.isUrlTextEditable}
@@ -134,22 +144,18 @@ class GoogleReview extends React.Component {
                                 }
                             </View>
                             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
-                            <TouchableOpacity onPress={() => {
+                            <TouchableOpacity style={{ alignItems: 'center', justifyContent: 'center', borderRadius: 5, height: responsiveHeight(6), backgroundColor: Color.primary, marginTop: responsiveHeight(1), marginBottom: 20, width: responsiveWidth(20), marginRight: responsiveWidth(4) }} onPress={() => {
                                         this.setState({ isUrlTextEditable: true })
                                     }}>
-                                <View style={{ alignItems: 'center', justifyContent: 'center', borderRadius: 5, height: responsiveHeight(6), backgroundColor: Color.primary, marginTop: responsiveHeight(1), marginBottom: 20, width: responsiveWidth(20), marginRight: responsiveWidth(4) }}>
-                                
                                         <Text style={{ fontFamily: CustomFont.fontName, color: Color.white, fontSize: CustomFont.font12, textAlign: 'center' }}>Edit</Text>
-                                    
-                                </View>
                                 </TouchableOpacity>
-                                <View style={{ alignItems: 'center', justifyContent: 'center', borderRadius: 5, height: responsiveHeight(6), backgroundColor: Color.primary, marginTop: responsiveHeight(1), marginBottom: 20, width: responsiveWidth(20), marginRight: responsiveWidth(4) }} >
-                                    <TouchableOpacity onPress={() => {
+                                    <TouchableOpacity style={{ alignItems: 'center', justifyContent: 'center', borderRadius: 5, height: responsiveHeight(6), backgroundColor: Color.primary, marginTop: responsiveHeight(1), marginBottom: 20, width: responsiveWidth(20), marginRight: responsiveWidth(4) }} onPress={() => {
                                         this.updateGoogleReviewURL();
                                     }}>
                                         <Text style={{ fontFamily: CustomFont.fontName, color: Color.white, fontSize: CustomFont.font12, textAlign: 'center' }}>Save</Text>
                                     </TouchableOpacity>
-                                </View>
+                                    
+                                
                             </View>
                         </View>
                     </ScrollView>

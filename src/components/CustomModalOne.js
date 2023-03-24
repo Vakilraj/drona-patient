@@ -21,51 +21,46 @@ import Modal from 'react-native-modal';
 import Validator from './Validator';
 
 let currentDate = '';
-let item = null, selectedReson = '', prvLength = -1, sincePattern = '', selectedInputTxtLength = 5;
+let  selectedSeverityGuid = '', sincePattern = '', selectedInputTxtLength = 5;
 let sinceDataPatternArr = [{ label: '1 day', value: '1 day', isSelect: true }, { label: '1 week', value: '1 week', isSelect: false }, { label: '1 month', value: '1 month', isSelect: false }, { label: '1 year', value: '1 year', isSelect: true }]
 class CustomModalOne extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			isModalVisible3Dots: false,
-			noShowModel: false,
-			cancelAppointmentModel: false,
-			cancelAppointmentModelData: [{ itemValue: "Mild", select: false }, { itemValue: "Moderate", select: false }, { itemValue: "Severe", select: false }],
-			ModelData: [{ itemValue: "Data One", select: false }, { itemValue: "Data Two", select: false }, { itemValue: "Data Three", select: false }],
-			timePrefix: 'Today',
-			isDuplicateItemOpened: false,
+			isModalOpenSeverity: false,
+			SeverityDataArray: [{ itemValue: "Mild", select: false }, { itemValue: "Moderate", select: false }, { itemValue: "Severe", select: false }],
+			
 			sinceDropdownArr: sinceDataPatternArr,
 			sinceText: '',
 			showStateSince: true
 		};
 		sincePattern = ''
-		item = props.item;
 	}
 	async componentDidMount() {
 
 	}
 
-	renderCancelModelItem = (item, index) => {
+	renderSeverityItem = (item, index) => {
 		return (
 			<TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }} onPress={() => {
-				for (let i = 0; i < this.state.cancelAppointmentModelData.length; i++) {
-					this.state.cancelAppointmentModelData[i].select = false;
+				for (let i = 0; i < this.state.SeverityDataArray.length; i++) {
+					this.state.SeverityDataArray[i].select = false;
 				}
-				this.state.cancelAppointmentModelData[index].select = true;
-				selectedReson = this.state.cancelAppointmentModelData[index].itemValue;
-				this.setState({ cancelAppointmentModelData: this.state.cancelAppointmentModelData })
+				this.state.SeverityDataArray[index].select = true;
+				selectedSeverityGuid = this.state.SeverityDataArray[index].itemValue;
+				this.setState({ SeverityDataArray: this.state.SeverityDataArray })
 			}}>
 				<CheckBox
 					disabled={false}
 					value={item.select}
-					onValueChange={(newValue) => {
-						for (let i = 0; i < this.state.cancelAppointmentModelData.length; i++) {
-							this.state.cancelAppointmentModelData[i].select = false;
-						}
-						this.state.cancelAppointmentModelData[index].select = true;
-						selectedReson = this.state.cancelAppointmentModelData[index].itemValue;
-						this.setState({ cancelAppointmentModelData: this.state.cancelAppointmentModelData })
-					}}
+					// onValueChange={(newValue) => {
+					// 	for (let i = 0; i < this.state.SeverityDataArray.length; i++) {
+					// 		this.state.SeverityDataArray[i].select = false;
+					// 	}
+					// 	this.state.SeverityDataArray[index].select = true;
+					// 	selectedSeverityGuid = this.state.SeverityDataArray[index].itemValue;
+					// 	this.setState({ SeverityDataArray: this.state.SeverityDataArray })
+					// }}
 					tintColors={{ true: Color.primary, false: Color.unselectedCheckBox }}
 					style={{ height: responsiveFontSize(2.5), width: responsiveFontSize(2.5), color: Color.mediumGrayTxt, marginLeft: 2 }}
 
@@ -100,7 +95,6 @@ class CustomModalOne extends React.Component {
 			this.setState({ sinceDropdownArr: sinceDataPatternArr, showStateSince: true })
 		}
 		this.setState({ sinceText: text });
-		prvLength = text.length;
 	}
 
 	clickOnState = (item) => {
@@ -114,11 +108,11 @@ class CustomModalOne extends React.Component {
 		return (
 			<View onStartShouldSetResponder={() => this.dismissDialog()}>
 				<TouchableOpacity style={{ height: responsiveHeight(6), width: responsiveWidth(12), justifyContent: 'center', alignItems: 'center', marginTop: 7, marginBottom: 7 }}
-					onPress={() => this.setState({ isModalVisible3Dots: true })}>
+					onPress={() => this.setState({ isModalOpenSeverity: true })}>
 					<Image source={three_dot} style={{ height: responsiveHeight(4), width: responsiveHeight(4), resizeMode: 'contain' }} />
 				</TouchableOpacity>
-				<Modal isVisible={this.state.isModalVisible3Dots} avoidKeyboard={true}
-					onRequestClose={() => this.setState({ isModalVisible3Dots: false })}>
+				<Modal isVisible={this.state.isModalOpenSeverity} avoidKeyboard={true}
+					onRequestClose={() => this.setState({ isModalOpenSeverity: false })}>
 					<View style={[styles.modelView3dots, { height: responsiveHeight(120) }]}>
 						<ScrollView>
 							<View style={{ marginBottom: responsiveHeight(32) }}>
@@ -127,7 +121,7 @@ class CustomModalOne extends React.Component {
 										<View >
 											<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font18, color: Color.black, fontWeight: CustomFont.fontWeight700, }}>Symptoms</Text>
 										</View>
-										<TouchableOpacity onPress={() => this.setState({ isModalVisible3Dots: false })}>
+										<TouchableOpacity onPress={() => this.setState({ isModalOpenSeverity: false })}>
 											<Image source={cross_new} style={{ tintColor: Color.primary, height: responsiveHeight(4), width: responsiveHeight(4), margin: 10, resizeMode: 'contain' }} />
 										</TouchableOpacity>
 									</View>
@@ -159,8 +153,8 @@ class CustomModalOne extends React.Component {
 										</Text>
 										<View style={{ marginBottom: responsiveHeight(5) }}>
 											<FlatList
-												data={this.state.cancelAppointmentModelData}
-												renderItem={({ item, index }) => this.renderCancelModelItem(item, index)}
+												data={this.state.SeverityDataArray}
+												renderItem={({ item, index }) => this.renderSeverityItem(item, index)}
 												keyExtractor={(item, index) => index.toString()}
 											/>
 										</View>
@@ -179,7 +173,7 @@ class CustomModalOne extends React.Component {
 							</View>
 						</ScrollView>
 					</View>
-				</Modal >
+				</Modal>
 			</View >
 		);
 	}

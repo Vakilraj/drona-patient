@@ -40,6 +40,15 @@ const styles = StyleSheet.create({
     bottom: Platform.OS === 'ios' ? responsiveHeight(-20) : responsiveHeight(-20),
     // position : 'absolute',
   },
+  modelViewSeverity: {
+    backgroundColor: Color.white,
+    borderTopStartRadius: 20,
+    borderTopEndRadius: 20,
+    width: responsiveWidth(101),
+    marginStart: -20,
+    bottom: Platform.OS === 'ios' ? responsiveHeight(-20) : responsiveHeight(-20),
+    // position : 'absolute',
+  },
   modelViewSignificant: {
     backgroundColor: Color.white,
     borderTopStartRadius: 20,

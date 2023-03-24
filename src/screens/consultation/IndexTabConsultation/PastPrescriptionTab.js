@@ -99,18 +99,18 @@ class CN extends React.Component {
 							}}
 								onPress={() => this.pickSingleItem(item)}>
 								<View style={{ flex: 1.2 }}>
-									<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font14, }}>{Moment(item.prescriptionDate).format('DD MMM YYYY')}</Text>
+									<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font14,fontWeight:CustomFont.fontWeight600 }}>{Moment(item.prescriptionDate).format('DD MMM YYYY')}</Text>
 								</View>
 								<View style={{ flex: 5 }}>
 									<Image style={{
 										marginTop: responsiveHeight(-2), height: responsiveHeight(15),
-										width: responsiveWidth(15), resizeMode: 'contain'
+										width: responsiveWidth(8), resizeMode: 'contain',marginBottom:10
 									}} source={rxIcon} />
 								</View>
 								<View style={{ flex: 1, justifyContent: 'center' }}>
 									<Text numberOfLines={2} style={{
 										fontFamily: CustomFont.fontName,
-										color: Color.textGrey, fontSize: CustomFont.font12, textAlign: 'center'
+										color: Color.textGrey, fontSize: CustomFont.font12, textAlign: 'center',fontWeight:CustomFont.fontWeight600
 									}}>{item.appointmentType}</Text>
 								</View>
 							</TouchableOpacity>
@@ -162,18 +162,18 @@ class CN extends React.Component {
 												}}
 													onPress={() => this.pickSingleItem(item)}>
 													<View style={{ flex: 1.2 }}>
-														<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font14, }}>{Moment(item.prescriptionDate).format('DD MMM YY')}</Text>
+														<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font14,fontWeight:CustomFont.fontWeight600 }}>{Moment(item.prescriptionDate).format('DD MMM ‘YY')}</Text>
 													</View>
 													<View style={{ flex: 5 }}>
 														<Image style={{
 															marginTop: responsiveHeight(-2), height: responsiveHeight(15),
-															width: responsiveWidth(15), resizeMode: 'contain'
+															width: responsiveWidth(8), resizeMode: 'contain'
 														}} source={rxIcon} />
 													</View>
-													<View style={{ flex: 1, justifyContent: 'center' }}>
+													<View style={{ flex: 1, justifyContent: 'center',marginBottom:10 }}>
 														<Text numberOfLines={2} style={{
 															fontFamily: CustomFont.fontName,
-															color: Color.textGrey, fontSize: CustomFont.font12, textAlign: 'center'
+															color: Color.textGrey, fontSize: CustomFont.font12, textAlign: 'center',fontWeight:CustomFont.fontWeight600
 														}}>{item.appointmentType}</Text>
 													</View>
 												</TouchableOpacity>

@@ -45,7 +45,7 @@ static isNameValidateAss(name) {
   return reg.test(name);
 }
 static isUrlValidate(url) {
-  var reg = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
+  var reg = /http(s)?|Http(s)?|HTTP(S)?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
   return reg.test(url);
 }
 static isDecimalYear(mobile) {

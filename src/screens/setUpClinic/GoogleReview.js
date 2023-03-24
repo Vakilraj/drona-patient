@@ -120,9 +120,11 @@ class GoogleReview extends React.Component {
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: responsiveWidth(3), alignItems: 'center' }}>
                                 {
                                     !this.state.isUrlTextEditable ?
-                                        <TouchableOpacity onPress={()=>{
-                                             Linking.openURL(this.state.googleReviewUrlData)
-                                             } }>
+                                    <TouchableOpacity
+                                    disabled={!this.state.googleReviewUrlData}
+                                    onPress={()=>{
+                                         Linking.openURL(this.state.googleReviewUrlData)
+                                         }}>
                                             <Text style={{ borderWidth: 1, borderColor: this.state.fld8,
                                                      padding: 10, 
                                                      width: responsiveWidth(88),

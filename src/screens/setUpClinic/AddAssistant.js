@@ -125,7 +125,7 @@ class AddAssistant extends React.Component {
 
     renderAllowAccessItem = (item, index) => {
         return (
-            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20 }} onPress={() => {
+            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20, padding: 2  }} onPress={() => {
                 let newValue = this.state.allowAccessArr[index].isAuthorized
                 this.state.allowAccessArr[index].isAuthorized = newValue == '0' ? '1' : '0';
                 this.setState({ allowAccessArr: this.state.allowAccessArr })

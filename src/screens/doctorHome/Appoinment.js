@@ -625,7 +625,7 @@ connection.start()
 							</View>
 
 						</ScrollView>
-						<Draggable x={responsiveWidth(97)} y={responsiveHeight(62)} maxY={responsiveHeight(62)}>
+						<Draggable x={responsiveWidth(97)} y={responsiveHeight(62)} maxY={responsiveHeight(62)} minY={responsiveHeight(11)}>
 						<TouchableOpacity style={styles.addPost} onPress={() =>
 						{
 						this.setState({ isModalVisible: true })

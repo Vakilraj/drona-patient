@@ -173,7 +173,7 @@ class CN extends React.Component {
 				PatientGuid: item.patientGuid,
 			}
 		}
-		actions.callLogin('V11/FuncForDrAppToGetAppointmentPatientDetails', 'post', params, signupDetails.accessToken, 'GetDetail');
+		actions.callLogin('V14/FuncForDrAppToGetAppointmentPatientDetails', 'post', params, signupDetails.accessToken, 'GetDetail');
 	}
 	async UNSAFE_componentWillReceiveProps(newProps) {
 		if (newProps.responseData && newProps.responseData.tag) {
@@ -237,7 +237,7 @@ class CN extends React.Component {
 
 					// let data = newProps.responseData.data.patientDetail;
 					// this.setState({ data: data });
-					this.setState({ responseDataIndexTab: newProps.responseData.data });
+					this.setState({ responseDataIndexTab: newProps.responseData.data});
 				} else {
 					Snackbar.show({ text: newProps.responseData.statusMessage, duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 				}
@@ -324,7 +324,7 @@ class CN extends React.Component {
 					</TouchableOpacity>
 				</View>
 
-				<View style={{ flex: 1, backgroundColor: Color.patientBackground, }}>
+				<View style={{ flex: 1, backgroundColor: Color.white, }}>
 
 					{this.state.responseDataIndexTab ? <ScrollableTabView
 

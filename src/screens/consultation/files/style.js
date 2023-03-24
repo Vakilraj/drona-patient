@@ -8,7 +8,7 @@ import CustomFont from '../../../components/CustomFont';
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Color.patientBackground
+        backgroundColor: Color.white
     },
     backImage: {
         marginLeft: responsiveWidth(3),
@@ -196,11 +196,10 @@ const styles = StyleSheet.create({
         // marginTop: responsiveHeight(.5),
     },
 
-    flatListView: { borderRadius: 0, flex: 1, backgroundColor: Color.white, justifyContent: 'flex-start', padding: 16, borderRadius: 10, marginTop: 5 },
-    dateContainer: { marginTop: 0, alignItems: 'center', justifyContent: 'center', marginBottom: 0 },
-    dayText: {
-        marginTop: 0, color: Color.liveBg, fontWeight: CustomFont.fontWeight700,
-        fontSize: CustomFont.font16, fontFamily: CustomFont.fontName
+    flatListView: { flex: 1, backgroundColor: Color.white, justifyContent: 'flex-start', padding: 16, borderRadius: 10, marginTop: 5 },
+    dateContainer: {  alignItems: 'center', justifyContent: 'center',},
+    dayText: { color: Color.primary, fontWeight: CustomFont.fontWeight700,
+        fontSize: CustomFont.font16, fontFamily: CustomFont.fontName,
     },
     monthText: {
         marginTop: 6, color: Color.datecolor, fontSize: CustomFont.font12,

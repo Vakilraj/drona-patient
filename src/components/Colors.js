@@ -159,4 +159,5 @@ fadedBg  : '#2D1D40',
 btnDisable : '#A5A5A5',
 adHocAlert:'#F9E5B3',
 selectedBgSymptom:'#F8F2FE',
+  newPurpleLine:"#ebedf9",
 };

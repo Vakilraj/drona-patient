@@ -378,7 +378,7 @@ class Consultation extends React.Component {
 
 
 
-			actions.callLogin('V1/FuncForDrAppToAddConsultationTabData', 'post', params, signupDetails.accessToken, 'ConsultationPageSave');
+			actions.callLogin('V14/FuncForDrAppToAddConsultationTabData', 'post', params, signupDetails.accessToken, 'ConsultationPageSave');
 		} else {
 			//alert("LLLLL")
 			this.callPreviewRx();
@@ -415,7 +415,7 @@ class Consultation extends React.Component {
 				"AppointmentGuid": signupDetails.appoinmentGuid,
 			}
 		}
-		actions.callLogin('V1/FuncForDrAppToConsulatationBillingPreview', 'post', params, signupDetails.accessToken, 'consulatationBillingPreviewData');
+		actions.callLogin('V14/FuncForDrAppToConsulatationBillingPreview', 'post', params, signupDetails.accessToken, 'consulatationBillingPreviewData');
 
 	}
 
@@ -1309,7 +1309,7 @@ class Consultation extends React.Component {
 					"SearchText": text
 				}
 			}
-			actions.callLogin('V1/FuncForDrAppToSearchForMedicine', 'post', params, signupDetails.accessToken, 'SearchForMedicine');
+			actions.callLogin('V14/FuncForDrAppToSearchForMedicine', 'post', params, signupDetails.accessToken, 'SearchForMedicine');
 		}
 		if (text && text.length == 0) {
 			this.setState({ isSearchStart: false })
@@ -2029,7 +2029,7 @@ class Consultation extends React.Component {
 					"Strength": this.state.strength
 				}
 			}
-			actions.callLogin('V1/FuncForDrAppToAddNewMedicine', 'post', params, signupDetails.accessToken, 'addmedicine');
+			actions.callLogin('V14/FuncForDrAppToAddNewMedicine', 'post', params, signupDetails.accessToken, 'addmedicine');
 			medicineFlag = true;
 			DRONA.setIsConsultationChange(true);
 		} else {

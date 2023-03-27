@@ -169,7 +169,7 @@ class PastEncountersDetail extends React.Component {
       }
     }
     setLogEvent("past_encounter", { duplicate: "click", UserGuid: signupDetails.UserGuid })
-    actions.callLogin('V1/FuncForDrAppToRepeatVisit', 'post', params, signupDetails.accessToken, 'repeatVisit');
+    actions.callLogin('V14/FuncForDrAppToRepeatVisit', 'post', params, signupDetails.accessToken, 'repeatVisit');
     Trace.stopTrace()
   }
 

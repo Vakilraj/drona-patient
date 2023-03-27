@@ -99,7 +99,7 @@ class CN extends React.Component {
 							}}
 								onPress={() => this.pickSingleItem(item)}>
 								<View style={{ flex: 1.2 }}>
-									<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font14,fontWeight:CustomFont.fontWeight600 }}>{Moment(item.prescriptionDate).format('DD MMM YYYY')}</Text>
+									<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font14,fontWeight:CustomFont.fontWeight600 }}>{Moment(item.prescriptionDate).format('DD MMM ‘YY')}</Text>
 								</View>
 								<View style={{ flex: 5 }}>
 									<Image style={{

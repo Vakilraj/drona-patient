@@ -28,6 +28,8 @@ import CameraRoll from "@react-native-community/cameraroll";
 import FastImage from 'react-native-fast-image'
 let recordGuid;
 let dataShow = [];
+import RNPrint from 'react-native-print';
+import CustomFont from '../../../components/CustomFont.js';
 
 class FilePreview extends React.Component {
   constructor(props) {
@@ -44,7 +46,7 @@ class FilePreview extends React.Component {
         file: Platform.OS === 'ios' ? 'test-pdf.pdf' : '/sdcard/Download/test-pdf.pdf',
         url: 'https://campustecnologicoalgeciras.es/wp-content/uploads/2017/07/',
         base64: 'data:application/pdf;base64,JVBERi0xLjMKJcfs...',
-      }
+      },
     };
   }
   componentDidMount() {
@@ -438,7 +440,9 @@ class FilePreview extends React.Component {
       });
 
   }
-
+  async printRemotePDF() {
+    await RNPrint.print({ filePath: this.state.downloadPdfUrl })
+  }
   render() {
     const resourceType = 'url';
     return (
@@ -507,24 +511,18 @@ class FilePreview extends React.Component {
             </View>
           </View>
 
-          {/* {this.state.fileExt != '.pdf' ?
-            <TouchableOpacity onPress={this.makeDownload}
-              style={{ paddingLeft: 0, paddingRight: 10, borderRadius: 20, position: 'absolute', alignItems: 'center', justifyContent: 'center', bottom: 50, right: 40, backgroundColor: Color.lightBlue, height: responsiveHeight(5), flexDirection: 'row' }}>
-              <Image style={{ flex: 0 }} source={downloadIcon}></Image>
-              <Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font16 }}>Download</Text>
-            </TouchableOpacity> :
-            <TouchableOpacity onPress={this.downloadPdf}
-              style={{ paddingLeft: 0, paddingRight: 10, borderRadius: 20, position: 'absolute', alignItems: 'center', justifyContent: 'center', bottom: 50, right: 40, backgroundColor: Color.lightBlue, height: responsiveHeight(5), flexDirection: 'row' }}>
-              <Image style={{ flex: 0 }} source={downloadIcon}></Image>
-              <Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font16 }}>Download</Text>
-            </TouchableOpacity>} */}
-
-
-          <View style={styles.bottomBtnView} >
-            <TouchableOpacity onPress={()=>this.makeDownload(this.state.fileExt)} style={styles.submitbtn}>
-              <Text style={styles.submittxt}>Download File</Text>
-            </TouchableOpacity>
-          </View>
+            <View style={styles.bottomBtnView} >
+              <TouchableOpacity onPress={() => this.makeDownload(this.state.fileExt)} style={styles.submitbtn}>
+                <Text style={styles.submittxt}>Download</Text>
+              </TouchableOpacity>
+              {this.state.fileExt !== '.png' ?  <TouchableOpacity style={[styles.submitbtn, { marginLeft: responsiveWidth(8), backgroundColor: Color.weekdaycellPink, }]}
+                onPress={() => {
+                  setLogEvent("patient_appointment", { "print_pdf": "click", })
+                  this.printRemotePDF()
+                }}>
+                <Text style={{ color: Color.white, fontSize: CustomFont.font16 }}>Print</Text>
+              </TouchableOpacity>:null}
+        </View>
         </View>
       </SafeAreaView>
     );

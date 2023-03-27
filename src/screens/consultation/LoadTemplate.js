@@ -112,7 +112,7 @@ class Templates extends React.Component {
       //           "version": null,
       //           "AppointmentGuid": signupDetails.appoinmentGuid,
     }
-    actions.callLogin('V1/FuncForDrAppToConsulatationBillingPreview', 'post', params, signupDetails.accessToken, 'consulatationBillingPreviewDataVIEW');
+    actions.callLogin('V14/FuncForDrAppToConsulatationBillingPreview', 'post', params, signupDetails.accessToken, 'consulatationBillingPreviewDataVIEW');
   }
   componentDidMount() {
     let { signupDetails } = this.props;

@@ -3,7 +3,7 @@ import {
     SafeAreaView,
     View,
     Text,
-    StatusBar, Alert, Image, TouchableOpacity,ScrollView, FlatList, Platform, BackHandler, TextInput
+    StatusBar, Alert, Image, TouchableOpacity, ScrollView, FlatList, Platform, BackHandler, TextInput
 } from 'react-native';
 import Color from '../../../components/Colors';
 import CloseIcon from '../../../../assets/cross.png';
@@ -71,10 +71,10 @@ class AddFiles extends React.Component {
     }
 
     componentDidMount() {
-    let { signupDetails } = this.props;
-    timeRange = Trace.getTimeRange();
-    Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Add_File',  signupDetails.firebaseLocation)
-    Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Add_File", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+        let { signupDetails } = this.props;
+        timeRange = Trace.getTimeRange();
+        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Add_File', signupDetails.firebaseLocation)
+        Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Add_File", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 
 
         let today = new Date();
@@ -127,7 +127,7 @@ class AddFiles extends React.Component {
             }, 500);
         }
     }
-   
+
 
     callIsFucused = () => {
         this.setState({ titleBorderColor: Color.primary })
@@ -152,8 +152,8 @@ class AddFiles extends React.Component {
     }
     componentWillUnmount() {
         Trace.stopTrace()
-        if(progressTimer)
-        clearInterval(progressTimer);
+        if (progressTimer)
+            clearInterval(progressTimer);
         this.backHandler.remove();
     }
 
@@ -223,14 +223,25 @@ class AddFiles extends React.Component {
                             }
                             tempArr.push('##');
                             tempImageArr = [...tempArr];
-                            this.setState({ data: tempArr, recordTypeArr: data.recordType });
+                            this.setState({ data: tempArr, recordTypeArr: data.recordType }); //, recordTypeArr: data.recordType 
                             this.setState({ fullAttachmentArr: tempArr });
                         }
                         else {
                             this.setState({ recordTypeArr: data.recordType });
                             // this.setState({recordTypeGuid : data.recordType[0].recordTypeGuid});
                         }
-
+                        // let tmpArrRecord = data.recordType;
+                        // let finalRecordTypeList = []
+                        // try {
+                        //     let temp = tmpArrRecord[0]
+                        //     let temp2 = tmpArrRecord[2]
+                        //     let temp3 = tmpArrRecord[3]
+                        //     let temp1 = tmpArrRecord[1]
+                        //     finalRecordTypeList.push(temp, temp2, temp3, temp1)
+                        // } catch (error) {
+                        //     finalRecordTypeList = data.recordType;
+                        // }
+                        // this.setState({ recordTypeArr: finalRecordTypeList });
 
                     }
                 }
@@ -245,12 +256,12 @@ class AddFiles extends React.Component {
                         // setTimeout(() => {
                         //     this.setState({ progessVal: 1 })
                         // }, 4000);
-                        let i=0;
-                        progressTimer =  setInterval(() => {
+                        let i = 0;
+                        progressTimer = setInterval(() => {
                             i = i + 1;
-                            let temp = parseFloat(i/10); 
+                            let temp = parseFloat(i / 10);
                             this.setState({ progessVal: temp })
-                          }, 600);
+                        }, 600);
                         setTimeout(() => {
                             this.setState({ showProgressModal: false });
                             this.props.navigation.goBack();
@@ -274,45 +285,45 @@ class AddFiles extends React.Component {
         });
     }
     handleCameraGalleryImage = (response) => {
-        let fileExtFromBase64=response.data && response.data.startsWith("iV") ?'.png':'.jpeg'
-        const source = { uri: 'data:image/jpeg;base64,' + response.data, type: 'image',size : response.size,imgExtn: fileExtFromBase64 };
+        let fileExtFromBase64 = response.data && response.data.startsWith("iV") ? '.png' : '.jpeg'
+        const source = { uri: 'data:image/jpeg;base64,' + response.data, type: 'image', size: response.size, imgExtn: fileExtFromBase64 };
         let tempObj = {};
-                tempObj.uri = source.uri;
-                tempObj.attachmentGuid = null;
-                tempObj.recordGuid = null
-                tempObj.orgFileName = null
-                tempObj.orgFileExt = null
-                tempObj.sysFileName = null
-                tempObj.sysFileExt = null
-                tempObj.fileBytes = null
-                tempObj.sysFilePath = null
-                tempObj.delMark = null
-                tempObj.DelMark = 0;
-                tempObj.uploadedOnCloud = null;
-                tempObj.type = source.type;
-                tempObj.size = source.size;
-                tempObj.imgExtn = source.imgExtn;
-                if (isFirstAdd === 0) {
-                    isFirstAdd = 1;
-                    galArr = [...tempImageArr];
-                    galArr.splice(galArr.length - 1, 0, tempObj)
-                }
-                else {
-                    galArr.splice(galArr.length - 1, 0, tempObj)
-                }
-                // this.setState({ data: galArr });
-                this.setState({ fullAttachmentArr: galArr });
-                //
-                let tempArr = [];
-                for (let k = 0; k < galArr.length - 1; k++) {
-                    let tempObj = {};
-                    tempObj = galArr[k];
-                    if (tempObj.DelMark == 0) {
-                        tempArr.push(tempObj);
-                    }
-                }
-                tempArr.push('##');
-                this.setState({ data: tempArr });
+        tempObj.uri = source.uri;
+        tempObj.attachmentGuid = null;
+        tempObj.recordGuid = null
+        tempObj.orgFileName = null
+        tempObj.orgFileExt = null
+        tempObj.sysFileName = null
+        tempObj.sysFileExt = null
+        tempObj.fileBytes = null
+        tempObj.sysFilePath = null
+        tempObj.delMark = null
+        tempObj.DelMark = 0;
+        tempObj.uploadedOnCloud = null;
+        tempObj.type = source.type;
+        tempObj.size = source.size;
+        tempObj.imgExtn = source.imgExtn;
+        if (isFirstAdd === 0) {
+            isFirstAdd = 1;
+            galArr = [...tempImageArr];
+            galArr.splice(galArr.length - 1, 0, tempObj)
+        }
+        else {
+            galArr.splice(galArr.length - 1, 0, tempObj)
+        }
+        // this.setState({ data: galArr });
+        this.setState({ fullAttachmentArr: galArr });
+        //
+        let tempArr = [];
+        for (let k = 0; k < galArr.length - 1; k++) {
+            let tempObj = {};
+            tempObj = galArr[k];
+            if (tempObj.DelMark == 0) {
+                tempArr.push(tempObj);
+            }
+        }
+        tempArr.push('##');
+        this.setState({ data: tempArr });
     }
     openGallery = () => {
         // NEW CODE
@@ -330,7 +341,7 @@ class AddFiles extends React.Component {
             // }else{
             // }
             for (let i = 0; i < image.length; i++) {
-                let source = { uri: 'data:image/jpeg;base64,' + image[i].data, type: 'image',size: image[i].size, imgExtn: image[i].mime };
+                let source = { uri: 'data:image/jpeg;base64,' + image[i].data, type: 'image', size: image[i].size, imgExtn: image[i].mime };
 
                 let tempObj = {};
                 tempObj.uri = source.uri;
@@ -361,7 +372,7 @@ class AddFiles extends React.Component {
                 }
                 // this.setState({ data: galArr });
                 this.setState({ fullAttachmentArr: galArr });
-               
+
 
             }
             //
@@ -388,7 +399,7 @@ class AddFiles extends React.Component {
                     for (let i = 0; i < res.length; i++) {
                         RNFS.readFile(res[i].uri, "base64").then(result => {
 
-                            const source = { uri: result, type: 'doc',size : res[i].size };
+                            const source = { uri: result, type: 'doc', size: res[i].size };
                             //
                             let tempObj = {};
                             tempObj.uri = source.uri;
@@ -590,7 +601,7 @@ class AddFiles extends React.Component {
     }
     selectRecordType = (item, index) => {
         this.setState({ recordTypeGuid: item.recordTypeGuid });
-         //alert(item.recordTypeGuid)
+        //alert(item.recordTypeGuid)
         this.setState({ selectedRecordType: index });
     }
     submitPress = () => {
@@ -603,9 +614,9 @@ class AddFiles extends React.Component {
         //     }
         //      sizeInMb = totalImageSizeInBytes/1000000;
         // } catch (error) {
-            
+
         // }
-        
+
         //alert(sizeInMb);
         if (this.state.recordTitle == '') {
             Snackbar.show({ text: 'Please Enter Record Title', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
@@ -637,11 +648,11 @@ class AddFiles extends React.Component {
                         if (tempArr.length > 1) {
                             tempbase64 = tempArr[1];
                         }
-                    //     let fileExtArr = this.state.fullAttachmentArr[i].imgExtn.split("/");
-                    // let fileExt = '.' + fileExtArr[1];
-                   // tempFileExt = '.png';
-                     //tempFileExt  = fileExt;
-                     //tempFileExt  = '.jpeg';
+                        //     let fileExtArr = this.state.fullAttachmentArr[i].imgExtn.split("/");
+                        // let fileExt = '.' + fileExtArr[1];
+                        // tempFileExt = '.png';
+                        //tempFileExt  = fileExt;
+                        //tempFileExt  = '.jpeg';
                     }
                     else {
                         tempbase64 = this.state.fullAttachmentArr[i].uri;
@@ -661,7 +672,7 @@ class AddFiles extends React.Component {
                 let tempObj = {};
                 tempObj.attachmentGuid = attachGuid;
                 tempObj.OrgFileExt = tempFileExt
-                tempObj.OrgFileName = 'test' + i+tempFileExt;
+                tempObj.OrgFileName = 'test' + i + tempFileExt;
 
                 // Previous 
                 //  tempObj.SysFileName = null;
@@ -696,7 +707,7 @@ class AddFiles extends React.Component {
             }
             this.setState({ showProgressModal: true });
             actions.callLogin('V11/FuncForDrAppToAddPatientRecord_V2', 'post', params, signupDetails.accessToken, 'saveandedit');
-            
+
             setLogEvent("files", { "upload_files": "upload", UserGuid: signupDetails.UserGuid, })
 
         }
@@ -727,7 +738,7 @@ class AddFiles extends React.Component {
     render() {
         return (
             <SafeAreaView style={[CommonStyle.container, { backgroundColor: Color.bgColor }]}>
-                <StatusBar backgroundColor={Color.statusBarNewColor} barStyle="dark-content"  />
+                <StatusBar backgroundColor={Color.statusBarNewColor} barStyle="dark-content" />
                 <Toolbar
                     title={"Add File Details"}
                     onBackPress={() => {
@@ -742,7 +753,7 @@ class AddFiles extends React.Component {
                         <Text style={styles.title}>Add File Details</Text>
                     </View> */}
 
-                    <ScrollView  keyboardShouldPersistTaps='always'>
+                    <ScrollView keyboardShouldPersistTaps='always'>
                         <View style={{ marginBottom: 24 }}>
                             <View style={{ marginTop: 24, height: responsiveHeight(25) }}>
                                 <FlatList
@@ -766,7 +777,7 @@ class AddFiles extends React.Component {
                                                     let { signupDetails } = this.props;
                                                     setLogEvent("files", { "delete_files": "click", UserGuid: signupDetails.UserGuid, })
                                                     this.removeImage(item, index)
-                                                }}  style={styles.imgcross}>
+                                                }} style={styles.imgcross}>
                                                     <Image style={{ height: 16, width: 16 }} source={CrossIcon} />
                                                 </TouchableOpacity>
                                             </View>
@@ -777,15 +788,15 @@ class AddFiles extends React.Component {
                             <View style={{ backgroundColor: Color.white, borderRadius: 10, marginStart: 16, marginEnd: 16, padding: 16 }}>
                                 <View style={{ marginTop: 0, marginLeft: responsiveWidth(0), marginRight: responsiveWidth(0) }}>
                                     <Text style={styles.titletxt}>Title *</Text>
-                                    <TextInput returnKeyType="done" onFocus={this.callIsFucused}  placeholderTextColor = {Color.placeHolderColor}
+                                    <TextInput returnKeyType="done" onFocus={this.callIsFucused} placeholderTextColor={Color.placeHolderColor}
                                         onBlur={this.callIsBlur} value={this.state.recordTitle} onChangeText={this.typeTitle}
                                         style={[styles.input, { borderColor: this.state.titleBorderColor }]} placeholder="Enter Name" />
 
                                     <Text style={[styles.titletxt, { marginTop: 24 }]}>Date *</Text>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                        <TextInput returnKeyType="done" placeholder={"DD/MM/YYYY"}  placeholderTextColor = {Color.placeHolderColor} editable={false} value={this.state.fileDate} onChangeText={this.typeDate}
+                                        <TextInput returnKeyType="done" placeholder={"DD/MM/YYYY"} placeholderTextColor={Color.placeHolderColor} editable={false} value={this.state.fileDate} onChangeText={this.typeDate}
                                             style={styles.inputdate} />
-                                        <TouchableOpacity onPress={this.openCalender} style={{ position: 'absolute', right:  responsiveHeight(2), top: responsiveHeight(3.1) }}>
+                                        <TouchableOpacity onPress={this.openCalender} style={{ position: 'absolute', right: responsiveHeight(2), top: responsiveHeight(3.1) }}>
                                             <Image source={CalenderIcon} style={{ height: responsiveHeight(3), width: responsiveHeight(3) }} />
                                         </TouchableOpacity>
 
@@ -807,8 +818,17 @@ class AddFiles extends React.Component {
                         </View>
                     </ScrollView>
 
-                    <View style={styles.bottomBtnView} >
-                        <TouchableOpacity onPress={this.submitPress} style={styles.submitbtn}>
+                    <View style={{
+                        padding: 16, backgroundColor: Color.white, borderTopStartRadius: 20, borderTopEndRadius: 20,
+                        width: '100%'
+                    }} >
+                        <TouchableOpacity onPress={this.submitPress} style={{
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundColor: Color.primary,
+                            borderRadius: 4,
+                            height: responsiveHeight(6),
+                        }}>
                             <Text style={styles.submittxt}>Submit</Text>
                         </TouchableOpacity>
                     </View>
@@ -851,7 +871,7 @@ class AddFiles extends React.Component {
                     <Modal isVisible={this.state.showDiscard}>
                         <View style={styles.modelViewDiscard}>
                             <View style={styles.rowDiscard}>
-                                <Text style={[styles.modalHeading,{marginTop:20}]}>All data added here will be discarded.</Text>
+                                <Text style={[styles.modalHeading, { marginTop: 20 }]}>All data added here will be discarded.</Text>
                                 <View style={{ marginRight: 20, flexDirection: 'row', marginTop: Platform.OS === 'android' ? responsiveHeight(3) : responsiveHeight(2) }}>
                                     <View style={{ flex: 1.4, alignItems: 'flex-end' }}>
                                         <Text onPress={this.cancelPress} style={{ color: Color.primary, fontFamily: CustomFont.fontName, fontSize: CustomFont.font18 }}>Cancel</Text>
@@ -903,11 +923,11 @@ class AddFiles extends React.Component {
                     <Modal style={{ justifyContent: 'center', alignItems: 'center' }}
                         isVisible={this.state.showProgressModal} >
                         <View style={styles.progresspopup}>
-                            <TouchableOpacity style={{position:'absolute',top:responsiveHeight(6),right:0}} onPress={()=>{
+                            <TouchableOpacity style={{ position: 'absolute', top: responsiveHeight(6), right: 0 }} onPress={() => {
                                 this.setState({ showProgressModal: false });
                                 this.props.navigation.goBack();
                             }}>
-<Image source={cross_red} style={{height:responsiveFontSize(3),width:responsiveFontSize(3),resizeMode:'contain',margin:20}}/>
+                                <Image source={cross_red} style={{ height: responsiveFontSize(3), width: responsiveFontSize(3), resizeMode: 'contain', margin: 20 }} />
                             </TouchableOpacity>
                             <Text style={styles.fileuploadheader}>{ }{this.state.data.length - 1}  {this.state.data.length > 2 ? 'files' : 'file'} uploading...</Text>
                             <Progress.Bar

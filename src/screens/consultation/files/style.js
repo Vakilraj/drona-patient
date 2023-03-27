@@ -387,15 +387,13 @@ const styles = StyleSheet.create({
         marginTop: 30
     },
     submitbtn: {
-        // marginLeft: responsiveWidth(5),
-        // marginRight: responsiveWidth(5),
-        // marginTop : responsiveWidth(5),
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: Color.primary,
-        borderRadius: 4,
-        height: responsiveHeight(6),
-        //marginBottom: 30
+        height: responsiveHeight(6), 
+        width: responsiveWidth(40), 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: Color.primary, 
+        borderRadius: 5, 
+        marginLeft: responsiveWidth(2)
     },
     submittxt: {
         fontFamily: CustomFont.fontName,
@@ -440,9 +438,12 @@ const styles = StyleSheet.create({
         bottom: Platform.OS === 'ios' ? responsiveHeight(-30) : responsiveHeight(-35),
     },
     bottomBtnView: {
-         
-        padding: 16, backgroundColor: Color.white, borderTopStartRadius: 20, borderTopEndRadius: 20,
-        width: '100%'
+        padding: 15, 
+        backgroundColor: Color.white, 
+        borderTopStartRadius: 20, 
+        borderTopEndRadius: 20,
+        width: responsiveWidth(100), 
+        flexDirection: 'row'
     },
 });
 export default styles;

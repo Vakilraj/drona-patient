@@ -33,9 +33,7 @@ import Moment from 'moment';
 import { setLogEvent } from '../../../service/Analytics';
 import Trace from '../../../service/Trace'
 import CustomFont from '../../../components/CustomFont';
-import { set } from 'lodash';
-
-let timeRange = '', recordTypeList = '';
+let timeRange = '', recordTypeList = '', finalRecordTypeList = [];
 class FileList extends React.Component {
     constructor(props) {
         super(props);
@@ -93,8 +91,25 @@ class FileList extends React.Component {
                 if (data != null) {
                     if (newProps.responseData.statusCode === '0') {
                         //alert(JSON.stringify(data.fileInfoYearly))
-                        this.setState({ fileListArr: data.fileInfoYearly == null ? [] : data.fileInfoYearly });
                         recordTypeList = data.recordTypeList;
+                        this.setState({ fileListArr: data.fileInfoYearly == null ? [] : data.fileInfoYearly });
+                        
+                    //     try {
+                    //    let temp = recordTypeList[0]
+                    //    let temp2 = recordTypeList[2]
+                    //    let temp3 = recordTypeList[3]
+                    //    let temp1 = recordTypeList[1]
+                    //     finalRecordTypeList.push(temp, temp2, temp3, temp1)
+                    //     } catch (error) {
+                    //         finalRecordTypeList=recordTypeList;
+                    //     }
+                       
+                        // var a = temp3.recordTypeName
+                        // var b = "Bills / ";
+                        // var position = 0;
+                        // output = [a.slice(0, position), b, a.slice(position)].join('');
+                        // console.log('output+++++++++++++', output)
+                        // console.log('finalRecordTypeList++++++++++', finalRecordTypeList)
                     }
                 }
 

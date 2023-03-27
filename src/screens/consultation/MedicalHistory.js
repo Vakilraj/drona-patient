@@ -192,7 +192,7 @@ class medicalHistory extends React.Component {
 				}
 			}
 			DRONA.setIsConsultationChange(false);
-			actions.callLogin('V1/FuncForDrAppToAddMedicalHistoryTabModel', 'post', params, signupDetails.accessToken, 'MedicalHistryPageSave');
+			actions.callLogin('V14/FuncForDrAppToAddMedicalHistoryTabModel', 'post', params, signupDetails.accessToken, 'MedicalHistryPageSave');
 		} else {
 			Snackbar.show({ text: 'No change on this page', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 		}
@@ -592,7 +592,7 @@ class medicalHistory extends React.Component {
 					"SearchText": text
 				}
 			}
-			actions.callLogin('V1/FuncForDrAppToSearchForPatientCurrentMedication', 'post', params, signupDetails.accessToken, 'SearchForcurrentMedication');
+			actions.callLogin('V14/FuncForDrAppToSearchForPatientCurrentMedication', 'post', params, signupDetails.accessToken, 'SearchForcurrentMedication');
 		}
 		let { actions, signupDetails } = this.props;
 		setLogEvent("medical_history", { "search_medication": "search", UserGuid: signupDetails.UserGuid, keyword: text })

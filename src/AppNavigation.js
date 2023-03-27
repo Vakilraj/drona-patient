@@ -101,7 +101,6 @@ import DisplayQrCode from './screens/qrCode/DisplayQrCode'
 import EarningScreen from './screens/doctorHome/Earnning.js';
 import PregnancyList from './screens/consultation/pregnancy/pregnancyList'
 import AddPrescription from './screens/consultation/handWritingPrescription/AddPrescription'
-import AddNewMedicine from './screens/consultation/AddNewMedicine' 
 import TimeSlotTreatment from './screens/consultation/dentistTreatment/TimeSlotTreatment' 
 import AddDentistAppoinment from './screens/consultation/dentistTreatment/AddDentistAppoinment' 
 import WorkdoneSave from './screens/consultation/dentistTreatment/WorkdoneSave' 
@@ -235,7 +234,6 @@ const AppNavigator = createStackNavigator(
     AssistantSignupComplete: { screen: AssistantSignupComplete},
     PregnancyList: { screen: PregnancyList },
     AddPrescription: { screen: AddPrescription },
-    AddNewMedicine: { screen: AddNewMedicine },
     PrivateNotes: { screen: PrivateNotes },
     TimeSlotTreatment: { screen: TimeSlotTreatment },
     AddDentistAppoinment: { screen: AddDentistAppoinment },

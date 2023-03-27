@@ -308,7 +308,7 @@ class BillingComplete extends React.Component {
                 "AppointmentGuid": signupDetails.appoinmentGuid,
             }
         }
-        actions.callLogin('V1/FuncForDrAppToConsulatationBillingPreview', 'post', params, signupDetails.accessToken, 'getConsulatationBillingPreviewData');
+        actions.callLogin('V14/FuncForDrAppToConsulatationBillingPreview', 'post', params, signupDetails.accessToken, 'getConsulatationBillingPreviewData');
     }
 
     completeConsultation = (type) => {

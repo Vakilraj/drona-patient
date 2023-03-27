@@ -54,15 +54,14 @@ class DoctorHome extends React.Component {
 
 
 	async componentDidMount() {
-		//
-		this.getCurrentLocation();
-		// let { actions, signupDetails } = this.props;
-		// let accessToken = signupDetails.accessToken ? signupDetails.accessToken : CryptoJS.AES.decrypt(await AsyncStorage.getItem('accessToken'),'MNKU').toString(CryptoJS.enc.Utf8);
-		// let params = {
-		// 	"UserGuid": signupDetails.UserGuid,
-		// 	"Data":{}
-		// }
-		// actions.callLogin('V11/FuncForDrAppToGetDoctorFireBase', 'post', params, accessToken, 'Kpidata');
+		//this.getCurrentLocation();
+		let { actions, signupDetails } = this.props;
+		let accessToken = signupDetails.accessToken ? signupDetails.accessToken : CryptoJS.AES.decrypt(await AsyncStorage.getItem('accessToken'),'MNKU').toString(CryptoJS.enc.Utf8);
+		let params = {
+			"UserGuid": signupDetails.UserGuid,
+			"Data":{}
+		}
+		actions.callLogin('V11/FuncForDrAppToGetDoctorFireBase', 'post', params, accessToken, 'Kpidata');
 		this.callAppVersionCheckAPI();
 		Keyboard.dismiss(0);
 		await AsyncStorage.setItem('profile_complete', 'profile_complete');

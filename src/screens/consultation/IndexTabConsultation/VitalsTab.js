@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import {View,
+import {
+	View,
 	Text,
 	TouchableOpacity,
 	FlatList,
@@ -20,7 +21,7 @@ import Snackbar from 'react-native-snackbar';
 import { TextInput } from 'react-native';
 
 let prvLength = -1, bpAlertMsg = '', bmiIndex = 0;
-let VitalAllData = '',FinalExtractNullData = [];
+let VitalAllData = '', FinalExtractNullData = [];
 let appoinmentGuid = "", vitalDate = null;
 class CN extends React.Component {
 	constructor(props) {
@@ -275,6 +276,12 @@ class CN extends React.Component {
 					margin: responsiveWidth(3),
 					borderRadius: 10
 				}}>
+				<Text style={{
+					fontSize: CustomFont.font16,
+					fontWeight: '700',
+					color: Color.black,
+					marginLeft: responsiveWidth(4),
+				}}>{Moment().format('DD MMM YYYY')}</Text>
 				<FlatList
 					data={this.state.vitalsDataArrayAll}
 					extraData={this.state}
@@ -293,7 +300,8 @@ class CN extends React.Component {
 									marginRight: responsiveWidth(3),
 									alignItems: 'center'
 								}} >
-								<View style={{ flex: 2,
+								<View style={{
+									flex: 2,
 								}}>
 									<Text
 										style={{
@@ -317,7 +325,7 @@ class CN extends React.Component {
 											flexDirection: 'row',
 											alignItems: 'center',
 											borderWidth: 1,
-											borderColor: Color.datecolor,
+											borderColor: Color.createInputBorder,
 											borderRadius: 10,
 											//maxHeight: responsiveHeight(5),
 											paddingLeft: responsiveWidth(1),
@@ -326,7 +334,7 @@ class CN extends React.Component {
 									>
 
 										<TextInput returnKeyType="done"
-											style={{ flex: 2 ,height:responsiveHeight(5)}}
+											style={{ flex: 2, height: responsiveHeight(5), color:Color.fontColor}}
 											onFocus={() => {
 												if (Platform.OS == 'ios')
 													this.setState({ dynamicTop: responsiveHeight(15) })
@@ -418,14 +426,14 @@ class CN extends React.Component {
 						justifyContent: 'center',
 						marginBottom: responsiveHeight(3)
 					}}>
-						<TouchableOpacity style={{ alignItems: 'center', marginBottom: responsiveHeight(2.5), justifyContent: 'center', borderRadius: 5, height: responsiveHeight(6), width: responsiveWidth(93), backgroundColor: '#5715D2', marginTop: 30 }} onPress={() => {
+						<TouchableOpacity style={{ alignItems: 'center', marginBottom: responsiveHeight(2.5), justifyContent: 'center', borderRadius: 5, height: responsiveHeight(6), width: responsiveWidth(93), backgroundColor: Color.white, marginTop: 30 }} onPress={() => {
 							// if (this.state.vitalsDataArrayAll && this.state.vitalsDataArrayAll.length > 0) {
 							this.updateVitals()
 							// } else {
 							// Snackbar.show({ text: 'No data available to submit ', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 							// }
 						}}>
-							<Text style={{ fontFamily: CustomFont.fontName, color: Color.white, fontSize: CustomFont.font16, textAlign: 'center' }}>Save</Text>
+							<Text style={{ fontFamily: CustomFont.fontName, color: '#5715D2', fontSize: CustomFont.font16, textAlign: 'center' }}>Save</Text>
 						</TouchableOpacity>
 					</View>
 					: null}

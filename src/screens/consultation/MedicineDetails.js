@@ -83,6 +83,7 @@ class MedicineDetails extends React.Component {
 		});
 		let item = this.props.navigation.state.params.item;
 		console.log('item-------' + JSON.stringify(item))
+		medicineTypeGuid = item.medicineTypeGuid;
 		if (item && item.medicineDosasesType) {
 			if (item.medicineDosasesType && item.medicineDosasesType.length > 0) {
 				let tempDoaseArr = [];

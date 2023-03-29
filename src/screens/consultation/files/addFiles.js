@@ -43,7 +43,7 @@ let recordGuid;
 let selectedDay = '';
 var progressTimer = null;
 import Trace from '../../../service/Trace'
-let timeRange = '';
+let timeRange = '', stop2TimesClickStatus = 0;
 class AddFiles extends React.Component {
     constructor(props) {
         super(props);
@@ -68,6 +68,7 @@ class AddFiles extends React.Component {
             titleBorderColor: Color.borderColor,
             buttonBoderWidth: 0,
         };
+        stop2TimesClickStatus=0
     }
 
     componentDidMount() {
@@ -605,6 +606,10 @@ class AddFiles extends React.Component {
         this.setState({ selectedRecordType: index });
     }
     submitPress = () => {
+        stop2TimesClickStatus=1;
+        setTimeout(()=>{
+            stop2TimesClickStatus=0;
+        },2000)
         // let totalImageSizeInBytes = 0;
         // let sizeInMb =0;
         // try {
@@ -822,13 +827,18 @@ class AddFiles extends React.Component {
                         padding: 16, backgroundColor: Color.white, borderTopStartRadius: 20, borderTopEndRadius: 20,
                         width: '100%'
                     }} >
-                        <TouchableOpacity onPress={this.submitPress} style={{
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            backgroundColor: Color.primary,
-                            borderRadius: 4,
-                            height: responsiveHeight(6),
-                        }}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                if (stop2TimesClickStatus == 0)
+                                    this.submitPress()
+                            }}
+                            style={{
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: Color.primary,
+                                borderRadius: 4,
+                                height: responsiveHeight(6),
+                            }}>
                             <Text style={styles.submittxt}>Submit</Text>
                         </TouchableOpacity>
                     </View>

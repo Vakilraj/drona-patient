@@ -79,5 +79,13 @@ const styles = StyleSheet.create({
        },divider: {
            height: 1, backgroundColor: Color.primaryBlue, opacity: 0.1
        },
+       customFontStyle: {
+        fontSize: CustomFont.font16,
+        marginLeft: responsiveWidth(2),
+        color: '#292B2C', 
+        fontWeight:CustomFont.fontWeight400,
+        lineHeight: 30,
+        fontFamily:CustomFont.fontName
+      }
 });
 export default styles;

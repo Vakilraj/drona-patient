@@ -387,8 +387,8 @@ const styles = StyleSheet.create({
         marginTop: 30
     },
     submitbtn: {
+        flex:1,
         height: responsiveHeight(6), 
-        width: responsiveWidth(40), 
         justifyContent: 'center', 
         alignItems: 'center', 
         backgroundColor: Color.primary, 

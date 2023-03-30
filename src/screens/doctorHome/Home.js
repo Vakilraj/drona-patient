@@ -175,21 +175,21 @@ class Home extends React.PureComponent {
 					let roleCode = data && data.userInfo && data.userInfo.roleCode ? data.userInfo.roleCode : '10';
 					signupDetails.roleCode = roleCode;
 					//let roleCode = '70';
-					DRONA.setClinicList(data.clinicDetailsList);
+					//DRONA.setClinicList(data.clinicDetailsList);
 						let clinicList = data.clinicDetailsList;
 						if (clinicList && clinicList.length > 0) {
 							let clinicIndex = 0;
 							try {
-					//DRONA.setClinicList([clinicList[0]]);  //single clinic
+					DRONA.setClinicList([clinicList[0]]);  //single clinic
 
 								// For Multiclinic point previous selected clinic
-								for (let i = 0; i < clinicList.length; i++) {
-									if (localSavedClinicGuid == clinicList[i].clinicGuid) {
-										clinicIndex = i;
-										DRONA.setSelectedIndexClinic(clinicIndex)
-										break;
-									}
-								}
+								// for (let i = 0; i < clinicList.length; i++) {
+								// 	if (localSavedClinicGuid == clinicList[i].clinicGuid) {
+								// 		clinicIndex = i;
+								// 		DRONA.setSelectedIndexClinic(clinicIndex)
+								// 		break;
+								// 	}
+								// }
 								signupDetails.clinicName = clinicList[clinicIndex].clinicName;
 								signupDetails.clinicGuid = clinicList[clinicIndex].clinicGuid;
 								signupDetails.clinicStatus = clinicList[clinicIndex].status;

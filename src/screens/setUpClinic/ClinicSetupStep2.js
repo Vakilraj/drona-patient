@@ -372,7 +372,7 @@ class ClinicSetupStep2 extends React.Component {
 		let params = {
 			"RoleCode": signupDetails.roleCode ? signupDetails.roleCode : 10,
 			"UserGuid": signupDetails.UserGuid,
-			"ClinicGuid": DRONA.getClinicGuid(),
+			"ClinicGuid": signupDetails.clinicGuid,//DRONA.getClinicGuid()
 			"DoctorGuid": signupDetails.doctorGuid,
 			"Data": null
 		}
@@ -511,7 +511,7 @@ class ClinicSetupStep2 extends React.Component {
 		let objParams = {
 			"RoleCode": signupDetails.roleCode,
 			"UserGuid": signupDetails.UserGuid,
-			"ClinicGuid": DRONA.getClinicGuid(),
+			"ClinicGuid": signupDetails.clinicGuid,//DRONA.getClinicGuid()
 			"DoctorGuid": signupDetails.doctorGuid,
 			"data": {
 				"editConsent": false,

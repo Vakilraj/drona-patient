@@ -59,9 +59,9 @@ class FilePreview extends React.Component {
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)
   }
   callReadApi = (recordGuid) => {
-    let { actions,signupDetails } = this.props;
+    let { actions, signupDetails } = this.props;
     let params = {
-			"UserGuid": signupDetails.UserGuid,
+      "UserGuid": signupDetails.UserGuid,
       "Data": {
         "RecordGuid": recordGuid
       }
@@ -70,45 +70,45 @@ class FilePreview extends React.Component {
 
   }
 
-  getBase64=()=>{
+  getBase64 = () => {
     if (this.state.attchment === '') {
       alert('Please select a file to download')
-    }else{
+    } else {
       this.refs.viewShot.capture().then((uri) => {
         this.downloadQrCode(uri)
       });
     }
-		
-	}
+
+  }
 
 
   downloadQrCode = async (uri) => {
-		if (Platform.OS == 'ios') {
-			CameraRoll.save(uri, { type: 'photo' });
-			Snackbar.show({ text: 'File Downloaded Successfully.', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-		} else {
-			try {
-				const granted = await PermissionsAndroid.request(
-					PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-					{
-						title: 'Storage Permission Required',
-						message:
-							'App needs access to your storage to download Photos',
-					}
-				);
-				if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-					CameraRoll.save(uri, { type: 'photo' });
-			 	Snackbar.show({ text: 'File Downloaded Successfully.', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-				} else {
-					// If permission denied then show alert
-					alert('Storage Permission Not Granted');
-				}
-			} catch (err) {
-				//console.warn(err);
-			}
-		}
-	//
-	}
+    if (Platform.OS == 'ios') {
+      CameraRoll.save(uri, { type: 'photo' });
+      Snackbar.show({ text: 'File Downloaded Successfully.', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
+    } else {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: 'Storage Permission Required',
+            message:
+              'App needs access to your storage to download Photos',
+          }
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          CameraRoll.save(uri, { type: 'photo' });
+          Snackbar.show({ text: 'File Downloaded Successfully.', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
+        } else {
+          // If permission denied then show alert
+          alert('Storage Permission Not Granted');
+        }
+      } catch (err) {
+        //console.warn(err);
+      }
+    }
+    //
+  }
 
   callAPIForEditRecordDetails = () => {
     let { actions, signupDetails } = this.props;
@@ -135,9 +135,9 @@ class FilePreview extends React.Component {
   async UNSAFE_componentWillReceiveProps(newProps) {
     if (newProps.responseData && newProps.responseData.tag) {
       let tagname = newProps.responseData.tag;
-      
+
       let data = newProps.responseData.data;
-      
+
 
       if (tagname === 'changereadstatus') {
         if (newProps.responseData.statusCode === '0') {
@@ -146,17 +146,16 @@ class FilePreview extends React.Component {
       }
 
       else if (tagname === 'filepreview') {
-        if(data.attachment.length == 1)
-        {
+        if (data.attachment.length == 1) {
           this.clickOnShowPreview(data.attachment[0]);
 
-        //   this.setState({ fileExt: '.pdf' })
-        //   this.setState({ downloadPdfUrl: data.attachment[0].attachmentUrl })
-        //   this.setState({
-        //   resources: {
-        //     url: data.attachment.attachmentUrl
-        //   }
-        // })
+          //   this.setState({ fileExt: '.pdf' })
+          //   this.setState({ downloadPdfUrl: data.attachment[0].attachmentUrl })
+          //   this.setState({
+          //   resources: {
+          //     url: data.attachment.attachmentUrl
+          //   }
+          // })
 
         }
 
@@ -170,7 +169,7 @@ class FilePreview extends React.Component {
       /[^.]+$/.exec(filename) : undefined;
   }
   downloadImage() {
-    
+
 
     if (this.state.attchment === '') {
       alert('Please select a file to download')
@@ -214,10 +213,10 @@ class FilePreview extends React.Component {
     let { signupDetails } = this.props;
     setLogEvent("files", { "download_files": "click", UserGuid: signupDetails.UserGuid, })
     if (Platform.OS === 'ios') {
-      if(fileType!= '.pdf')
-      this.downloadImage()
+      if (fileType != '.pdf')
+        this.downloadImage()
       else
-      this.downloadPdfFromUrl();
+        this.downloadPdfFromUrl();
     }
     else {
       try {
@@ -229,10 +228,10 @@ class FilePreview extends React.Component {
           }
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          if(fileType!= '.pdf')
-      this.downloadImage()
-      else
-      this.downloadPdfFromUrl();
+          if (fileType != '.pdf')
+            this.downloadImage()
+          else
+            this.downloadPdfFromUrl();
         } else {
           // If permission denied then show alert
           alert('Storage Permission Not Granted');
@@ -249,42 +248,42 @@ class FilePreview extends React.Component {
     const dirToSave = Platform.OS == 'ios' ? dirs.DocumentDir : dirs.DownloadDir
     let fileName = "filePreview" + (new Date()).getTime() + '.pdf'
     const configfb = {
-        fileCache: true,
-        useDownloadManager: true,
-        notification: true,
-        mediaScannable: true,
-        title: 'test',
-        path: `${dirToSave}/` + fileName,
+      fileCache: true,
+      useDownloadManager: true,
+      notification: true,
+      mediaScannable: true,
+      title: 'test',
+      path: `${dirToSave}/` + fileName,
     }
     const configOptions = Platform.select({
-        ios: {
-            fileCache: configfb.fileCache,
-            title: configfb.title,
-            path: configfb.path,
-            appendExt: 'pdf',
-        },
-        android: configfb,
+      ios: {
+        fileCache: configfb.fileCache,
+        title: configfb.title,
+        path: configfb.path,
+        appendExt: 'pdf',
+      },
+      android: configfb,
     });
 
     //console.log('The file saved to 23233', configfb, dirs);
     RNFetchBlob.config(configOptions)
-        .fetch('GET', this.state.downloadPdfUrl, {})
-        .then((res) => {
-            if (Platform.OS === "ios") {
-              RNFetchBlob.ios.openDocument(res.data);
-                // RNFetchBlob.fs.writeFile(configfb.path, res.data, 'base64');
-                // RNFetchBlob.ios.previewDocument(configfb.path);
-            }
-            //setisdownloaded(false)
-            if (Platform.OS == 'android') {
-              Snackbar.show({ text: 'File downloaded successfully', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-            }
-            //console.log('The file saved to ', res);
-        })
-        .catch((e) => {
-            //console.log('The file saved to ERROR', e.message)
-        });
-}
+      .fetch('GET', this.state.downloadPdfUrl, {})
+      .then((res) => {
+        if (Platform.OS === "ios") {
+          RNFetchBlob.ios.openDocument(res.data);
+          // RNFetchBlob.fs.writeFile(configfb.path, res.data, 'base64');
+          // RNFetchBlob.ios.previewDocument(configfb.path);
+        }
+        //setisdownloaded(false)
+        if (Platform.OS == 'android') {
+          Snackbar.show({ text: 'File downloaded successfully', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
+        }
+        //console.log('The file saved to ', res);
+      })
+      .catch((e) => {
+        //console.log('The file saved to ERROR', e.message)
+      });
+  }
   // makeDownload1 = async () => {
   //   let { signupDetails } = this.props;
   //   setLogEvent("files", { "download_files": "click", UserGuid: signupDetails.UserGuid, })
@@ -357,47 +356,47 @@ class FilePreview extends React.Component {
   //       //console.log(e)
   //     });
   // }
-//   actualDownload = () => {
-//     const { dirs } = RNFetchBlob.fs;
-//     const dirToSave = Platform.OS == 'ios' ? dirs.DocumentDir : dirs.DownloadDir
-//     let fileName = "filePreview" + (new Date()).getTime() + '.pdf'
-//     const configfb = {
-//         fileCache: true,
-//         useDownloadManager: true,
-//         notification: true,
-//         mediaScannable: true,
-//         title: 'test',
-//         path: `${dirToSave}/` + fileName,
-//     }
-//     const configOptions = Platform.select({
-//         ios: {
-//             fileCache: configfb.fileCache,
-//             title: configfb.title,
-//             path: configfb.path,
-//             appendExt: 'pdf',
-//         },
-//         android: configfb,
-//     });
+  //   actualDownload = () => {
+  //     const { dirs } = RNFetchBlob.fs;
+  //     const dirToSave = Platform.OS == 'ios' ? dirs.DocumentDir : dirs.DownloadDir
+  //     let fileName = "filePreview" + (new Date()).getTime() + '.pdf'
+  //     const configfb = {
+  //         fileCache: true,
+  //         useDownloadManager: true,
+  //         notification: true,
+  //         mediaScannable: true,
+  //         title: 'test',
+  //         path: `${dirToSave}/` + fileName,
+  //     }
+  //     const configOptions = Platform.select({
+  //         ios: {
+  //             fileCache: configfb.fileCache,
+  //             title: configfb.title,
+  //             path: configfb.path,
+  //             appendExt: 'pdf',
+  //         },
+  //         android: configfb,
+  //     });
 
-//     //console.log('The file saved to 23233', configfb, dirs);
-//     RNFetchBlob.config(configOptions)
-//         .fetch('GET', this.state.downloadPdfUrl, {})
-//         .then((res) => {
-//             if (Platform.OS === "ios") {
-//               RNFetchBlob.ios.openDocument(res.data);
-//                 // RNFetchBlob.fs.writeFile(configfb.path, res.data, 'base64');
-//                 // RNFetchBlob.ios.previewDocument(configfb.path);
-//             }
-//             //setisdownloaded(false)
-//             if (Platform.OS == 'android') {
-//               Snackbar.show({ text: 'File downloaded successfully', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-//             }
-//             //console.log('The file saved to ', res);
-//         })
-//         .catch((e) => {
-//             //console.log('The file saved to ERROR', e.message)
-//         });
-// }
+  //     //console.log('The file saved to 23233', configfb, dirs);
+  //     RNFetchBlob.config(configOptions)
+  //         .fetch('GET', this.state.downloadPdfUrl, {})
+  //         .then((res) => {
+  //             if (Platform.OS === "ios") {
+  //               RNFetchBlob.ios.openDocument(res.data);
+  //                 // RNFetchBlob.fs.writeFile(configfb.path, res.data, 'base64');
+  //                 // RNFetchBlob.ios.previewDocument(configfb.path);
+  //             }
+  //             //setisdownloaded(false)
+  //             if (Platform.OS == 'android') {
+  //               Snackbar.show({ text: 'File downloaded successfully', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
+  //             }
+  //             //console.log('The file saved to ', res);
+  //         })
+  //         .catch((e) => {
+  //             //console.log('The file saved to ERROR', e.message)
+  //         });
+  // }
   clickOnShowPreview = (item) => {
     // alert(JSON.stringify(item))
     if (Platform.OS == 'ios' && item.orgFileExt == '.pdf') {
@@ -431,7 +430,7 @@ class FilePreview extends React.Component {
       .fetch('GET', item.attachmentUrl, {})
       .then((res) => {
         RNFS.readFile(res.path(), "base64").then(result => {
-         // alert(JSON.stringify(result))
+          // alert(JSON.stringify(result))
           this.setState({ fileSavePathIOS: result })
 
         })
@@ -446,9 +445,9 @@ class FilePreview extends React.Component {
   render() {
     const resourceType = 'url';
     return (
-      <SafeAreaView style={[CommonStyle.safeArea,{backgroundColor: Color.bgColor}]}>
+      <SafeAreaView style={[CommonStyle.safeArea, { backgroundColor: Color.bgColor }]}>
         <View style={{ flex: 1, backgroundColor: Color.bgColor }}>
-          <StatusBar backgroundColor={Color.statusBarNewColor} barStyle="dark-content"  />
+          <StatusBar backgroundColor={Color.statusBarNewColor} barStyle="dark-content" />
           {/* <View style={{ flexDirection: 'row', marginTop: 0, backgroundColor: Color.primary, alignItems: 'center', height: Platform.OS === 'ios' ? 40 : responsiveHeight(7.5) }}>
             <TouchableOpacity style={{ marginLeft: responsiveWidth(2.5) }} onPress={() => this.props.navigation.goBack()}>
               <Image source={arrowBack} style={{ height: responsiveWidth(4.5), width: responsiveWidth(5) }} />
@@ -461,68 +460,68 @@ class FilePreview extends React.Component {
               this.handleBackPress()
             }} />
           {/* <View style={{ flex: 1.5 }}> */}
-          <View style={{ flex: 1.5,backfaceVisibility:Color.bgColor }}>
-              <FlatList
-                data={this.state.data}
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
-                style={{ paddingBottom: 2, paddingTop: 5 }}
-                renderItem={({ item, index }) => (
-                  <TouchableOpacity style={styles.preview} onPress={() => this.clickOnShowPreview(item)}>
-                    {/* <Image source={{ uri: item.url }} style={{ height: 57, width: 57, backgroundColor: 'red' }} /> */}
-                    {item.orgFileExt != '.pdf' ? <Image source={{ uri: item.attachmentUrl }} style={{ height: 60, width: 60 }} /> : <Image source={PdfIcon} style={{ height: 60, width: 60 }} />}
-                  </TouchableOpacity>
-                )}
-                keyExtractor={(item, index) => index.toString()}
-              />
+          <View style={{ flex: 1.5, backfaceVisibility: Color.bgColor }}>
+            <FlatList
+              data={this.state.data}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              style={{ paddingBottom: 2, paddingTop: 5 }}
+              renderItem={({ item, index }) => (
+                <TouchableOpacity style={styles.preview} onPress={() => this.clickOnShowPreview(item)}>
+                  {/* <Image source={{ uri: item.url }} style={{ height: 57, width: 57, backgroundColor: 'red' }} /> */}
+                  {item.orgFileExt != '.pdf' ? <Image source={{ uri: item.attachmentUrl }} style={{ height: 60, width: 60 }} /> : <Image source={PdfIcon} style={{ height: 60, width: 60 }} />}
+                </TouchableOpacity>
+              )}
+              keyExtractor={(item, index) => index.toString()}
+            />
 
-            <View style={{ flex: 12 ,backgroundColor: Color.bgColor}}>
+            <View style={{ flex: 12, backgroundColor: Color.bgColor }}>
               {this.state.fileExt != '.png' ?
                 <PDFView
                   fadeInDuration={250.0}
-                  style={{ flex: 1,backgroundColor: Color.bgColor }}
+                  style={{ flex: 1, backgroundColor: Color.bgColor }}
                   resource={Platform.OS == 'android' ? this.state.resources[resourceType] : this.state.fileSavePathIOS}
                   resourceType={Platform.OS == 'android' ? resourceType : 'base64'}
                 />
                 :
                 <ViewShot
-                style={{flex:1}}
-					  	ref="viewShot"
-					  	options={{ format: 'jpg', quality: 0.9 }}>
-                <ImageZoom cropWidth={Dimensions.get('window').width}
-                  cropHeight={Dimensions.get('window').height}
-                  imageWidth={responsiveWidth(100)}
-                  imageHeight={responsiveHeight(100)}>
+                  style={{ flex: 1 }}
+                  ref="viewShot"
+                  options={{ format: 'jpg', quality: 0.9 }}>
+                  <ImageZoom cropWidth={Dimensions.get('window').width}
+                    cropHeight={Dimensions.get('window').height}
+                    imageWidth={responsiveWidth(100)}
+                    imageHeight={responsiveHeight(100)}>
                     <FastImage
-        style={{width: responsiveWidth(100), height: Platform.OS=='android'? responsiveHeight(70): responsiveHeight(68)}}
-        source={{
-            uri: this.state.attchment,
-            //headers: { Authorization: signupDetails.accessToken },
-            priority: FastImage.priority.normal,
-        }}
-        resizeMode={FastImage.resizeMode.contain}
-    />
-                  {/* <Image style={{ resizeMode: 'contain', width: responsiveWidth(100), height: responsiveHeight(80) }}
+                      style={{ width: responsiveWidth(100), height: Platform.OS == 'android' ? responsiveHeight(70) : responsiveHeight(68) }}
+                      source={{
+                        uri: this.state.attchment,
+                        //headers: { Authorization: signupDetails.accessToken },
+                        priority: FastImage.priority.normal,
+                      }}
+                      resizeMode={FastImage.resizeMode.contain}
+                    />
+                    {/* <Image style={{ resizeMode: 'contain', width: responsiveWidth(100), height: responsiveHeight(80) }}
                     source={{ uri: this.state.attchment }} /> */}
 
-                </ImageZoom>
+                  </ImageZoom>
                 </ViewShot>
               }
             </View>
           </View>
 
-            <View style={styles.bottomBtnView} >
-              <TouchableOpacity onPress={() => this.makeDownload(this.state.fileExt)} style={styles.submitbtn}>
-                <Text style={styles.submittxt}>Download</Text>
-              </TouchableOpacity>
-              {this.state.fileExt !== '.png' ?  <TouchableOpacity style={[styles.submitbtn, { marginLeft: responsiveWidth(8), backgroundColor: Color.weekdaycellPink, }]}
-                onPress={() => {
-                  setLogEvent("patient_appointment", { "print_pdf": "click", })
-                  this.printRemotePDF()
-                }}>
-                <Text style={{ color: Color.white, fontSize: CustomFont.font16 }}>Print</Text>
-              </TouchableOpacity>:null}
-        </View>
+          <View style={styles.bottomBtnView} >
+            <TouchableOpacity onPress={() => this.makeDownload(this.state.fileExt)} style={styles.submitbtn}>
+              <Text style={styles.submittxt}>Download</Text>
+            </TouchableOpacity>
+            {this.state.fileExt !== '.png' ? <TouchableOpacity style={[styles.submitbtn, { marginLeft: responsiveWidth(8), backgroundColor: Color.weekdaycellPink, }]}
+              onPress={() => {
+                setLogEvent("patient_appointment", { "print_pdf": "click", })
+                this.printRemotePDF()
+              }}>
+              <Text style={{ color: Color.white, fontSize: CustomFont.font16 }}>Print</Text>
+            </TouchableOpacity> : null}
+          </View>
         </View>
       </SafeAreaView>
     );

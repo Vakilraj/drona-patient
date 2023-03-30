@@ -19,6 +19,7 @@ let strings = new LocalizedStrings({
    frequency : 'Frequency',
    duration : 'Duration',
    symptoms  :'Symptoms',
+   procedures: 'Procedures',
    findings :'Findings',
    diagnosis :'Diagnosis',
    advisedinvestigation :'Advised Investigations',
@@ -49,6 +50,7 @@ let strings = new LocalizedStrings({
   frequency : 'পৌনঃপুনিকতা',
   duration : 'মেয়াদ',
   symptoms  :'উপসর্গ', //d
+  procedures: 'পদ্ধতি',
   findings :'আবিষ্কার', //d
   diagnosis :'রোগ নির্ণয়',//
   advisedinvestigation :'সুপারিশকৃত অনুসন্ধান',// d
@@ -77,6 +79,7 @@ let strings = new LocalizedStrings({
   frequency : 'આવર્તન',
   duration : 'સમયગાળો',
   symptoms  :'લક્ષણો',
+  procedures: 'પ્રક્રિયાઓ',
   findings :'તારણો',
   diagnosis :'નિદાન',
   advisedinvestigation :'તપાસની સલાહ',
@@ -105,6 +108,7 @@ let strings = new LocalizedStrings({
   frequency : 'वारंवारता',
   duration : 'कालावधी',
   symptoms  :'लक्षणे',
+  procedures: 'प्रक्रिया[संपादन]',
   findings :'निष्कर्ष',
   diagnosis :'रोगनिदान',
   advisedinvestigation :'पडताळणीचा सल्ला',
@@ -133,6 +137,7 @@ let strings = new LocalizedStrings({
   frequency : 'आवृत्ति',
   duration : 'अवधि',
   symptoms  :'लक्षण (निष्कर्ष)',
+  procedures: 'प्रक्रियाओं',
   findings :'जाँच - परिणाम',
   diagnosis :'निदान',
   advisedinvestigation :'सलाह अनुसार जाँच ',
@@ -161,6 +166,7 @@ let strings = new LocalizedStrings({
   frequency : 'தடவை',
   duration : 'தடவை',
   symptoms  :'அறிகுறிகள்',
+  procedures: 'நடைமுறைகள்',
   findings :'கண்டுபிடிப்புகள்',
   diagnosis :'நோய் கண்டறிதல்',
   advisedinvestigation :'அறிவுறுத்தப்பட்ட பரிசோதனை',
@@ -189,6 +195,7 @@ let strings = new LocalizedStrings({
   frequency : 'తరచుదనం',
   duration : 'వ్యవధి',
   symptoms  :'లక్షణాలు',
+  procedures: '[మార్చు] ప్రక్రియలు',
   findings :'తెలుసుకున్నవి',
   diagnosis :'వ్యాధి నిర్థారణ',
   advisedinvestigation :'సలహా ఇవ్వబడిన పరీక్ష',

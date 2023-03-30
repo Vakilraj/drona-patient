@@ -39,7 +39,6 @@ import alerts from '../../../assets/success_tick.png';
 let dataAll = '', isGetData = false
 let selectedDay = '', selectedDayReformat = '', RelationGuid = '';
 let pincode = '', city = '', stateName = '', addr1 = '', addr2 = '', landmark = '', patientGuid = '', base64 = null, filename = '', from = '';;
-//
 
 let availabilityGuid = '';
 let prevIndex = 0;
@@ -53,6 +52,7 @@ let objItem = {}
 let timeslot = {};
 let addPatientFromWhere = '';
 let isChange = false;
+let dobNullText = '';
 
 class AddNewPatients extends React.Component {
 	constructor(props) {
@@ -109,6 +109,7 @@ class AddNewPatients extends React.Component {
 			showDiscard: false,
 			showDiscardDialog: false,
 			showInitialDate: new Date(),
+			nullDate : 'DD/MM/YYYY',
 			isValidAge: true,
 			parentName: ''
 		};
@@ -233,11 +234,11 @@ class AddNewPatients extends React.Component {
 					lname: item.lastName,
 					referedName: item.referredBy,
 					mobile: item.contactNumber ? item.contactNumber : item.phoneNumber,
-					age: age + '',
+					age: item.age == null ? '0' : age + '',
 					email: item.emailAddress,
-					showSelectedDay: Moment(item.dateOfBirth).format('DD/MM/YYYY'),
+					showSelectedDay: item.dob == null ? this.state.nullDate : Moment(item.dateOfBirth).format('DD/MM/YYYY'),
 					relationship: item.relationName,
-					showInitialDate: Moment(item.dateOfBirth).format('YYYY-MM-DD')
+					showInitialDate: item.dob == null ? 'DD/MM/YYYY' : Moment(item.dateOfBirth).format('YYYY-MM-DD')
 				})
 				if (item.dateOfBirth) this.setState({ isAgeEditable: false })
 
@@ -591,10 +592,17 @@ class AddNewPatients extends React.Component {
 
 				} else {
 					let age = 0;
-					if (item.dob) {
-						age = Moment(new Date()).format('YYYY') - Moment(item.dob).format('YYYY');
-					} else {
-						age = item.age;
+					if(item.dob != null)
+					{
+						if (item.dob) {
+							age = Moment(new Date()).format('YYYY') - Moment(item.dob).format('YYYY');
+						} else {
+							age = item.age;
+						}
+					}
+					else
+					{
+						dobNullText = 'age'
 					}
 
 					this.setState({
@@ -605,13 +613,13 @@ class AddNewPatients extends React.Component {
 						mobile: item.phoneNumber,
 						age: age + '',
 						email: item.email,
-						showSelectedDay: Moment(item.dob).format('DD/MM/YYYY'),
+						showSelectedDay: item.dob == null ? this.state.nullDate : Moment(item.dob).format('DD/MM/YYYY'),
 						// showHeaderDate: '',
 						// dateForfullCalendar: '',
 						//imageSource: null,
 						//isModalVisibleRelation: false,
 						//relationship: item.relationName,
-						showInitialDate: Moment(item.dob).format('YYYY-MM-DD')
+						showInitialDate: item.dob == null ? 'DD/MM/YYYY' : Moment(item.dob).format('YYYY-MM-DD')
 					})
 					// alert(this.state.age);
 					if (item.dob != null && item.dob != "") this.setState({ isAgeEditable: false })
@@ -1105,7 +1113,7 @@ class AddNewPatients extends React.Component {
 						<ScrollView>
 							<View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginTop: 20 }}>
 								<CalendarPicker
-									initialDate={this.state.showInitialDate}
+									initialDate={this.state.showInitialDate == 'DD/MM/YYYY' ? Moment(new Date()).format('YYYY-MM-DD') : this.state.showInitialDate}
 									width={responsiveWidth(90)}
 									startFromMonday={true}
 									todayTextStyle={{ color: '#00bfff' }}

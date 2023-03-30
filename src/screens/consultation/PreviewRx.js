@@ -51,6 +51,7 @@ let timingAndDur = '';
 let noteStr = '';
 let consultTypeValue = '';
 let followupHead = '', from='';
+let procedureList = '', procedureHead = '';
 import Trace from '../../service/Trace'
 let timeRange = '',consultId='';
 class PreviewRx extends React.Component {
@@ -173,6 +174,7 @@ class PreviewRx extends React.Component {
                 instructionsList = prescriptionDataFullArray.instructionsList != null ? prescriptionDataFullArray.instructionsList : [];
                 investigationList = prescriptionDataFullArray.investigationList != null ? prescriptionDataFullArray.investigationList : [];
                 diagnosisList = prescriptionDataFullArray.diagnosisList != null ? prescriptionDataFullArray.diagnosisList : [];
+                procedureList = prescriptionDataFullArray.procedureList != null ? prescriptionDataFullArray.procedureList : [];
                 followUpItem = prescriptionDataFullArray.followUp;
                 registrationNumber = doctorInfo ? doctorInfo.registrationNumber : '';
                 eSign = prescriptionDataFullArray != null ? prescriptionDataFullArray.esignature : null;
@@ -187,6 +189,7 @@ class PreviewRx extends React.Component {
                 timingAndDur = Language.language.timingandduration;
                 noteStr = Language.language.note;
                 followupHead = Language.language.followup;
+                procedureHead = Language.language.procedures;
                 try {
 
                 } catch (error) {
@@ -201,12 +204,14 @@ class PreviewRx extends React.Component {
 
         for (var i = 0; i < symptomList.length; i++) {
             if (i == 0) {
-            const htmlCode = symptomList[i].symptomName;
+           // const htmlCode = symptomList[i].symptomName;
+           const htmlCode = (symptomList[i].symptomName) + ' ' + (symptomList[i].since ? symptomList[i].since : '')  + ' ' + (symptomList[i].severityName ? symptomList[i].severityName : '') + ' ' + (symptomList[i].notes ? symptomList[i].notes : '');
             temp.push(htmlCode)
             }
             else
             {
-                const htmlCode = ', ' + symptomList[i].symptomName;
+               // const htmlCode = ', ' + symptomList[i].symptomName;
+               const htmlCode = ', ' + (symptomList[i].symptomName) + ' ' + (symptomList[i].since ? symptomList[i].since : '')  + ' ' + (symptomList[i].severityName ? symptomList[i].severityName : '') + ' ' + (symptomList[i].notes ? symptomList[i].notes : '');
                 temp.push(htmlCode)
             }
         }
@@ -220,18 +225,35 @@ class PreviewRx extends React.Component {
         for (var i = 0; i < findingList.length; i++) {
 
             if (i == 0) {
-                const htmlCode = findingList[i].findingName;
+                //const htmlCode = findingList[i].findingName;
+                const htmlCode = (findingList[i].findingName) + ' ' + (findingList[i].since ? findingList[i].since : '')  + ' ' + (findingList[i].severityName ? findingList[i].severityName : '') + ' ' + (findingList[i].notes ? findingList[i].notes : '');
                 temp.push(htmlCode)
             }
             else
             {
-                const htmlCode = ', ' + findingList[i].findingName;
+               // const htmlCode = ', ' + findingList[i].findingName;
+               const htmlCode = ', ' + (findingList[i].findingName) + ' ' + (findingList[i].since ? findingList[i].since : '')  + ' ' + (findingList[i].severityName ? findingList[i].severityName : '') + ' ' + (findingList[i].notes ? findingList[i].notes : '');
                 temp.push(htmlCode)
             }
         }
         return temp.join("")
     }
+    procedureView = (procedureList) => {
+        let temp = []
 
+        for (var i = 0; i < procedureList.length; i++) {
+            if (i == 0) {
+            const htmlCode = procedureList[i].procedureName;
+            temp.push(htmlCode)
+            }
+            else
+            {
+                const htmlCode = ', ' + procedureList[i].procedureName;
+                temp.push(htmlCode)
+            }
+        }
+        return temp.join("")
+    }
     // symptomsView = (symptomList) => {
     //     let temp = []
 
@@ -263,10 +285,12 @@ class PreviewRx extends React.Component {
 
         for (var i = 0; i < diagnosisList.length; i++) {
             if (i == 0) {
-                const htmlCode = diagnosisList[i].diagnosisName;
+                //const htmlCode = diagnosisList[i].diagnosisName;
+                const htmlCode = (diagnosisList[i].diagnosisName) + ' ' + (diagnosisList[i].since ? diagnosisList[i].since : '')  + ' ' + (diagnosisList[i].diagnosisDesc ? diagnosisList[i].diagnosisDesc : '') + ' ' + (diagnosisList[i].notes ? diagnosisList[i].notes : '');
                 temp.push(htmlCode)
             } else {
-                const htmlCode = ', ' + diagnosisList[i].diagnosisName;
+                //const htmlCode = ', ' + diagnosisList[i].diagnosisName;
+                const htmlCode = ', ' + (diagnosisList[i].diagnosisName) + ' ' + (diagnosisList[i].since ? diagnosisList[i].since : '')  + ' ' + (diagnosisList[i].diagnosisDesc ? diagnosisList[i].diagnosisDesc : '') + ' ' + (diagnosisList[i].notes ? diagnosisList[i].notes : '');
                 temp.push(htmlCode)
             }
         }
@@ -293,10 +317,12 @@ class PreviewRx extends React.Component {
             // const htmlCode = '• ' + investigationList[i].investigationName + '\n';
             // temp.push(htmlCode)
             if (i == 0) {
-                const htmlCode = investigationList[i].investigationName;
+                //const htmlCode = investigationList[i].investigationName;
+                const htmlCode = (investigationList[i].investigationName) + ' ' + (investigationList[i].notes ? '('+investigationList[i].notes+')' : '');
                 temp.push(htmlCode)
             } else {
-                const htmlCode = ', ' + investigationList[i].investigationName;
+                //const htmlCode = ', ' + investigationList[i].investigationName;
+                const htmlCode = ', ' + (investigationList[i].investigationName) + ' ' + (investigationList[i].notes ? '('+investigationList[i].notes +')' : '');
                 temp.push(htmlCode)
             }
         }
@@ -470,7 +496,11 @@ class PreviewRx extends React.Component {
                                     
                                 </View> : null}
 
-                               
+                                {(procedureList && procedureList.length > 0) ? 
+                                <View>
+                                    <Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), marginTop: 0, }}><Text style={{fontWeight: 'bold'}}>{procedureList && procedureList.length > 0 ? procedureHead : ''}: </Text> {this.procedureView(procedureList)}</Text>
+                                </View>
+                                :null}
 
                                 {prescriptionNote.prescriptionNoteName ?
                                  <View style={{  marginTop: 5 }}>

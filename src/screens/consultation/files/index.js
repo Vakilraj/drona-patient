@@ -33,7 +33,8 @@ import Moment from 'moment';
 import { setLogEvent } from '../../../service/Analytics';
 import Trace from '../../../service/Trace'
 import CustomFont from '../../../components/CustomFont';
-let timeRange = '', recordTypeList = '', finalRecordTypeList = [];
+let timeRange = '', recordTypeList = '';
+let finalRecordTypeList = []
 class FileList extends React.Component {
     constructor(props) {
         super(props);
@@ -93,23 +94,55 @@ class FileList extends React.Component {
                         //alert(JSON.stringify(data.fileInfoYearly))
                         recordTypeList = data.recordTypeList;
                         this.setState({ fileListArr: data.fileInfoYearly == null ? [] : data.fileInfoYearly });
-                        
-                    //     try {
-                    //    let temp = recordTypeList[0]
-                    //    let temp2 = recordTypeList[2]
-                    //    let temp3 = recordTypeList[3]
-                    //    let temp1 = recordTypeList[1]
-                    //     finalRecordTypeList.push(temp, temp2, temp3, temp1)
-                    //     } catch (error) {
-                    //         finalRecordTypeList=recordTypeList;
-                    //     }
-                       
-                        // var a = temp3.recordTypeName
-                        // var b = "Bills / ";
-                        // var position = 0;
-                        // output = [a.slice(0, position), b, a.slice(position)].join('');
-                        // console.log('output+++++++++++++', output)
-                        // console.log('finalRecordTypeList++++++++++', finalRecordTypeList)
+                        finalRecordTypeList=[
+                            {
+                                "recordTypeGuid": "",
+                                "recordTypeName": ""
+                            },
+                            {
+                                "recordTypeGuid": "",
+                                "recordTypeName": ""
+                            },
+                            {
+                                "recordTypeGuid": "",
+                                "recordTypeName": ""
+                            },
+                            {
+                                "recordTypeGuid": "",
+                                "recordTypeName": ""
+                            }]
+                        try {
+                            if(recordTypeList.length>4)
+                            finalRecordTypeList = recordTypeList;
+                            else
+                            for (var i = 0; i < recordTypeList.length; i++) {
+                                if (recordTypeList[i].recordTypeName == 'Prescriptions') {
+                                    finalRecordTypeList[0].recordTypeName = 'Prescriptions'
+                                    finalRecordTypeList[0].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+                                }
+                                else if (recordTypeList[i].recordTypeName == 'Lab Reports') {
+                                    finalRecordTypeList[1].recordTypeName = 'Lab Reports'
+                                    finalRecordTypeList[1].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+
+                                }
+                                else if (recordTypeList[i].recordTypeName == 'Invoice') {
+                                    finalRecordTypeList[2].recordTypeName = 'Bill / Invoice'
+                                    finalRecordTypeList[2].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+
+                                }
+                                else if (recordTypeList[i].recordTypeName == 'Other Attachments') {
+                                    finalRecordTypeList[3].recordTypeName = 'Others'
+                                    finalRecordTypeList[3].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+                                }
+                            }
+
+                        } catch (error) {
+                            finalRecordTypeList = recordTypeList;
+                        }
                     }
                 }
 
@@ -391,9 +424,8 @@ class FileList extends React.Component {
                             </TouchableOpacity>
                         </View>
                         <View style={{ marginStart: 10, marginEnd: 10, marginTop: 15, marginBottom: 15 }}>
-
-                            <FlatList
-                                data={recordTypeList}
+{finalRecordTypeList && finalRecordTypeList.length>0 ? <FlatList
+                                data={finalRecordTypeList}
                                 horizontal
                                 showsHorizontalScrollIndicator={false}
                                 renderItem={({ item }) => (
@@ -412,7 +444,8 @@ class FileList extends React.Component {
                                         </View>
                                     </TouchableOpacity>
                                 )}
-                            />
+                            />:null}
+                            
 
                         </View>
 

@@ -38,18 +38,18 @@ import Validator from '../../components/Validator';
 import CustomModalOne from '../../components/CustomModalOne';
 // import CustomModalTwo from '../../components/CustomModalTwo';
 
-let SymptomFullArray = [], findingFullArray = [], diagnosticFullArray = [], medicineFullArray = [], InvestigationeFullArray = [], InstructionFullArray = [], NotesData = '',
+let SymptomFullArray = [], findingFullArray = [], diagnosticFullArray = [], medicineFullArray = [], InvestigationeFullArray = [], InstructionFullArray = [], NotesData = '',ProcedureFullArray=[],
 	VitalAllData = '', medTiming = null, FinalExtractNullData = [];
 let appoinmentGuid = "", patientGuid = '', vitalDate = null;
 let appointmentStatus = null, vitalLoadSTatus = 0;
 let normalListBackup = [], selectedListBackup = [], noteGuid = '';
-let vitalFlag = false, symptomFlag = false, findingFlag = false, diagnosticFlag = false, medicineFlag = false, instructionFlag = false, investigationFlag = false, notesFlag = false;
+let vitalFlag = false, symptomFlag = false, findingFlag = false, diagnosticFlag = false, medicineFlag = false, instructionFlag = false, investigationFlag = false, notesFlag = false,procedureFlag = false;;
 let medicineIndex = 0, medicineAddUpdateFlag = 'add', vitalIsAddedStatus = '';
 import Trace from '../../service/Trace'
 let timeRange = '', medicineTypeFullArray = [], prvLength = -1, bpAlertMsg = '', bmiIndex = 0;
 let sinceDataPatternArr = [{ label: '1 day', value: '1 day', isSelect: true }, { label: '1 week', value: '1 week', isSelect: false }, { label: '1 month', value: '1 month', isSelect: false }, { label: '1 year', value: '1 year', isSelect: true }];
 let selectedSeverityGuid = '', selectedSeverityName = '', sincePattern = '', selectedInputTxtLength = 5;
-let severityTmpArry = [{ itemValue: "Mild", select: false }, { itemValue: "Moderate", select: false }, { itemValue: "Severe", select: false }];
+let severityArrySymptFind = [], severityArryDiagnostic = [];
 let clickItemIndex = 0, clickItemName = '', clickType = '';
 class Consultation extends React.Component {
 	constructor(props) {
@@ -94,6 +94,10 @@ class Consultation extends React.Component {
 			InstructionArray: [],
 			SelectedInstructionArr: [],
 
+			ProcedureArr: [],
+			SelectedProcedureArr: [],
+			procedureSearchTxt: '',
+			isProcedureModalOpen:false,
 			isVitalEmpty: true,
 			showFollowUpModal: true,
 
@@ -137,13 +141,14 @@ class Consultation extends React.Component {
 			bpFieldError: false,
 
 			isModalOpenSeverity: false,
-			SeverityDataArray: severityTmpArry,
+			SeverityDataArray: [],
 			isModalVisibleInstructionInvest: false,
 			severityNameHeader: '',
 			selectedSeverityIndex: -1,
 			sinceDropdownArr: sinceDataPatternArr,
 			sinceText: '',
 			severityNotes: '',
+			instInstructNotes: '',
 			showSinceDropDown: true
 		};
 		this.clearArray()
@@ -159,11 +164,13 @@ class Consultation extends React.Component {
 		instructionFlag = false;
 		investigationFlag = false;
 		notesFlag = false;
+		procedureFlag = false;
 		medicineIndex = 0;
 		medicineAddUpdateFlag = 'add';
 		selectedSeverityGuid = '';
 		sincePattern = '';
 		selectedSeverityName = '';
+		ProcedureFullArray = [];
 	}
 	callOnFocus = (type) => {
 		if (type == '1') {
@@ -270,6 +277,7 @@ class Consultation extends React.Component {
 		medicineFullArray = patientConsultation.medicineList ? patientConsultation.medicineList : []
 		InvestigationeFullArray = patientConsultation.investigationList ? patientConsultation.investigationList : []
 		InstructionFullArray = patientConsultation.instructionsList ? patientConsultation.instructionsList : []
+		ProcedureFullArray = patientConsultation.procedureList ? patientConsultation.procedureList:[]
 		NotesData = patientConsultation.prescriptionNote ? patientConsultation.prescriptionNote.prescriptionNoteName : ''
 		let selectedSymptoms = patientConsultation.selectedSymptoms && patientConsultation.selectedSymptoms.length > 0 ? patientConsultation.selectedSymptoms : []
 		let selectedInvestigations = patientConsultation.selectedInvestigations && patientConsultation.selectedInvestigations.length > 0 ? patientConsultation.selectedInvestigations : []
@@ -277,11 +285,11 @@ class Consultation extends React.Component {
 		let selectedFindings = patientConsultation.selectedFindings ? patientConsultation.selectedFindings : []
 		let selectedDiagnosis = patientConsultation.selectedDiagnosis ? patientConsultation.selectedDiagnosis : []
 		let selectedMedicines = patientConsultation.selectedMedicines ? patientConsultation.selectedMedicines : []
-
+		let selectedProcedure = patientConsultation.selectedProcedure && patientConsultation.selectedProcedure.length > 0 ? patientConsultation.selectedProcedure : []
 		noteGuid = patientConsultation.prescriptionNote ? patientConsultation.prescriptionNote.prescriptionNoteGuid : ''
 		this.setState({
 			SymptomArr: SymptomFullArray, FindingArr: findingFullArray, DiagnosticArr: diagnosticFullArray, MedicineArr: medicineFullArray, InvestigationArray: InvestigationeFullArray, InstructionArray: InstructionFullArray,
-			notesData: NotesData, followupData: data.followUp, showFollowUpModal: false
+			notesData: NotesData, followupData: data.followUp, showFollowUpModal: false,ProcedureArr: ProcedureFullArray,
 		});
 
 		if (medicineFullArray.length == 0)
@@ -294,7 +302,7 @@ class Consultation extends React.Component {
 			this.setState({ vitalsDataArray: [] })
 		}
 
-		this.setState({ SelectedSymptomArr: selectedSymptoms, SelectedInvestigationArr: selectedInvestigations, SelectedInstructionArr: selectedInstructions, SelectedFindingArr: selectedFindings, SelectedDiagnosticArr: selectedDiagnosis, SelectedMedicineArr: selectedMedicines })
+		this.setState({ SelectedSymptomArr: selectedSymptoms, SelectedInvestigationArr: selectedInvestigations, SelectedInstructionArr: selectedInstructions, SelectedFindingArr: selectedFindings, SelectedDiagnosticArr: selectedDiagnosis, SelectedMedicineArr: selectedMedicines,SelectedProcedureArr: selectedProcedure, })
 		medTiming = patientConsultation.medTiming;
 		setTimeout(() => {
 			this.setState({ showFollowUpModal: true });
@@ -327,7 +335,12 @@ class Consultation extends React.Component {
 			if (selectedInstructions)
 				instructionFlag = true;
 
+if (selectedProcedure)
+procedureFlag = true;
+
 		}
+		severityArrySymptFind = patientConsultation.severityMaster;
+		severityArryDiagnostic = patientConsultation.diagnoisisStatusMaster;
 	}
 	componentWillUnmount() {
 		Trace.stopTrace()
@@ -336,17 +349,19 @@ class Consultation extends React.Component {
 	savePage = () => {
 		Trace.stopTrace()
 		//vitalFlag || 
-		if (symptomFlag || findingFlag || diagnosticFlag || medicineFlag || instructionFlag || investigationFlag || notesFlag) {
+		if (symptomFlag || findingFlag || diagnosticFlag || medicineFlag || instructionFlag || investigationFlag || notesFlag || procedureFlag) {
 			let { actions, signupDetails } = this.props;
 			let tmpMedicineArr = [...this.state.SelectedMedicineArr];
+			console.log('-----tmpMedicineArr---'+JSON.stringify(tmpMedicineArr));
 			let tmpArr = []
 			for (let i = 0; i < tmpMedicineArr.length; i++) {
 				let doaseArr = tmpMedicineArr[i].medicineDosasesType;
-				let tempObj = Object.assign({ medicineDosasesTypeGuid: doaseArr[0].medicineDoasesGuId, medicineDosasesType: doaseArr[0].doasestype }, tmpMedicineArr[i]);
+				let tempObj = Object.assign({ medicineDosasesTypeGuid: doaseArr[0].medicineDoasesGuId,}, tmpMedicineArr[i]); // medicineDosasesType: doaseArr[0].doasestype 
 				tempObj.medicineDosasesType = doaseArr[0].doasestype;
 				tempObj.medicineTimingShift = null;
 				tmpArr.push(tempObj);
 			}
+			console.log('-----tmpArr---'+JSON.stringify(tmpArr));
 			let params = {
 				"UserGuid": signupDetails.UserGuid,
 				"DoctorGuid": signupDetails.doctorGuid,
@@ -361,6 +376,7 @@ class Consultation extends React.Component {
 						"MedicineList": tmpArr,
 						"InvestigationList": this.state.SelectedInvestigationArr,
 						"InstructionsList": this.state.SelectedInstructionArr,
+						"ProcedureList": this.state.SelectedProcedureArr,
 						"PrescriptionNote": {
 							"PrescriptionNoteGuid": noteGuid,
 							"PrescriptionNoteName": this.state.notesData
@@ -371,7 +387,8 @@ class Consultation extends React.Component {
 						"IsMedicineListUpdated": medicineFlag,
 						"IsInvestigationListUpdated": investigationFlag,
 						"IsInstructionsListUpdated": instructionFlag,
-						"IsPrescriptionNoteUpdated": notesFlag
+						"IsPrescriptionNoteUpdated": notesFlag,
+						"IsProcedureUpdated": procedureFlag,
 					}
 				}
 			}
@@ -785,48 +802,6 @@ class Consultation extends React.Component {
 					vitalIsAddedStatus = '';
 				}
 			}
-			// else if (tagname === 'AddCustomInvestigation') {
-			// 	if (newProps.responseData.statusCode == '0') {
-			// 		let data = newProps.responseData.data
-			// 		let { signupDetails } = this.props;
-			// 		let tempItem = {
-			// 			"appointmentGuid": null,
-			// 			"doctorGuid": signupDetails.doctorGuid,
-			// 			"investigationGuid": data.investigationGuid,
-			// 			"investigationName": this.state.InvestigationArray[this.state.InvestigationArray.length - 1].investigationName,
-			// 			"investigationDesc": null,
-			// 			"patientAppointmentInvestigationGuId": data.patientAppointmentInvestigationGuId,
-			// 			"isSelected": true
-			// 		}
-			// 		InvestigationeFullArray.push(tempItem)
-			// 		this.setState({ investigationSearchTxt: "", InvestigationArray: InvestigationeFullArray })
-			// 		//Snackbar.show({ text: 'Investigation added successfully', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-			// 	} else {
-			// 		//Snackbar.show({ text: 'Investigation not added. Please try again later', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-			// 		this.setState({ InvestigationArray: normalListBackup });
-			// 	}
-			// } 
-			// else if (tagname === 'AddCustomInstruction') {
-			// 	if (newProps.responseData.statusCode == '0') {
-			// 		let data = newProps.responseData.data
-			// 		let { signupDetails } = this.props;
-			// 		let tempItem = {
-			// 			"appointmentGuid": null,
-			// 			"doctorGuid": signupDetails.doctorGuid,
-			// 			"instructionsGuid": data.instructionsGuid,
-			// 			"instructionsName": this.state.InstructionArray[this.state.InstructionArray.length - 1].instructionsName,
-			// 			"instructionsDesc": null,
-			// 			"patientAppointmentInstructionGuId": data.patientAppointmentInstructionGuId,
-			// 			"isSelected": true
-			// 		}
-			// 		InstructionFullArray.push(tempItem)
-			// 		this.setState({ instructionSearchTxt: "", InstructionArray: InstructionFullArray })
-			// 		//Snackbar.show({ text: 'Instruction added successfully', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-			// 	} else {
-			// 		//Snackbar.show({ text: 'Instruction not added. Please try again later', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-			// 		this.setState({ InstructionArray: normalListBackup, SelectedConditionsArr: selectedListBackup });
-			// 	}
-			// } 
 			else if (tagname === 'getmedicinetype') {
 				if (newProps.responseData.statusCode == '0') {
 					let response = newProps.responseData.data
@@ -869,8 +844,50 @@ class Consultation extends React.Component {
 					instructionFlag = false;
 					investigationFlag = false;
 					notesFlag = false;
+					procedureFlag = false;
 				}
 				Snackbar.show({ text: newProps.responseData.statusMessage, duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
+			}else if (tagname === 'SearchForProcedure') {
+				if (newProps.responseData.statusCode == '0') {
+					if (newProps.responseData.data && newProps.responseData.data.length > 0) {
+						let temp = newProps.responseData.data;
+						let tempserviceArr = [...this.state.SelectedProcedureArr];
+						try {
+							let temp2 = _.differenceBy(temp, tempserviceArr, 'procedureGuid');
+							temp2.push({
+								"procedureGuid": null,
+								// "procedureDesc": '',
+								"procedureName": "Add new Procedure “" + this.state.procedureSearchTxt + '”'
+							})
+							this.setState({ ProcedureArr: temp2 });
+						} catch (error) { }
+
+
+					} else
+						this.setState({
+							ProcedureArr: [{
+								"procedureGuid": null,
+								// "procedureDesc": '',
+								"procedureName": "Add new Procedure “" + this.state.procedureSearchTxt + '”'
+							}]
+						});
+				}
+			} else if (tagname === 'AddProcedure') {
+				if (newProps.responseData.statusCode == '0' && newProps.responseData.data) {
+
+					let GetpatientAppointmentProcedureGuId = newProps.responseData.data.patientAppointmentProcedureGuId;
+					let procedureGuid = newProps.responseData.data.procedureGuid;
+					let tempArr = [...this.state.SelectedProcedureArr]
+					tempArr[tempArr.length - 1].procedureGuid = procedureGuid
+					tempArr[tempArr.length - 1].patientAppointmentProcedureGuId = GetpatientAppointmentProcedureGuId
+					this.setState({ SelectedProcedureArr: tempArr });
+
+					//Snackbar.show({ text: newProps.responseData.statusMessage, duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
+				}
+				else {
+					//Snackbar.show({ text: 'Procedure not added. Please try again later', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
+					this.setState({ ProcedureArr: normalListBackup, SelectedProcedureArr: selectedListBackup });
+				}
 			}
 		}
 	}
@@ -1000,8 +1017,8 @@ class Consultation extends React.Component {
 			sincePattern = '';
 			selectedSeverityGuid = '';
 			selectedSeverityName = '';
-
-			this.setState({ severityNameHeader: item.symptomName, sinceText: '', severityNotes: '', isModalOpenSeverity: true, SeverityDataArray: severityTmpArry, selectedSeverityIndex: -1 })
+//Add symptom severity
+			this.setState({ severityNameHeader: item.symptomName, sinceText: '', severityNotes: '', isModalOpenSeverity: true, SeverityDataArray: severityArrySymptFind, selectedSeverityIndex: -1 });
 			// selectedTempserviceArr.push(item)
 			// tempserviceArr.splice(index, 1);
 			// try {
@@ -1095,30 +1112,38 @@ class Consultation extends React.Component {
 			normalListBackup = [...this.state.FindingArr];
 			selectedListBackup = [...this.state.SelectedFindingArr];
 
+			clickItemIndex = index;
+			clickItemName = 'Finding';
+			clickType = 'Add';
+			sincePattern = '';
+			selectedSeverityGuid = '';
+			selectedSeverityName = '';
+//Add Finding severity
+			this.setState({ severityNameHeader: item.findingName, sinceText: '', severityNotes: '', isModalOpenSeverity: true, SeverityDataArray: severityArrySymptFind, selectedSeverityIndex: -1 });
 
-			selectedTempserviceArr.push(item)
-			tempserviceArr.splice(index, 1);
-			try {
-				findingFullArray = _.differenceBy(findingFullArray, [item], 'findingGuid');
-			} catch (error) { }
-			this.setState({ SelectedFindingArr: selectedTempserviceArr, FindingArr: tempserviceArr, findingSearchTxt: '', FindingArr: findingFullArray })
+			// selectedTempserviceArr.push(item)
+			// tempserviceArr.splice(index, 1);
+			// try {
+			// 	findingFullArray = _.differenceBy(findingFullArray, [item], 'findingGuid');
+			// } catch (error) { }
+			// this.setState({ SelectedFindingArr: selectedTempserviceArr, FindingArr: tempserviceArr, findingSearchTxt: '', FindingArr: findingFullArray })
 
-			if (!item.findingGuid) {
-				let { actions, signupDetails } = this.props;
-				let params = {
-					"userGuid": signupDetails.UserGuid,
-					"DoctorGuid": signupDetails.doctorGuid,
-					"ClinicGuid": signupDetails.clinicGuid,
-					"Version": "",
-					"Data": {
-						"AppointmentGuid": appoinmentGuid,
-						"FindingName": item.findingName,
-						"FindingDesc": item.findingDesc,
-						"FindingGuid": item.findingGuid,
-					}
-				}
-				actions.callLogin('V1/FuncForDrAppToAddFinding', 'post', params, signupDetails.accessToken, 'AddFinding');
-			}
+			// if (!item.findingGuid) {
+			// 	let { actions, signupDetails } = this.props;
+			// 	let params = {
+			// 		"userGuid": signupDetails.UserGuid,
+			// 		"DoctorGuid": signupDetails.doctorGuid,
+			// 		"ClinicGuid": signupDetails.clinicGuid,
+			// 		"Version": "",
+			// 		"Data": {
+			// 			"AppointmentGuid": appoinmentGuid,
+			// 			"FindingName": item.findingName,
+			// 			"FindingDesc": item.findingDesc,
+			// 			"FindingGuid": item.findingGuid,
+			// 		}
+			// 	}
+			// 	actions.callLogin('V1/FuncForDrAppToAddFinding', 'post', params, signupDetails.accessToken, 'AddFinding');
+			// }
 		}
 	}
 	removeSelectedFinding = (item, index) => {
@@ -1187,30 +1212,38 @@ class Consultation extends React.Component {
 			normalListBackup = [...this.state.DiagnosticArr];
 			selectedListBackup = [...this.state.SelectedDiagnosticArr];
 
+			clickItemIndex = index;
+			clickItemName = 'Diagnostic';
+			clickType = 'Add';
+			sincePattern = '';
+			selectedSeverityGuid = '';
+			selectedSeverityName = '';
+//Add Diagnostic severity
+			this.setState({ severityNameHeader: item.diagnosisName, sinceText: '', severityNotes: '', isModalOpenSeverity: true, SeverityDataArray: severityArryDiagnostic, selectedSeverityIndex: -1 });
 
-			selectedTempserviceArr.push(item)
-			tempserviceArr.splice(index, 1);
-			try {
-				diagnosticFullArray = _.differenceBy(diagnosticFullArray, [item], 'diagnosisGuid');
-			} catch (error) { }
+			// selectedTempserviceArr.push(item)
+			// tempserviceArr.splice(index, 1);
+			// try {
+			// 	diagnosticFullArray = _.differenceBy(diagnosticFullArray, [item], 'diagnosisGuid');
+			// } catch (error) { }
 
-			this.setState({ SelectedDiagnosticArr: selectedTempserviceArr, DiagnosticArr: tempserviceArr, diagnosticSearchTxt: '', DiagnosticArr: diagnosticFullArray })
-			if (!item.diagnosisGuid) {
-				let { actions, signupDetails } = this.props;
-				let params = {
-					"userGuid": signupDetails.UserGuid,
-					"DoctorGuid": signupDetails.doctorGuid,
-					"ClinicGuid": signupDetails.clinicGuid,
-					"Version": "",
-					"Data": {
-						"AppointmentGuid": appoinmentGuid,
-						"DiagnosisName": item.diagnosisName,
-						"DiagnosisDesc": item.diagnosisDesc,
-						"DiagnosisGuid": item.diagnosisGuid,
-					}
-				}
-				actions.callLogin('V1/FuncForDrAppToAddDiagnosis', 'post', params, signupDetails.accessToken, 'AddDiagnosis');
-			}
+			// this.setState({ SelectedDiagnosticArr: selectedTempserviceArr, DiagnosticArr: tempserviceArr, diagnosticSearchTxt: '', DiagnosticArr: diagnosticFullArray })
+			// if (!item.diagnosisGuid) {
+			// 	let { actions, signupDetails } = this.props;
+			// 	let params = {
+			// 		"userGuid": signupDetails.UserGuid,
+			// 		"DoctorGuid": signupDetails.doctorGuid,
+			// 		"ClinicGuid": signupDetails.clinicGuid,
+			// 		"Version": "",
+			// 		"Data": {
+			// 			"AppointmentGuid": appoinmentGuid,
+			// 			"DiagnosisName": item.diagnosisName,
+			// 			"DiagnosisDesc": item.diagnosisDesc,
+			// 			"DiagnosisGuid": item.diagnosisGuid,
+			// 		}
+			// 	}
+			// 	actions.callLogin('V1/FuncForDrAppToAddDiagnosis', 'post', params, signupDetails.accessToken, 'AddDiagnosis');
+			// }
 		}
 
 	}
@@ -1348,32 +1381,37 @@ class Consultation extends React.Component {
 			normalListBackup = [...this.state.InvestigationArray];
 			selectedListBackup = [...this.state.SelectedInvestigationArr];
 
+			clickItemIndex = index;
+			clickItemName = 'Investigation';
+			clickType = 'Add';
+//Add Investigation severity
+			this.setState({ severityNameHeader: item.investigationName,  instInstructNotes: '', isModalVisibleInstructionInvest: true });
 
-			selectedTempserviceArr.push(item)
-			tempserviceArr.splice(index, 1);
-			try {
-				InvestigationeFullArray = _.differenceBy(InvestigationeFullArray, [item], 'investigationGuid');
-			} catch (error) { }
-			this.setState({ SelectedInvestigationArr: selectedTempserviceArr, InvestigationArray: tempserviceArr, investigationSearchTxt: '', InvestigationArray: InvestigationeFullArray })
+			// selectedTempserviceArr.push(item)
+			// tempserviceArr.splice(index, 1);
+			// try {
+			// 	InvestigationeFullArray = _.differenceBy(InvestigationeFullArray, [item], 'investigationGuid');
+			// } catch (error) { }
+			// this.setState({ SelectedInvestigationArr: selectedTempserviceArr, InvestigationArray: tempserviceArr, investigationSearchTxt: '', InvestigationArray: InvestigationeFullArray })
 
-			if (!item.investigationGuid) {
-				let { actions, signupDetails } = this.props;
-				let params = {
-					"UserGuid": signupDetails.UserGuid,
-					"DoctorGuid": signupDetails.doctorGuid,
-					"ClinicGuid": signupDetails.clinicGuid,
-					"Version": "",
-					"Data": {
-						"AppointmentGuid": appoinmentGuid,
-						"InvestigationName": item.investigationName,
-						"InvestigationDesc": item.investigationDesc,
-						"InvestigationGuid": item.investigationGuid
-					}
+			// if (!item.investigationGuid) {
+			// 	let { actions, signupDetails } = this.props;
+			// 	let params = {
+			// 		"UserGuid": signupDetails.UserGuid,
+			// 		"DoctorGuid": signupDetails.doctorGuid,
+			// 		"ClinicGuid": signupDetails.clinicGuid,
+			// 		"Version": "",
+			// 		"Data": {
+			// 			"AppointmentGuid": appoinmentGuid,
+			// 			"InvestigationName": item.investigationName,
+			// 			"InvestigationDesc": item.investigationDesc,
+			// 			"InvestigationGuid": item.investigationGuid
+			// 		}
 
-				}
+			// 	}
 
-				actions.callLogin('V1/FuncForDrAppToAddInvestigation', 'post', params, signupDetails.accessToken, 'AddInvestigation');
-			}
+			// 	actions.callLogin('V1/FuncForDrAppToAddInvestigation', 'post', params, signupDetails.accessToken, 'AddInvestigation');
+			// }
 		}
 
 
@@ -1517,6 +1555,101 @@ class Consultation extends React.Component {
 
 	}
 
+// procedure functions
+
+clickOnProcedure = (item, index) => {
+	//SelectedIndex = index
+	let tempserviceArr = [...this.state.ProcedureArr];
+	let selectedTempserviceArr = [...this.state.SelectedProcedureArr];
+	item.procedureName = item.procedureName.replace("Add new Procedure “", "").replace('”', "")
+	let isProcedureExist = false;
+	try {
+		if (selectedTempserviceArr && selectedTempserviceArr.length > 0)
+			for (let i = 0; i < selectedTempserviceArr.length; i++) {
+				if (selectedTempserviceArr[i].procedureName.toLowerCase() == item.procedureName.toLowerCase()) {
+					isProcedureExist = true;
+					break;
+				}
+			}
+	} catch (error) {
+
+	}
+
+	if (isProcedureExist) {
+		Snackbar.show({ text: item.procedureName + ' already added', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
+	} else {
+		normalListBackup = [...this.state.ProcedureArr];
+		selectedListBackup = [...this.state.SelectedProcedureArr];
+
+
+		selectedTempserviceArr.push(item)
+		tempserviceArr.splice(index, 1);
+		try {
+			ProcedureFullArray = _.differenceBy(ProcedureFullArray, [item], 'procedureGuid');
+		} catch (error) { }
+		this.setState({ SelectedProcedureArr: selectedTempserviceArr, ProcedureArr: tempserviceArr, procedureSearchTxt: '', ProcedureArr: ProcedureFullArray })
+
+		if (!item.procedureGuid) {
+			let { actions, signupDetails } = this.props;
+			let params = {
+				"userGuid": signupDetails.UserGuid,
+				"DoctorGuid": signupDetails.doctorGuid,
+				"ClinicGuid": signupDetails.clinicGuid,
+				"Version": "",
+				"Data": {
+					"AppointmentGuid": appoinmentGuid, // item.appointmentGuid,
+					"ProcedureName": item.procedureName,
+					// "ProcedureDesc": item.procedureDesc,
+					"ProcedureGuid": item.procedureGuid,
+				}
+			}
+			actions.callLogin('V14/FuncForDrAppToAddProcedures', 'post', params, signupDetails.accessToken, 'AddProcedure');
+		}
+	}
+
+
+}
+removeSelectedProcedure = (item, index) => {
+	let tempserviceArr = [...this.state.ProcedureArr];
+	let selectedTempserviceArr = [...this.state.SelectedProcedureArr];
+
+	normalListBackup = [...this.state.ProcedureArr];
+	selectedListBackup = [...this.state.SelectedProcedureArr];
+
+	tempserviceArr.unshift(item)
+	selectedTempserviceArr.splice(index, 1);
+	this.setState({ SelectedProcedureArr: selectedTempserviceArr, ProcedureArr: tempserviceArr })
+	ProcedureFullArray.push(item)
+}
+SearchProcedure = (text) => {
+	var searchResult = _.filter(ProcedureFullArray, function (item) {
+		return item.procedureName.toLowerCase().indexOf(text.toLowerCase()) > -1;
+	});
+	if (searchResult.length == 0) {
+		searchResult.push({
+			"ProcedureDesc": null,
+			// "ProcedureDesc": '',
+			"ProcedureName": "Add new Procedure “" + text + '”'
+		})
+	}
+	this.setState({
+		ProcedureArr: searchResult, procedureSearchTxt: text
+	});
+	if (text.length > 2) {
+		let { actions, signupDetails } = this.props;
+		let params = {
+			"UserGuid": signupDetails.UserGuid,
+			"DoctorGuid": signupDetails.doctorGuid,
+			"ClinicGuid": signupDetails.clinicGuid,
+			"Version": "",
+			"Data": {
+				"SearchText": text
+			}
+		}
+		actions.callLogin('V14/FuncForDrAppToSearchForProcedure', 'post', params, signupDetails.accessToken, 'SearchForProcedure');
+	}
+
+}
 
 	// SearchInvestigation = (text) => {
 	// 	var searchResult = _.filter(InvestigationeFullArray, function (item) {
@@ -1891,6 +2024,16 @@ class Consultation extends React.Component {
 			return text;
 		}
 	}
+	getSelectedProcedureTxt = () => {
+		let tmpArr = [...this.state.SelectedProcedureArr];
+		let str = '';
+		if (tmpArr && tmpArr.length > 0) {
+			for (let i = 0; i < tmpArr.length; i++) {
+				str += tmpArr[i].procedureName + ', '
+			}
+		}
+		return str.replace(/,\s*$/, "");
+	}
 	getSelectedSymptomTxt = () => {
 		let tmpArr = [...this.state.SelectedSymptomArr];
 		let str = '';
@@ -2113,26 +2256,24 @@ class Consultation extends React.Component {
 	}
 	renderSeverityItem = (item, index) => {
 		return (
-			<TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }} onPress={() => {
-
-				//let tmpArr=[...this.state.SeverityDataArray];
-				// for (let i = 0; i < tmpArr.length; i++) {
-				// 	tmpArr[i].select = false;
-				// }
-				//tmpArr[index].select = true;
-				//this.setState({ SeverityDataArray: tmpArr});
-				selectedSeverityGuid = this.state.SeverityDataArray[index].itemValue;
-				selectedSeverityName = this.state.SeverityDataArray[index].itemValue;
+			<TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center',marginRight:20}} onPress={() => {
+if(clickItemName == 'Diagnostic'){
+	selectedSeverityGuid = this.state.SeverityDataArray[index].diagnosisStatusGuid;
+	selectedSeverityName = this.state.SeverityDataArray[index].diagnosisStatus;
+}else{
+	selectedSeverityGuid = this.state.SeverityDataArray[index].severityGuid;
+	selectedSeverityName = this.state.SeverityDataArray[index].severityName;
+}	
 				this.setState({ selectedSeverityIndex: index });
 			}}>
 				<CheckBox
 					disabled={false}
 					value={this.state.selectedSeverityIndex == index}
 					tintColors={{ true: Color.primary, false: Color.unselectedCheckBox }}
-					style={{ height: responsiveFontSize(2.5), width: responsiveFontSize(2.5), color: Color.mediumGrayTxt, marginLeft: 2 }}
+					style={{ height: responsiveFontSize(2.5), width: responsiveFontSize(2.5), color: Color.mediumGrayTxt, margin: 2 }}
 
 				/>
-				<Text style={{ fontSize: CustomFont.font14, color: Color.optiontext, marginLeft: 10, fontWeight: CustomFont.fontWeight400, fontFamily: CustomFont.fontName, }}>{item.itemValue}</Text>
+				<Text style={{ fontSize: CustomFont.font14, color: Color.optiontext, marginLeft: 10, fontWeight: CustomFont.fontWeight400, fontFamily: CustomFont.fontName, }}>{clickItemName == 'Diagnostic' ? item.diagnosisStatus : item.severityName}</Text>
 			</TouchableOpacity>
 		)
 	}
@@ -2199,10 +2340,134 @@ class Consultation extends React.Component {
 				selectedTempserviceArr.splice(clickItemIndex, 1, item);
 				this.setState({ SelectedSymptomArr: selectedTempserviceArr })
 			}
+			symptomFlag = true;
 		}else if(clickItemName == 'Finding'){
+			let tempserviceArr = [...this.state.FindingArr];
+			let selectedTempserviceArr = [...this.state.SelectedFindingArr];
+			if (clickType == 'Add') {
+				let item = tempserviceArr[clickItemIndex]
+				item.severityName = selectedSeverityName;
+				item.severityGuid = selectedSeverityGuid
+				item.since = sincePattern
+				item.notes = this.state.severityNotes;
+		selectedTempserviceArr.push(item)
+			tempserviceArr.splice(clickItemIndex, 1);
+			try {
+				findingFullArray = _.differenceBy(findingFullArray, [item], 'findingGuid');
+			} catch (error) { }
+			this.setState({ SelectedFindingArr: selectedTempserviceArr, findingSearchTxt: '', FindingArr: findingFullArray })
 
+			if (!item.findingGuid) {
+				let { actions, signupDetails } = this.props;
+				let params = {
+					"userGuid": signupDetails.UserGuid,
+					"DoctorGuid": signupDetails.doctorGuid,
+					"ClinicGuid": signupDetails.clinicGuid,
+					"Version": "",
+					"Data": {
+						"AppointmentGuid": appoinmentGuid,
+						"FindingName": item.findingName,
+						"FindingDesc": item.findingDesc,
+						"FindingGuid": item.findingGuid,
+					}
+				}
+				actions.callLogin('V1/FuncForDrAppToAddFinding', 'post', params, signupDetails.accessToken, 'AddFinding');
+			}
+			} else { //update symptom
+				let item = selectedTempserviceArr[clickItemIndex]
+				item.severityName = selectedSeverityName;
+				item.severityGuid = selectedSeverityGuid
+				item.since = sincePattern
+				item.notes = this.state.severityNotes;
+				selectedTempserviceArr.splice(clickItemIndex, 1, item);
+				this.setState({ SelectedFindingArr: selectedTempserviceArr })
+			}
+			findingFlag = true;
+		}else if(clickItemName == 'Diagnostic'){
+			let tempserviceArr = [...this.state.DiagnosticArr];
+		let selectedTempserviceArr = [...this.state.SelectedDiagnosticArr];
+			if (clickType == 'Add') {
+				let item = tempserviceArr[clickItemIndex]
+				item.diagnosisStatus = selectedSeverityName;
+				item.diagnosisStatusGuid = selectedSeverityGuid
+				item.since = sincePattern
+				item.notes = this.state.severityNotes;
+		selectedTempserviceArr.push(item)
+			tempserviceArr.splice(clickItemIndex, 1);
+			try {
+				diagnosticFullArray = _.differenceBy(diagnosticFullArray, [item], 'diagnosisGuid');
+			} catch (error) { }
+
+			this.setState({ SelectedDiagnosticArr: selectedTempserviceArr, diagnosticSearchTxt: '', DiagnosticArr: diagnosticFullArray })
+			if (!item.diagnosisGuid) {
+				let { actions, signupDetails } = this.props;
+				let params = {
+					"userGuid": signupDetails.UserGuid,
+					"DoctorGuid": signupDetails.doctorGuid,
+					"ClinicGuid": signupDetails.clinicGuid,
+					"Version": "",
+					"Data": {
+						"AppointmentGuid": appoinmentGuid,
+						"DiagnosisName": item.diagnosisName,
+						"DiagnosisDesc": item.diagnosisDesc,
+						"DiagnosisGuid": item.diagnosisGuid,
+					}
+				}
+				actions.callLogin('V1/FuncForDrAppToAddDiagnosis', 'post', params, signupDetails.accessToken, 'AddDiagnosis');
+			}
+			} else { //update symptom
+				let item = selectedTempserviceArr[clickItemIndex]
+				item.diagnosisStatus = selectedSeverityName;
+				item.diagnosisStatusGuid = selectedSeverityGuid
+				item.since = sincePattern
+				item.notes = this.state.severityNotes;
+				selectedTempserviceArr.splice(clickItemIndex, 1, item);
+				this.setState({ SelectedDiagnosticArr: selectedTempserviceArr })
+			}
+			diagnosticFlag = true;
+		}else if(clickItemName == 'Investigation'){
+			let tempserviceArr = [...this.state.InvestigationArray];
+		let selectedTempserviceArr = [...this.state.SelectedInvestigationArr];
+			if (clickType == 'Add') {
+				let item = tempserviceArr[clickItemIndex]
+				item.notes = this.state.instInstructNotes;
+		selectedTempserviceArr.push(item)
+			tempserviceArr.splice(clickItemIndex, 1);
+			try {
+				InvestigationeFullArray = _.differenceBy(InvestigationeFullArray, [item], 'investigationGuid');
+			} catch (error) { }
+			this.setState({ SelectedInvestigationArr: selectedTempserviceArr, investigationSearchTxt: '', InvestigationArray: InvestigationeFullArray })
+
+			if (!item.investigationGuid) {
+				let { actions, signupDetails } = this.props;
+				let params = {
+					"UserGuid": signupDetails.UserGuid,
+					"DoctorGuid": signupDetails.doctorGuid,
+					"ClinicGuid": signupDetails.clinicGuid,
+					"Version": "",
+					"Data": {
+						"AppointmentGuid": appoinmentGuid,
+						"InvestigationName": item.investigationName,
+						"InvestigationDesc": item.investigationDesc,
+						"InvestigationGuid": item.investigationGuid
+					}
+
+				}
+
+				actions.callLogin('V1/FuncForDrAppToAddInvestigation', 'post', params, signupDetails.accessToken, 'AddInvestigation');
+			}
+			} else { //update symptom
+				let item = selectedTempserviceArr[clickItemIndex]
+				item.notes = this.state.instInstructNotes;
+				selectedTempserviceArr.splice(clickItemIndex, 1, item);
+				this.setState({ SelectedInvestigationArr: selectedTempserviceArr })
+			}
+			investigationFlag = true;
 		}
+		if(this.state.isModalOpenSeverity)
 		this.setState({ isModalOpenSeverity: false });
+		if(this.state.isModalVisibleInstructionInvest)
+		this.setState({ isModalVisibleInstructionInvest: false });
 	}
 	render() {
 		let { actions, signupDetails } = this.props;
@@ -2281,14 +2546,14 @@ class Consultation extends React.Component {
 												selectedSeverityGuid = item.severityGuid;
 												selectedSeverityName = item.severityName ? item.severityName : '';
 												let sevIndex = -1;
-												if (selectedSeverityName && severityTmpArry.length > 0)
-													for (let i = 0; i < severityTmpArry.length; i++) {
-														if (selectedSeverityName == severityTmpArry[i].itemValue) {
+												if (selectedSeverityName && severityArrySymptFind.length > 0)
+													for (let i = 0; i < severityArrySymptFind.length; i++) {
+														if (selectedSeverityName == severityArrySymptFind[i].severityName) {
 															sevIndex = i;
 															break;
 														}
 													}
-												this.setState({ severityNameHeader: item.symptomName, sinceText: item.since ? item.since : '', severityNotes: item.notes ? item.notes : '', isModalOpenSeverity: true, SeverityDataArray: severityTmpArry, selectedSeverityIndex: sevIndex })
+												this.setState({ severityNameHeader: item.symptomName, sinceText: item.since ? item.since : '', severityNotes: item.notes ? item.notes : '', isModalOpenSeverity: true, SeverityDataArray: severityArrySymptFind, selectedSeverityIndex: sevIndex,showSinceDropDown:false });
 											
 											}}>
 												<Text style={styles.txtSelect}>{item.symptomName} {item.severityName || item.since ? '(' + item.since + ' ' + item.severityName + ')' : ''}</Text>
@@ -2375,8 +2640,25 @@ class Consultation extends React.Component {
 									</View>
 									<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', marginLeft: responsiveWidth(-1.6) }}>
 										{this.state.SelectedFindingArr && this.state.SelectedFindingArr.length > 0 ? this.state.SelectedFindingArr.map((item, index) => {
-											return (<View style={styles.selectedView} >
-												<Text style={styles.txtSelect}>{item.findingName}</Text>
+											return (<TouchableOpacity style={styles.selectedView} onPress={() => {
+												clickItemIndex = index;
+												clickItemName = 'Finding';
+												clickType = 'Update';
+												sincePattern = item.since ? item.since : '';
+												selectedSeverityGuid = item.severityGuid;
+												selectedSeverityName = item.severityName ? item.severityName : '';
+												let sevIndex = -1;
+												if (selectedSeverityName && severityArrySymptFind.length > 0)
+													for (let i = 0; i < severityArrySymptFind.length; i++) {
+														if (selectedSeverityName == severityArrySymptFind[i].severityName) {
+															sevIndex = i;
+															break;
+														}
+													}
+												this.setState({ severityNameHeader: item.findingName, sinceText: item.since ? item.since : '', severityNotes: item.notes ? item.notes : '', isModalOpenSeverity: true, SeverityDataArray: severityArrySymptFind, selectedSeverityIndex: sevIndex,showSinceDropDown:false });
+											
+											}}>
+												<Text style={styles.txtSelect}>{item.findingName}  {item.severityName || item.since ? '(' + item.since + ' ' + item.severityName + ')' : ''}</Text>
 												<TouchableOpacity style={styles.crossSelected}
 													onPress={() => {
 														findingFlag = true;
@@ -2386,7 +2668,7 @@ class Consultation extends React.Component {
 														setLogEvent("delete_finding", { UserGuid: signupDetails.UserGuid })
 													}}>
 													<Image source={cross_close} style={{ height: responsiveWidth(3), width: responsiveWidth(3), resizeMode: 'contain' }} />
-												</TouchableOpacity></View>);
+												</TouchableOpacity></TouchableOpacity>);
 										}, this) : null}
 									</View>
 									{this.state.isFindingModalOpen ? <View>
@@ -2452,8 +2734,25 @@ class Consultation extends React.Component {
 
 									<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', marginLeft: responsiveWidth(-1.6) }}>
 										{this.state.SelectedDiagnosticArr && this.state.SelectedDiagnosticArr.length > 0 ? this.state.SelectedDiagnosticArr.map((item, index) => {
-											return (<View style={styles.selectedView} >
-												<Text style={styles.txtSelect}>{item.diagnosisName}</Text>
+											return (<TouchableOpacity style={styles.selectedView} onPress={() => {
+												clickItemIndex = index;
+												clickItemName = 'Diagnostic';
+												clickType = 'Update';
+												sincePattern = item.since ? item.since : '';
+												selectedSeverityGuid = item.diagnosisStatusGuid;
+												selectedSeverityName = item.diagnosisStatus ? item.diagnosisStatus : '';
+												let sevIndex = -1;
+												if (selectedSeverityName && severityArryDiagnostic.length > 0)
+													for (let i = 0; i < severityArryDiagnostic.length; i++) {
+														if (selectedSeverityName == severityArryDiagnostic[i].diagnosisStatus) {
+															sevIndex = i;
+															break;
+														}
+													}
+												this.setState({ severityNameHeader: item.diagnosisName, sinceText: item.since ? item.since : '', severityNotes: item.notes ? item.notes : '', isModalOpenSeverity: true, SeverityDataArray: severityArryDiagnostic, selectedSeverityIndex: sevIndex,showSinceDropDown:false });
+											
+											}}>
+												<Text style={styles.txtSelect}>{item.diagnosisName}  {item.diagnosisStatus || item.since ? '(' + item.since + ' ' + item.diagnosisStatus + ')' : ''}</Text>
 												<TouchableOpacity style={styles.crossSelected}
 													onPress={() => {
 														diagnosticFlag = true;
@@ -2464,7 +2763,7 @@ class Consultation extends React.Component {
 														this.removeSelectedDiagnostic(item, index)
 													}}>
 													<Image source={cross_close} style={{ height: responsiveWidth(3), width: responsiveWidth(3), resizeMode: 'contain' }} />
-												</TouchableOpacity></View>);
+												</TouchableOpacity></TouchableOpacity>);
 										}, this) : null}
 									</View>
 									{this.state.isDiagnosticModalOpen ? <View>
@@ -2626,8 +2925,14 @@ class Consultation extends React.Component {
 
 									<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', marginLeft: responsiveWidth(-1.6) }}>
 										{this.state.SelectedInvestigationArr && this.state.SelectedInvestigationArr.length > 0 ? this.state.SelectedInvestigationArr.map((item, index) => {
-											return (<View style={styles.selectedView} >
-												<Text style={styles.txtSelect}>{item.investigationName}</Text>
+											return (<TouchableOpacity style={styles.selectedView}  onPress={() => {
+												clickItemIndex = index;
+												clickItemName = 'Investigation';
+												clickType = 'Update';
+												this.setState({ severityNameHeader: item.investigationName, instInstructNotes: item.notes ? item.notes : '', isModalVisibleInstructionInvest: true });
+											
+											}}>
+												<Text style={styles.txtSelect}>{item.investigationName} {item.notes ? '(' + item.notes  + ')' : ''}</Text>
 												<TouchableOpacity style={styles.crossSelected}
 													onPress={() => {
 														investigationFlag = true;
@@ -2641,7 +2946,7 @@ class Consultation extends React.Component {
 												</TouchableOpacity>
 
 
-											</View>);
+											</TouchableOpacity>);
 										}, this) : null}
 
 									</View>
@@ -2718,13 +3023,7 @@ class Consultation extends React.Component {
 
 									<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', marginLeft: responsiveWidth(-1.6) }}>
 										{this.state.SelectedInstructionArr && this.state.SelectedInstructionArr.length > 0 ? this.state.SelectedInstructionArr.map((item, index) => {
-											return (<TouchableOpacity style={styles.selectedView} onPress={() => {
-
-												// this.setState({isModalVisibleInstruction: false})
-												// setTimeout(()=>{
-												// 	this.setState({isModalVisibleInstructionInvest:true})
-												// },500)
-											}} >
+											return (<View style={styles.selectedView}>
 												<Text style={styles.txtSelect}>{item.instructionsName}</Text>
 												<TouchableOpacity style={styles.crossSelected}
 													onPress={() => {
@@ -2739,7 +3038,7 @@ class Consultation extends React.Component {
 												</TouchableOpacity>
 
 
-											</TouchableOpacity>);
+											</View>);
 										}, this) : null}
 
 									</View>
@@ -2789,6 +3088,90 @@ class Consultation extends React.Component {
 
 								</View>
 							</View>
+							{/* -------Procedure Section--------- */}
+
+							<View style={{ backgroundColor: Color.white, marginTop: responsiveHeight(1.5), marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), borderRadius: 10 }}>
+								<View style={{ margin: responsiveWidth(4) }}>
+									<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+										<Text style={{ fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, color: Color.yrColor, fontFamily: CustomFont.fontName }}>Procedures</Text>
+										{signupDetails.isAssistantUser ? null : <TouchableOpacity onPress={() => {
+											let { signupDetails } = this.props;
+											timeRange = Trace.getTimeRange();
+											Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Procedure', signupDetails.firebaseLocation)
+											Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Procedure", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+											this.setState({ isProcedureModalOpen: !this.state.isProcedureModalOpen });
+										}}>
+											{this.state.SelectedProcedureArr && this.state.SelectedProcedureArr.length > 0 ? <Image source={edit_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), margin: 5, resizeMode: 'contain' }} /> : <Image source={plus_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), resizeMode: 'contain', margin: 5 }} />}
+										</TouchableOpacity>}
+
+									</View>
+
+									<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', marginLeft: responsiveWidth(-1.6) }}>
+										{this.state.SelectedProcedureArr && this.state.SelectedProcedureArr.length > 0 ? this.state.SelectedProcedureArr.map((item, index) => {
+											return (<View style={styles.selectedView} onPress={() => {
+												// console.log('selected view')
+											}}>
+												<Text style={styles.txtSelect}>{item.procedureName}</Text>
+												<TouchableOpacity style={styles.crossSelected}
+													onPress={() => {
+														procedureFlag = true;
+														DRONA.setIsConsultationChange(true);
+														let { signupDetails } = this.props;
+														setLogEvent("delete_Procedure", { UserGuid: signupDetails.UserGuid })
+														Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Delete_Procedure", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+														this.removeSelectedProcedure(item, index)
+													}}>
+													<Image source={cross_close} style={{ height: responsiveWidth(3), width: responsiveWidth(3), resizeMode: 'contain' }} />
+												</TouchableOpacity>
+
+
+											</View>);
+										}, this) : null}
+
+									</View>
+									{this.state.isProcedureModalOpen ? <View>
+										<View style={[styles.searchView, { borderColor: this.state.fld2 }]}>
+											<TextInput returnKeyType="done"
+												onFocus={() => this.callOnFocus('2')}
+												onBlur={() => this.callOnBlur('2')}
+												placeholderTextColor={Color.placeHolderColor}
+												style={[styles.searchInput]} placeholder="Search or add procedure" value={this.state.procedureSearchTxt}
+												onChangeText={(procedureSearchTxt) => {
+													let { signupDetails } = this.props;
+													setLogEvent("patient_consultation", { "search_Procedure": "search", UserGuid: signupDetails.UserGuid, "keyword": procedureSearchTxt })
+
+													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Search_Procedure", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+													this.SearchProcedure(procedureSearchTxt)
+													this.SearchProcedure(procedureSearchTxt)
+												}} maxLength={30} />
+											{this.state.procedureSearchTxt ? <TouchableOpacity style={{ alignSelf: 'center' }} onPress={() => { this.setState({ procedureSearchTxt: '', ProcedureArr: ProcedureFullArray }); }}>
+												<Image style={{ ...styles.crossSearch }} source={cross_close} />
+											</TouchableOpacity> : null}
+										</View>
+
+										<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', marginLeft: responsiveWidth(-1.6), marginTop: responsiveHeight(1.8) }}>
+											{this.state.ProcedureArr && this.state.ProcedureArr.length > 0 ? this.state.ProcedureArr.map((item, index) => {
+
+												return (<TouchableOpacity onPress={() => {
+													procedureFlag = true;
+													DRONA.setIsConsultationChange(true);
+													let { signupDetails } = this.props;
+													setLogEvent("add_procedure", { UserGuid: signupDetails.UserGuid })
+													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Add_Procedure", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+
+													if (item.procedureName)
+														this.clickOnProcedure(item, index)
+												}} style={styles.unselectView}>
+													<Text style={styles.unselectTxtColor}>{item.procedureName}</Text>
+												</TouchableOpacity>
+												);
+											}, this) : null}
+										</View>
+									</View> : null}
+
+								</View>
+							</View>
+
 							{/* -------Notes section--------- */}
 
 							<View style={{ backgroundColor: Color.white, marginTop: responsiveHeight(1.5), marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), borderRadius: 10 }}>
@@ -3019,6 +3402,7 @@ class Consultation extends React.Component {
 				<Modal isVisible={this.state.isModalOpenSeverity} avoidKeyboard={true}
 					onRequestClose={() => this.setState({ isModalOpenSeverity: false })}>
 					<View style={styles.modelViewSeverity}>
+					<ScrollView style={{marginTop:20}} keyboardShouldPersistTaps='always'>
 						<View style={{ marginBottom: responsiveHeight(20) }}>
 							<View style={{ margin: responsiveWidth(5) }}>
 								<View style={{ height: responsiveHeight(7), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -3032,7 +3416,7 @@ class Consultation extends React.Component {
 
 								<Text style={{ color: Color.patientSearchName, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: '700', marginTop: 10 }}>Since</Text>
 								<TextInput onBlur={this.callIsBlur2} onFocus={this.callIsFucused2} keyboardType={'phone-pad'} style={[styles.createInputStyle, { borderColor: this.state.InpborderColor2 }]} placeholder="one day" placeholderTextColor={Color.placeHolderColor} value={this.state.sinceText} maxLength={selectedInputTxtLength} onChangeText={(text) => this.handleSinceData(text)} ref='search' returnKeyType='done' />
-								{this.state.sinceText && this.state.sinceDropdownArr && this.state.sinceDropdownArr.length > 0 && this.state.showSinceDropDown ?
+								{this.state.sinceText && this.state.showSinceDropDown ?
 									<View style={{
 										borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,
 										borderBottomColor: Color.createInputBorder, borderTopColor: Color.white, marginTop: responsiveHeight(-.8)
@@ -3047,17 +3431,18 @@ class Consultation extends React.Component {
 										keyExtractor={(item, index) => index.toString()}
 										/>
 									</View> : null}
-								<Text style={{ color: Color.patientSearchName, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: '700', marginTop: 15, }}>
+								<Text style={{ color: Color.patientSearchName, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: '700', marginTop: 15,marginBottom:20 }}>
 									Severity
 								</Text>
 								<FlatList
 									data={this.state.SeverityDataArray}
+									horizontal={true}
 									renderItem={({ item, index }) => this.renderSeverityItem(item, index)}
 									keyExtractor={(item, index) => index.toString()}
 								/>
-								<Text style={{ color: Color.patientSearchName, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: '700', marginTop: 15 }}>
+								<Text style={{ color: Color.patientSearchName, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: '700', marginTop: 20 }}>
 									Notes</Text>
-								<TextInput returnKeyType="done" style={{ height: responsiveHeight(10), borderColor: Color.createInputBorder, borderWidth: 1.5, borderRadius: 5, backgroundColor: Color.white, fontSize: CustomFont.font14, color: Color.placeHolderColor, paddingLeft: 10, paddingRight: 10, marginTop: 10 }} multiline={true} placeholder="Enter Notes" placeholderTextColor={Color.placeHolderColor} onChangeText={(severityNotes) => {
+								<TextInput returnKeyType="done" style={{ height: responsiveHeight(10), borderColor: Color.createInputBorder, borderWidth: 1, borderRadius: 5, backgroundColor: Color.white, fontSize: CustomFont.font14, color: Color.placeHolderColor, paddingLeft: 10, paddingRight: 10, marginTop: 15 }} multiline={true} numberOfLines={4} placeholder="Enter Notes" placeholderTextColor={Color.placeHolderColor} onChangeText={(severityNotes) => {
 									this.setState({ severityNotes });
 								}} value={this.state.severityNotes} />
 
@@ -3068,6 +3453,7 @@ class Consultation extends React.Component {
 								</TouchableOpacity>
 							</View>
 						</View>
+						</ScrollView>
 					</View>
 				</Modal>
 
@@ -3076,12 +3462,12 @@ class Consultation extends React.Component {
 				<Modal isVisible={this.state.isModalVisibleInstructionInvest} avoidKeyboard={true}
 					onRequestClose={() => this.setState({ isModalVisibleInstructionInvest: false })}>
 					<View style={[styles.modelView3dots, { height: responsiveHeight(50) }]}>
-						<ScrollView>
+						<ScrollView style={{marginTop:20}}>
 							<View style={{ marginBottom: responsiveHeight(32) }}>
 								<View style={{ margin: responsiveWidth(5) }}>
 									<View style={{ height: responsiveHeight(7), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
 										<View >
-											<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font18, color: Color.black, fontWeight: CustomFont.fontWeight700, }}>CT Scan</Text>
+											<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font18, color: Color.black, fontWeight: CustomFont.fontWeight700, }}>{this.state.severityNameHeader}</Text>
 										</View>
 										<TouchableOpacity onPress={() => this.setState({ isModalVisibleInstructionInvest: false })}>
 											<Image source={cross_close} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), marginRight: 10, resizeMode: 'contain' }} />
@@ -3092,10 +3478,12 @@ class Consultation extends React.Component {
 									<View>
 										<Text style={{ color: Color.patientSearchName, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: '700', marginBottom: 10 }}>
 											Notes</Text>
-										<TextInput returnKeyType="done" style={{ height: responsiveHeight(10), borderColor: Color.createInputBorder, borderWidth: 1.5, borderRadius: 5, backgroundColor: Color.white, fontSize: CustomFont.font14, color: Color.placeHolderColor, paddingLeft: 10, paddingRight: 10 }} multiline={true} placeholder="Enter Notes" placeholderTextColor={Color.placeHolderColor} ></TextInput>
+										<TextInput returnKeyType="done" style={{ height: responsiveHeight(10), borderColor: Color.createInputBorder, borderWidth: 1, borderRadius: 5, backgroundColor: Color.white, fontSize: CustomFont.font14, color: Color.placeHolderColor, paddingLeft: 10, paddingRight: 10 }} multiline={true} numberOfLines={3} placeholder="Enter Notes"  placeholderTextColor={Color.placeHolderColor} onChangeText={(instInstructNotes) => {
+									this.setState({ instInstructNotes });
+								}} value={this.state.instInstructNotes}></TextInput>
 										<View style={{ width: '100%', flex: 1, alignItems: 'center', justifyContent: 'center', borderRadius: 4, height: responsiveHeight(11), backgroundColor: Color.white, borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
 											<TouchableOpacity style={{ alignItems: 'center', marginBottom: responsiveHeight(2.5), justifyContent: 'center', borderRadius: 5, height: responsiveHeight(6), width: responsiveWidth(93), backgroundColor: '#5715D2', marginTop: 20 }} onPress={() => {
-												console.log('Button Pressed')
+												this.saveSeverity()
 											}}>
 												<Text style={{ fontFamily: CustomFont.fontName, color: Color.white, fontSize: CustomFont.font16, textAlign: 'center' }}>Save</Text>
 											</TouchableOpacity>

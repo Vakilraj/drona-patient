@@ -71,10 +71,7 @@ class GoogleReview extends React.Component {
     }
 
     updateGoogleReviewURL = () => {
-        if (!this.state.googleReviewUrlData) {
-            Snackbar.show({ text: 'Please fill the URL', duration: Snackbar.LENGTH_LONG, backgroundColor: Color.primary });
-        } else
-        if (!Validator.isUrlValidate(this.state.googleReviewUrlData)) {
+        if (this.state.googleReviewUrlData && !Validator.isUrlValidate(this.state.googleReviewUrlData)) {
             Snackbar.show({ text: 'Please enter the valid URL', duration: Snackbar.LENGTH_LONG, backgroundColor: Color.primary });
         }
         else {
@@ -142,7 +139,7 @@ class GoogleReview extends React.Component {
                                                 this.setState({ isSaveBtnDisable: false })
                                         }} value={this.state.googleReviewUrlData} onFocus={() => this.setState({ keyboardAvoiding: 0, fld5: Color.primary })} maxLength={2000} />
                                     <View style={{ alignItems: 'flex-end' }}>
-                                        <TouchableOpacity style={{ alignItems: 'center', justifyContent: 'center', borderRadius: 5, height: responsiveHeight(6), backgroundColor: this.state.isSaveBtnDisable ? Color.btnDisable : Color.primary, marginTop: responsiveHeight(1), marginBottom: 20, width: responsiveWidth(20), marginRight: responsiveWidth(4) }} onPress={() => {
+                                        <TouchableOpacity style={{ alignItems: 'center', justifyContent: 'center', borderRadius: 5, height: responsiveHeight(6), backgroundColor: this.state.isSaveBtnDisable ? Color.btnDisable : Color.primary, marginTop: responsiveHeight(1), marginBottom: 20, width: responsiveWidth(20),}} onPress={() => {
                                             this.updateGoogleReviewURL();
                                         }}>
                                             <Text style={{ fontFamily: CustomFont.fontName, color: Color.white, fontSize: CustomFont.font12, textAlign: 'center' }}>Save</Text>

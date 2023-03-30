@@ -21,7 +21,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import Snackbar from 'react-native-snackbar';
 let flag = 0;
 let consultTypeValue = '';
-let symptomHead = '', findingHead = '', diagionsisHead = '', notes = '', timingAndDur = '', medicine = '', investigationAdvise = '', instructionHead = '', followUpHeadGlobal = '', noteStr = ''
+let symptomHead = '', findingHead = '', diagionsisHead = '', notes = '', timingAndDur = '', medicine = '', investigationAdvise = '', instructionHead = '', followUpHeadGlobal = '', noteStr = '',procedureHead = '';
 class PreviewRxButton extends React.Component {
 	constructor(props) {
 		super(props);
@@ -362,7 +362,7 @@ class PreviewRxButton extends React.Component {
 		if (symptomList && symptomList.length > 0) {
 			let temp = []
 			for (var i = 0; i < symptomList.length; i++) {
-					const htmlCode = symptomList[i].symptomName
+				const htmlCode = (symptomList[i].symptomName) + ' ' + (symptomList[i].since ? symptomList[i].since : '')  + ' ' + (symptomList[i].severityName ? symptomList[i].severityName : '') + ' ' + (symptomList[i].notes ? symptomList[i].notes : '');
 					temp.push(htmlCode)
 			}
 			const htmlCode = `
@@ -549,6 +549,30 @@ class PreviewRxButton extends React.Component {
 		}
 
 	}
+
+	showProcedureList = (procedureList) => {
+		if (procedureList && procedureList.length > 0) {
+			let temp = []
+			for (var i = 0; i < procedureList.length; i++) {
+					const htmlCode = procedureList[i].procedureName
+					temp.push(htmlCode)
+			}
+			const htmlCode = `
+			<table style="width:100%;margin-top: 5px" >
+				<tr>
+					<th style="width:15%;">`+ procedureHead + ` :</th>
+					<td>`+ temp.join(", ") + `</td>
+				</tr>
+			</table>
+			`
+			return htmlCode
+		}
+		else {
+			return ''
+		}
+
+	}
+
 	showfollowUpViewList = (followUpItem) => {
 		// alert(JSON.stringify(followUpItem))
 		if (followUpItem) {
@@ -605,7 +629,8 @@ class PreviewRxButton extends React.Component {
 		let prescriptionNote = prescriptionDataFullArray.prescriptionNote != null ? prescriptionDataFullArray.prescriptionNote : []
 		let instructionsList = prescriptionDataFullArray.instructionsList != null ? prescriptionDataFullArray.instructionsList : []
 		let investigationList = prescriptionDataFullArray.investigationList != null ? prescriptionDataFullArray.investigationList : []
-		let diagnosisList = prescriptionDataFullArray.diagnosisList != null ? prescriptionDataFullArray.diagnosisList : []
+		let diagnosisList = prescriptionDataFullArray.diagnosisList != null ? prescriptionDataFullArray.diagnosisList : [];
+		let procedureList = prescriptionDataFullArray.procedureList != null ? prescriptionDataFullArray.procedureList : []
 		let followUpItem = prescriptionDataFullArray.followUp
 		let registrationNumber = doctorInfo ? doctorInfo.registrationNumber : ''
 		let eSign = prescriptionDataFullArray != null ? prescriptionDataFullArray.esignature : null;
@@ -619,7 +644,7 @@ class PreviewRxButton extends React.Component {
 		instructionHead = Language.language.instructions;
 		diagionsisHead = Language.language.diagnosis;
 		followUpHeadGlobal = Language.language.followup;
-
+		procedureHead = Language.language.procedures;
 		notes = Language.language.notes;
 		medicine = Language.language.medicine;
 		timingAndDur = Language.language.timingandduration;
@@ -717,6 +742,7 @@ class PreviewRxButton extends React.Component {
 		  `+ this.showmedicineListViewList(medicineList) + `
 		  `+ this.showinvestigationsViewList(investigationList) + `
 		  `+ this.showinstructionViewList(instructionsList) + `
+		  `+ this.showProcedureList(procedureList) + `
 		  `+ this.showprescriptionNoteViewList(prescriptionNote) + `
 		  `+ this.showfollowUpViewList(followUpItem) + `
 		  

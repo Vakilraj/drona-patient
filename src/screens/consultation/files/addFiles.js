@@ -43,7 +43,8 @@ let recordGuid;
 let selectedDay = '';
 var progressTimer = null;
 import Trace from '../../../service/Trace'
-let timeRange = '', stop2TimesClickStatus = 0;
+let timeRange = '',recordTypeList=[],stop2TimesClickStatus = 0;
+let finalRecordTypeList = []
 class AddFiles extends React.Component {
     constructor(props) {
         super(props);
@@ -59,7 +60,6 @@ class AddFiles extends React.Component {
             showCalendar: false,
             fileDate: '',
             selectedRecordType: -1,
-            recordTypeArr: [],
             showProgressModal: false,
             progessVal: .2,
             recordGuid: null,
@@ -68,7 +68,7 @@ class AddFiles extends React.Component {
             titleBorderColor: Color.borderColor,
             buttonBoderWidth: 0,
         };
-        stop2TimesClickStatus=0
+        stop2TimesClickStatus = 0;
     }
 
     componentDidMount() {
@@ -224,26 +224,65 @@ class AddFiles extends React.Component {
                             }
                             tempArr.push('##');
                             tempImageArr = [...tempArr];
-                            this.setState({ data: tempArr, recordTypeArr: data.recordType }); //, recordTypeArr: data.recordType 
+                            this.setState({ data: tempArr,  }); //, recordTypeArr: data.recordType 
                             this.setState({ fullAttachmentArr: tempArr });
                         }
                         else {
-                            this.setState({ recordTypeArr: data.recordType });
+                            //this.setState({ recordTypeArr: data.recordType });
                             // this.setState({recordTypeGuid : data.recordType[0].recordTypeGuid});
                         }
-                        // let tmpArrRecord = data.recordType;
-                        // let finalRecordTypeList = []
-                        // try {
-                        //     let temp = tmpArrRecord[0]
-                        //     let temp2 = tmpArrRecord[2]
-                        //     let temp3 = tmpArrRecord[3]
-                        //     let temp1 = tmpArrRecord[1]
-                        //     finalRecordTypeList.push(temp, temp2, temp3, temp1)
-                        // } catch (error) {
-                        //     finalRecordTypeList = data.recordType;
-                        // }
-                        // this.setState({ recordTypeArr: finalRecordTypeList });
+                        recordTypeList= data.recordType;
 
+                      try {
+                        finalRecordTypeList=[
+                            {
+                                "recordTypeGuid": "",
+                                "recordTypeName": ""
+                            },
+                            {
+                                "recordTypeGuid": "",
+                                "recordTypeName": ""
+                            },
+                            {
+                                "recordTypeGuid": "",
+                                "recordTypeName": ""
+                            },
+                            {
+                                "recordTypeGuid": "",
+                                "recordTypeName": ""
+                            }
+                        ];
+                            if(recordTypeList.length>4)
+                            finalRecordTypeList = recordTypeList;
+                            else
+                            for (var i = 0; i < recordTypeList.length; i++) {
+                                if (recordTypeList[i].recordTypeName == 'Prescriptions') {
+                                    finalRecordTypeList[0].recordTypeName = 'Prescriptions'
+                                    finalRecordTypeList[0].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+                                }
+                                else if (recordTypeList[i].recordTypeName == 'Lab Reports') {
+                                    finalRecordTypeList[1].recordTypeName = 'Lab Reports'
+                                    finalRecordTypeList[1].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+
+                                }
+                                else if (recordTypeList[i].recordTypeName == 'Invoice') {
+                                    finalRecordTypeList[2].recordTypeName = 'Bill / Invoice'
+                                    finalRecordTypeList[2].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+
+                                }
+                                else if (recordTypeList[i].recordTypeName == 'Other Attachments') {
+                                    finalRecordTypeList[3].recordTypeName = 'Others'
+                                    finalRecordTypeList[3].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+                                }
+                            }
+
+                        } catch (error) {
+                            finalRecordTypeList = recordTypeList;
+                        }
                     }
                 }
                 else {
@@ -808,16 +847,17 @@ class AddFiles extends React.Component {
                                     </View>
                                 </View>
                                 <Text style={[styles.titletxt, { marginTop: 24 }]}>Record Type *</Text>
-                                <FlatList
+                                {finalRecordTypeList && finalRecordTypeList.length>0? <FlatList
                                     style={{ marginTop: 8, marginBottom: 0 }}
-                                    data={this.state.recordTypeArr}
+                                    data={finalRecordTypeList}
                                     horizontal={true}
                                     showsVerticalScrollIndicator={false}
                                     renderItem={({ item, index }) => this.renderList(item, index)}
                                     extraData={this.state}
                                     keyExtractor={(item, index) => index.toString()}
                                 //onEndReached={this.loadMoreData}
-                                />
+                                />:null}
+                                
 
                             </View>
                         </View>
@@ -827,18 +867,16 @@ class AddFiles extends React.Component {
                         padding: 16, backgroundColor: Color.white, borderTopStartRadius: 20, borderTopEndRadius: 20,
                         width: '100%'
                     }} >
-                        <TouchableOpacity
-                            onPress={() => {
+                        <TouchableOpacity  onPress={() => {
                                 if (stop2TimesClickStatus == 0)
                                     this.submitPress()
-                            }}
-                            style={{
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                backgroundColor: Color.primary,
-                                borderRadius: 4,
-                                height: responsiveHeight(6),
-                            }}>
+                            }} style={{
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundColor: Color.primary,
+                            borderRadius: 4,
+                            height: responsiveHeight(6),
+                        }}>
                             <Text style={styles.submittxt}>Submit</Text>
                         </TouchableOpacity>
                     </View>

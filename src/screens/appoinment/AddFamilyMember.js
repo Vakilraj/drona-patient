@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
 	SafeAreaView, ScrollView,
 	View,
-	Text, Image, TextInput, FlatList, BackHandler, TouchableOpacity
+	Text, Image, TextInput, FlatList, BackHandler, TouchableOpacity, Alert
 } from 'react-native';
 import styles from './style';
 import Modal from 'react-native-modal';
@@ -22,9 +22,6 @@ import radioNotSelected from '../../../assets/radioNotSelected.png';
 import EditIcon from '../../../assets/edit_primary.png';
 import SelectedIcon from '../../../assets/selected.png';
 import Toolbar from '../../customviews/Toolbar.js';
-
-
-
 import * as signupActions from '../../redux/actions/signupActions';
 import * as apiActions from '../../redux/actions/apiActions';
 import { connect } from 'react-redux';
@@ -57,12 +54,21 @@ class AddFamily extends React.Component {
 
 	async componentDidMount() {
 		item = this.props.navigation.state.params.item;
-		console.log('add family parent data ====>s' + JSON.stringify(item));
+		console.log('add family parent data ====>' + JSON.stringify(item));
 		if (item) {
-			// let tempDobArr = item.dateOfBirth.split(' ');
-			// tempDob = tempDobArr[0];
-			if (item.relationName)
-				this.selectPatientType(item.relationName);
+			if(item.age == null)
+			{
+				Snackbar.show({ text: 'Please enter patient\'s DOB or Age to continue', duration: Snackbar.LENGTH_LONG, backgroundColor: Color.primary });
+
+				this.props.navigation.navigate('AddNewPatients', { item: item, from: 'editfamily', isGetData: true, Refresh: this.Refresh, onEditPatient: this.onEditPatient });
+			}
+			else
+			{
+				let tempDobArr = item.dateOfBirth.split(' ');
+				tempDob = tempDobArr[0];
+				if (item.relationName)
+					this.selectPatientType(item.relationName);
+			}
 		}
 		this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
 			this.props.navigation.goBack()
@@ -133,16 +139,13 @@ class AddFamily extends React.Component {
 						"age":""}
 						if (selectFamilyMemberObj)
 							this.setState({ isFamilyMemberSelected: true })
-					
-
-
 				} else {
 					this.setState({ familyMemberArr: [], });
 				}
 			}
-
 		}
 	}
+
 	getNamechar = (fname, lname) => {
 		fname = fname ? fname.trim() : '';
 		lname = lname ? lname.trim() : '';
@@ -173,7 +176,9 @@ class AddFamily extends React.Component {
 			"UserGuid": signupDetails.UserGuid,
 			"DoctorGuid": signupDetails.doctorGuid,
 			"ClinicGuid": signupDetails.clinicGuid,
-			"Data": { "PatientGuid": item.patientGuid }
+			"Data": { 
+				"PatientGuid": item.patientGuid 
+			}
 		}
 		actions.callLogin('V11/FuncForDrAppToGetPatientDetailsById', 'post', params, signupDetails.accessToken, 'getFamilyMember');
 	}

@@ -225,7 +225,7 @@ class BankAccountDetails extends React.Component {
 									"RoleCode": signupDetails.roleCode,
 									"UserGuid": signupDetails.UserGuid,
 									"DoctorGuid": signupDetails.doctorGuid,
-									"ClinicGuid": DRONA.getClinicGuid(),
+									"ClinicGuid": signupDetails.clinicGuid,//DRONA.getClinicGuid()
 									"Data": { "upiGuId": upiGuId, "UpiName": upiNameOnModal }
 								};
 								actions.callLogin('V1/FuncForDrAppToAddUpdateUpiDetails', 'post', params, signupDetails.accessToken, 'saveupdateUpi');
@@ -307,7 +307,7 @@ class BankAccountDetails extends React.Component {
 								let params = {
 									"RoleCode": signupDetails.roleCode,
 									"UserGuid": signupDetails.UserGuid,
-									"ClinicGuid": DRONA.getClinicGuid(),
+									"ClinicGuid": signupDetails.clinicGuid,//DRONA.getClinicGuid()
 									"DoctorGuid": signupDetails.doctorGuid,
 									"version": "null",
 									"Data": {

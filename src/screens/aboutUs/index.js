@@ -31,6 +31,7 @@ class AboutusIndex extends React.Component {
 	}
 	async componentDidMount() {
 		let { actions, signupDetails } = this.props;
+		console.log('')
 		let params = {
 			"UserGuid": signupDetails.UserGuid,
 			"data": {

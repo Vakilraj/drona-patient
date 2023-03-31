@@ -85,6 +85,7 @@ class FileList extends React.Component {
         this.setState({ isModalShow: false })
     }
     async UNSAFE_componentWillReceiveProps(newProps) {
+        let { signupDetails } = this.props;
         if (newProps.responseData && newProps.responseData.tag) {
             let tagname = newProps.responseData.tag;
             let data = newProps.responseData.data;
@@ -94,7 +95,7 @@ class FileList extends React.Component {
                         //alert(JSON.stringify(data.fileInfoYearly))
                         recordTypeList = data.recordTypeList;
                         this.setState({ fileListArr: data.fileInfoYearly == null ? [] : data.fileInfoYearly });
-                        finalRecordTypeList=[
+                        finalRecordTypeList = [
                             {
                                 "recordTypeGuid": "",
                                 "recordTypeName": ""
@@ -112,33 +113,62 @@ class FileList extends React.Component {
                                 "recordTypeName": ""
                             }]
                         try {
-                            if(recordTypeList.length>4)
-                            finalRecordTypeList = recordTypeList;
+                            if (recordTypeList.length > 4)
+                                finalRecordTypeList = recordTypeList;
                             else
-                            for (var i = 0; i < recordTypeList.length; i++) {
-                                if (recordTypeList[i].recordTypeName == 'Prescriptions') {
-                                    finalRecordTypeList[0].recordTypeName = 'Prescriptions'
-                                    finalRecordTypeList[0].recordTypeGuid = recordTypeList[i].recordTypeGuid
+                                for (var i = 0; i < recordTypeList.length; i++) {
+                                    if (signupDetails.isAssistantUser) {
+                                        if (recordTypeList[i].recordTypeName == 'Invoice') {
+                                            finalRecordTypeList[0].recordTypeName = 'Bills'
+                                            finalRecordTypeList[0].recordTypeGuid = recordTypeList[i].recordTypeGuid
 
+                                        }
+                                        else if (recordTypeList[i].recordTypeName == 'Lab Reports') {
+                                            finalRecordTypeList[1].recordTypeName = 'Lab Reports'
+                                            finalRecordTypeList[1].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+
+                                        }
+                                        else if
+                                            (recordTypeList[i].recordTypeName == 'Prescriptions') {
+                                            finalRecordTypeList[2].recordTypeName = 'Erx'
+                                            finalRecordTypeList[2].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+
+                                        }
+                                        else if (recordTypeList[i].recordTypeName == 'Other Attachments') {
+                                            finalRecordTypeList[3].recordTypeName = 'Others'
+                                            finalRecordTypeList[3].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+                                        }
+
+                                    }
+                                    else {
+                                        if (recordTypeList[i].recordTypeName == 'Prescriptions') {
+                                            finalRecordTypeList[0].recordTypeName = 'Prescriptions'
+                                            finalRecordTypeList[0].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+                                        }
+                                        else if (recordTypeList[i].recordTypeName == 'Lab Reports') {
+                                            finalRecordTypeList[1].recordTypeName = 'Lab Reports'
+                                            finalRecordTypeList[1].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+
+                                        }
+                                        else if (recordTypeList[i].recordTypeName == 'Invoice') {
+                                            finalRecordTypeList[2].recordTypeName = 'Bills'
+                                            finalRecordTypeList[2].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+
+                                        }
+                                        else if (recordTypeList[i].recordTypeName == 'Other Attachments') {
+                                            finalRecordTypeList[3].recordTypeName = 'Others'
+                                            finalRecordTypeList[3].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+                                        }
+
+                                    }
                                 }
-                                else if (recordTypeList[i].recordTypeName == 'Lab Reports') {
-                                    finalRecordTypeList[1].recordTypeName = 'Lab Reports'
-                                    finalRecordTypeList[1].recordTypeGuid = recordTypeList[i].recordTypeGuid
-
-
-                                }
-                                else if (recordTypeList[i].recordTypeName == 'Invoice') {
-                                    finalRecordTypeList[2].recordTypeName = 'Bill / Invoice'
-                                    finalRecordTypeList[2].recordTypeGuid = recordTypeList[i].recordTypeGuid
-
-
-                                }
-                                else if (recordTypeList[i].recordTypeName == 'Other Attachments') {
-                                    finalRecordTypeList[3].recordTypeName = 'Others'
-                                    finalRecordTypeList[3].recordTypeGuid = recordTypeList[i].recordTypeGuid
-
-                                }
-                            }
 
                         } catch (error) {
                             finalRecordTypeList = recordTypeList;
@@ -424,7 +454,7 @@ class FileList extends React.Component {
                             </TouchableOpacity>
                         </View>
                         <View style={{ marginStart: 10, marginEnd: 10, marginTop: 15, marginBottom: 15 }}>
-{finalRecordTypeList && finalRecordTypeList.length>0 ? <FlatList
+                            {finalRecordTypeList && finalRecordTypeList.length > 0 ? <FlatList
                                 data={finalRecordTypeList}
                                 horizontal
                                 showsHorizontalScrollIndicator={false}
@@ -436,7 +466,7 @@ class FileList extends React.Component {
                                     }}>
 
 
-                                        <View style={{ borderColor: Color.primary, backgroundColor: this.state.isSelected === item.recordTypeName ? Color.primary : null, borderRadius: 20, borderWidth: 1.2, padding: 7, maxWidth: responsiveHeight(20), alignItems: 'center', marginHorizontal: 7 }}>
+                                        <View style={{ borderColor: Color.primary, backgroundColor: this.state.isSelected === item.recordTypeName ? Color.primary : null, borderRadius: 20, borderWidth: 1.2, paddingLeft: 8, paddingRight: 8, paddingTop: 5, paddingBottom: 5, maxWidth: responsiveHeight(20), alignItems: 'center', marginHorizontal: 7 }}>
                                             <Text style={{
                                                 color: this.state.isSelected === item.recordTypeName ? Color.white : Color.datecolor, fontWeight: CustomFont.fontWeight400,
                                                 fontSize: CustomFont.font14, fontFamily: CustomFont.fontName
@@ -444,8 +474,8 @@ class FileList extends React.Component {
                                         </View>
                                     </TouchableOpacity>
                                 )}
-                            />:null}
-                            
+                            /> : null}
+
 
                         </View>
 

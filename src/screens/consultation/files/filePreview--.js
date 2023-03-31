@@ -39,6 +39,7 @@ class FilePreview extends React.Component {
       name: '',
       attchment: '',
       fileExt: '',
+      isPrintBtn: false,
       downloadPdfUrl: '',
       data: [{ type: 'image', name: 'Prescription 1', url: 'https://d1nhio0ox7pgb.cloudfront.net/_img/o_collection_png/green_dark_grey/512x512/plain/plus.png' },
       { type: 'pdf', name: 'Prescription 2', url: 'https://campustecnologicoalgeciras.es/wp-content/uploads/2017/07/OoPdfFormExample.pdf' }],
@@ -107,6 +108,7 @@ class FilePreview extends React.Component {
         //console.warn(err);
       }
     }
+    //
   }
 
   callAPIForEditRecordDetails = () => {
@@ -400,16 +402,16 @@ class FilePreview extends React.Component {
     // alert(JSON.stringify(item))
     if (Platform.OS == 'ios' && item.orgFileExt == '.pdf') {
       this.setState({ fileExt: '.pdf' })
-      this.setState({ downloadPdfUrl: item.attachmentUrl })
+      this.setState({ downloadPdfUrl: item.attachmentUrl, isPrintBtn: true })
       this.downloadFileForIos(item);
 
     } else {
       if (item.orgFileExt != '.pdf') {
-        this.setState({ attchment: item.attachmentUrl })
+        this.setState({ downloadPdfUrl: item.attachmentUrl, isPrintBtn: false })
         this.setState({ fileExt: '.png' })
       } else {
         this.setState({ fileExt: '.pdf' })
-        this.setState({ downloadPdfUrl: item.attachmentUrl })
+        this.setState({ downloadPdfUrl: item.attachmentUrl, isPrintBtn: true })
         this.setState({
           resources: {
             url: item.attachmentUrl
@@ -513,7 +515,7 @@ class FilePreview extends React.Component {
             <TouchableOpacity onPress={() => this.makeDownload(this.state.fileExt)} style={styles.submitbtn}>
               <Text style={styles.submittxt}>Download</Text>
             </TouchableOpacity>
-            {this.state.fileExt !== '.png' ? <TouchableOpacity style={[styles.submitbtn, { marginLeft: responsiveWidth(8), backgroundColor: Color.weekdaycellPink, }]}
+            {this.state.isPrintBtn ? <TouchableOpacity style={[styles.submitbtn, { marginLeft: responsiveWidth(8), backgroundColor: Color.weekdaycellPink, }]}
               onPress={() => {
                 setLogEvent("patient_appointment", { "print_pdf": "click", })
                 this.printRemotePDF()

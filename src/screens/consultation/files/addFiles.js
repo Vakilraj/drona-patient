@@ -172,6 +172,7 @@ class AddFiles extends React.Component {
     }
 
     async UNSAFE_componentWillReceiveProps(newProps) {
+        let { signupDetails } = this.props;
         if (newProps.responseData && newProps.responseData.tag) {
             let tagname = newProps.responseData.tag;
             let data = newProps.responseData.data;
@@ -256,26 +257,55 @@ class AddFiles extends React.Component {
                             finalRecordTypeList = recordTypeList;
                             else
                             for (var i = 0; i < recordTypeList.length; i++) {
-                                if (recordTypeList[i].recordTypeName == 'Prescriptions') {
-                                    finalRecordTypeList[0].recordTypeName = 'Prescriptions'
-                                    finalRecordTypeList[0].recordTypeGuid = recordTypeList[i].recordTypeGuid
+                                if (signupDetails.isAssistantUser) {
+                                    if (recordTypeList[i].recordTypeName == 'Invoice') {
+                                        finalRecordTypeList[0].recordTypeName = 'Bills'
+                                        finalRecordTypeList[0].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+                                    }
+                                    else if (recordTypeList[i].recordTypeName == 'Lab Reports') {
+                                        finalRecordTypeList[1].recordTypeName = 'Lab Reports'
+                                        finalRecordTypeList[1].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+
+                                    }
+                                    else if
+                                        (recordTypeList[i].recordTypeName == 'Prescriptions') {
+                                        finalRecordTypeList[2].recordTypeName = 'Erx'
+                                        finalRecordTypeList[2].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+
+                                    }
+                                    else if (recordTypeList[i].recordTypeName == 'Other Attachments') {
+                                        finalRecordTypeList[3].recordTypeName = 'Others'
+                                        finalRecordTypeList[3].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+                                    }
 
                                 }
-                                else if (recordTypeList[i].recordTypeName == 'Lab Reports') {
-                                    finalRecordTypeList[1].recordTypeName = 'Lab Reports'
-                                    finalRecordTypeList[1].recordTypeGuid = recordTypeList[i].recordTypeGuid
+                                else {
+                                    if (recordTypeList[i].recordTypeName == 'Prescriptions') {
+                                        finalRecordTypeList[0].recordTypeName = 'Prescriptions'
+                                        finalRecordTypeList[0].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+                                    }
+                                    else if (recordTypeList[i].recordTypeName == 'Lab Reports') {
+                                        finalRecordTypeList[1].recordTypeName = 'Lab Reports'
+                                        finalRecordTypeList[1].recordTypeGuid = recordTypeList[i].recordTypeGuid
 
 
-                                }
-                                else if (recordTypeList[i].recordTypeName == 'Invoice') {
-                                    finalRecordTypeList[2].recordTypeName = 'Bill / Invoice'
-                                    finalRecordTypeList[2].recordTypeGuid = recordTypeList[i].recordTypeGuid
+                                    }
+                                    else if (recordTypeList[i].recordTypeName == 'Invoice') {
+                                        finalRecordTypeList[2].recordTypeName = 'Bills'
+                                        finalRecordTypeList[2].recordTypeGuid = recordTypeList[i].recordTypeGuid
 
 
-                                }
-                                else if (recordTypeList[i].recordTypeName == 'Other Attachments') {
-                                    finalRecordTypeList[3].recordTypeName = 'Others'
-                                    finalRecordTypeList[3].recordTypeGuid = recordTypeList[i].recordTypeGuid
+                                    }
+                                    else if (recordTypeList[i].recordTypeName == 'Other Attachments') {
+                                        finalRecordTypeList[3].recordTypeName = 'Others'
+                                        finalRecordTypeList[3].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+                                    }
 
                                 }
                             }
@@ -829,7 +859,7 @@ class AddFiles extends React.Component {
                                     keyExtractor={(item, index) => index.toString()}
                                 />
                             </View>
-                            <View style={{ backgroundColor: Color.white, borderRadius: 10, marginStart: 16, marginEnd: 16, padding: 16 }}>
+                            <View style={{ backgroundColor: Color.white, borderRadius: 10, marginStart: 16, marginEnd: 16 }}>
                                 <View style={{ marginTop: 0, marginLeft: responsiveWidth(0), marginRight: responsiveWidth(0) }}>
                                     <Text style={styles.titletxt}>Title *</Text>
                                     <TextInput returnKeyType="done" onFocus={this.callIsFucused} placeholderTextColor={Color.placeHolderColor}

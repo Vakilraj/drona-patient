@@ -362,7 +362,16 @@ class PreviewRxButton extends React.Component {
 		if (symptomList && symptomList.length > 0) {
 			let temp = []
 			for (var i = 0; i < symptomList.length; i++) {
-				const htmlCode = (symptomList[i].symptomName) + ' ' + (symptomList[i].since ? symptomList[i].since : '')  + ' ' + (symptomList[i].severityName ? symptomList[i].severityName : '') + ' ' + (symptomList[i].notes ? symptomList[i].notes : '');
+				let tempStr = '';
+            if (symptomList[i].since)
+                tempStr = symptomList[i].since;
+            if (symptomList[i].severityName)
+                tempStr += ', ' + symptomList[i].severityName;
+            if (symptomList[i].notes)
+                tempStr += ', ' + symptomList[i].notes;
+            if (tempStr)
+                tempStr = '(' + tempStr + ')'
+				const htmlCode = (symptomList[i].symptomName) + ' ' + tempStr;
 					temp.push(htmlCode)
 			}
 			const htmlCode = `
@@ -385,8 +394,18 @@ class PreviewRxButton extends React.Component {
 		if (findingList && findingList.length > 0) {
 			let temp = []
 			for (var i = 0; i < findingList.length; i++) {
+				let tempStr = '';
+            if (findingList[i].since)
+                tempStr = findingList[i].since;
+            if (findingList[i].severityName)
+                tempStr += ', ' + findingList[i].severityName;
+            if (findingList[i].notes)
+                tempStr += ', ' + findingList[i].notes;
+            if (tempStr)
+                tempStr = '(' + tempStr + ')'
 				// if (i == 0) {
-					const htmlCode = findingList[i].findingName
+					//const htmlCode = findingList[i].findingName
+					const htmlCode = (findingList[i].findingName) + ' ' + tempStr;
 					temp.push(htmlCode)
 				// }
 				//else {
@@ -415,7 +434,17 @@ class PreviewRxButton extends React.Component {
 			let temp = []
 			for (var i = 0; i < diagnosisList.length; i++) {
 				// if (i == 0) {
-					const htmlCode = diagnosisList[i].diagnosisName ;
+					//const htmlCode = diagnosisList[i].diagnosisName ;
+					let tempStr = '';
+            if (diagnosisList[i].since)
+                tempStr = diagnosisList[i].since;
+            if (diagnosisList[i].diagnosisStatus)
+                tempStr += ', ' + diagnosisList[i].diagnosisStatus;
+            if (diagnosisList[i].notes)
+                tempStr += ', ' + diagnosisList[i].notes;
+            if (tempStr)
+                tempStr = '(' + tempStr + ')'
+					const htmlCode = (diagnosisList[i].diagnosisName) + ' ' + tempStr;
 				// 	temp.push(htmlCode)
 				// } else {
 				// 	const htmlCode = `
@@ -489,7 +518,8 @@ class PreviewRxButton extends React.Component {
 			for (var i = 0; i < investigationList.length; i++) {
 
 				// if (i == 0) {
-					const htmlCode =  investigationList[i].investigationName;
+					//const htmlCode =  investigationList[i].investigationName;
+					const htmlCode = investigationList[i].investigationName + ' ' + (investigationList[i].notes ? '('+investigationList[i].notes +')': '');
 				// 	temp.push(htmlCode)
 				// } else {
 				// 	const htmlCode = `

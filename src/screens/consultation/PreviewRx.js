@@ -50,10 +50,10 @@ let medicine = '';
 let timingAndDur = '';
 let noteStr = '';
 let consultTypeValue = '';
-let followupHead = '', from='';
+let followupHead = '', from = '';
 let procedureList = '', procedureHead = '';
 import Trace from '../../service/Trace'
-let timeRange = '',consultId='';
+let timeRange = '', consultId = '';
 class PreviewRx extends React.Component {
 
     constructor(props) {
@@ -76,7 +76,7 @@ class PreviewRx extends React.Component {
                 { value: 'gu', index: 6, label: 'Gujarati', isTempSelected: false },
             ],
             dynamicTop: 7,
-            showNormalPrescription:true,
+            showNormalPrescription: true,
         };
         flag == 0;
     }
@@ -84,8 +84,8 @@ class PreviewRx extends React.Component {
     getFuncForDrAppToConsulatationBillingPreview = () => {
         let { actions, signupDetails } = this.props;
         let params = {
-			"RoleCode": signupDetails.roleCode,
-			"UserGuid": signupDetails.UserGuid,
+            "RoleCode": signupDetails.roleCode,
+            "UserGuid": signupDetails.UserGuid,
             "DoctorGuid": signupDetails.doctorGuid,
             "ClinicGuid": signupDetails.clinicGuid,
             "Version": "",
@@ -97,37 +97,37 @@ class PreviewRx extends React.Component {
         actions.callLogin('V14/FuncForDrAppToConsulatationBillingPreview', 'post', params, signupDetails.accessToken, 'consulatationBillingPreviewDataVIEW');
     }
     componentDidMount() {
-        
+
         let { signupDetails } = this.props;
         timeRange = Trace.getTimeRange();
-        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Prescription_Preview',  signupDetails.firebaseLocation)
-        Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Prescription_Preview", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
-    
+        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Prescription_Preview', signupDetails.firebaseLocation)
+        Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Prescription_Preview", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+
         //
-         from=this.props.navigation.state && this.props.navigation.state.params && this.props.navigation.state.params.from ? this.props.navigation.state.params.from :'';
-         if(from=='normalPrescription'){
+        from = this.props.navigation.state && this.props.navigation.state.params && this.props.navigation.state.params.from ? this.props.navigation.state.params.from : '';
+        if (from == 'normalPrescription') {
             this.getFuncForDrAppToConsulatationBillingPreview();
-        }else{
-            this.setState({showNormalPrescription:false})
+        } else {
+            this.setState({ showNormalPrescription: false })
         }
-            consultTypeValue = signupDetails.consultType;
-            let filePath = this.props.navigation.state.params.PreviewPdfPath;
-            if (filePath) {
-                if (filePath.includes('/')) {
-                    let str = filePath.split('/');
-                    let name = str[str.length - 1];
-                    this.setState({ resources: { file: name } });
-                } else {
-                    this.setState({ resources: { file: filePath } });
-                }
+        consultTypeValue = signupDetails.consultType;
+        let filePath = this.props.navigation.state.params.PreviewPdfPath;
+        if (filePath) {
+            if (filePath.includes('/')) {
+                let str = filePath.split('/');
+                let name = str[str.length - 1];
+                this.setState({ resources: { file: name } });
+            } else {
+                this.setState({ resources: { file: filePath } });
             }
-            this.setState({
-                filePath: filePath,
-            })
-            consultId=this.props.navigation.state.params.consultId;
+        }
+        this.setState({
+            filePath: filePath,
+        })
+        consultId = this.props.navigation.state.params.consultId;
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)
     }
-    
+
     handleBackPress = () => {
         this.props.navigation.goBack();
         return true;
@@ -203,15 +203,22 @@ class PreviewRx extends React.Component {
         let temp = []
 
         for (var i = 0; i < symptomList.length; i++) {
+            let tempStr = '';
+            if (symptomList[i].since)
+                tempStr = symptomList[i].since;
+            if (symptomList[i].severityName)
+                tempStr += ', ' + symptomList[i].severityName;
+            if (symptomList[i].notes)
+                tempStr += ', ' + symptomList[i].notes;
+            if (tempStr)
+                tempStr = '(' + tempStr + ')'
             if (i == 0) {
-           // const htmlCode = symptomList[i].symptomName;
-           const htmlCode = (symptomList[i].symptomName) + ' ' + (symptomList[i].since ? symptomList[i].since : '')  + ' ' + (symptomList[i].severityName ? symptomList[i].severityName : '') + ' ' + (symptomList[i].notes ? symptomList[i].notes : '');
-            temp.push(htmlCode)
+                // const htmlCode = symptomList[i].symptomName;
+                const htmlCode = symptomList[i].symptomName + ' ' + tempStr;
+                temp.push(htmlCode)
             }
-            else
-            {
-               // const htmlCode = ', ' + symptomList[i].symptomName;
-               const htmlCode = ', ' + (symptomList[i].symptomName) + ' ' + (symptomList[i].since ? symptomList[i].since : '')  + ' ' + (symptomList[i].severityName ? symptomList[i].severityName : '') + ' ' + (symptomList[i].notes ? symptomList[i].notes : '');
+            else {
+                const htmlCode = ', ' + symptomList[i].symptomName + ' ' + tempStr;
                 temp.push(htmlCode)
             }
         }
@@ -223,16 +230,23 @@ class PreviewRx extends React.Component {
         let temp = []
 
         for (var i = 0; i < findingList.length; i++) {
-
+            let tempStr = '';
+            if (findingList[i].since)
+                tempStr = findingList[i].since;
+            if (findingList[i].severityName)
+                tempStr += ', ' + findingList[i].severityName;
+            if (findingList[i].notes)
+                tempStr += ', ' + findingList[i].notes;
+            if (tempStr)
+                tempStr = '(' + tempStr + ')'
             if (i == 0) {
                 //const htmlCode = findingList[i].findingName;
-                const htmlCode = (findingList[i].findingName) + ' ' + (findingList[i].since ? findingList[i].since : '')  + ' ' + (findingList[i].severityName ? findingList[i].severityName : '') + ' ' + (findingList[i].notes ? findingList[i].notes : '');
+                const htmlCode = findingList[i].findingName + ' ' + tempStr;
                 temp.push(htmlCode)
             }
-            else
-            {
-               // const htmlCode = ', ' + findingList[i].findingName;
-               const htmlCode = ', ' + (findingList[i].findingName) + ' ' + (findingList[i].since ? findingList[i].since : '')  + ' ' + (findingList[i].severityName ? findingList[i].severityName : '') + ' ' + (findingList[i].notes ? findingList[i].notes : '');
+            else {
+                // const htmlCode = ', ' + findingList[i].findingName;
+                const htmlCode = ', ' + findingList[i].findingName + ' ' + tempStr;
                 temp.push(htmlCode)
             }
         }
@@ -243,11 +257,10 @@ class PreviewRx extends React.Component {
 
         for (var i = 0; i < procedureList.length; i++) {
             if (i == 0) {
-            const htmlCode = procedureList[i].procedureName;
-            temp.push(htmlCode)
+                const htmlCode = procedureList[i].procedureName;
+                temp.push(htmlCode)
             }
-            else
-            {
+            else {
                 const htmlCode = ', ' + procedureList[i].procedureName;
                 temp.push(htmlCode)
             }
@@ -284,13 +297,22 @@ class PreviewRx extends React.Component {
         let temp = []
 
         for (var i = 0; i < diagnosisList.length; i++) {
+            let tempStr = '';
+            if (diagnosisList[i].since)
+                tempStr = diagnosisList[i].since;
+            if (diagnosisList[i].diagnosisStatus)
+                tempStr += ', ' + diagnosisList[i].diagnosisStatus;
+            if (diagnosisList[i].notes)
+                tempStr += ', ' + diagnosisList[i].notes;
+            if (tempStr)
+                tempStr = '(' + tempStr + ')'
             if (i == 0) {
                 //const htmlCode = diagnosisList[i].diagnosisName;
-                const htmlCode = (diagnosisList[i].diagnosisName) + ' ' + (diagnosisList[i].since ? diagnosisList[i].since : '')  + ' ' + (diagnosisList[i].diagnosisDesc ? diagnosisList[i].diagnosisDesc : '') + ' ' + (diagnosisList[i].notes ? diagnosisList[i].notes : '');
+                const htmlCode = diagnosisList[i].diagnosisName + ' ' + tempStr;
                 temp.push(htmlCode)
             } else {
                 //const htmlCode = ', ' + diagnosisList[i].diagnosisName;
-                const htmlCode = ', ' + (diagnosisList[i].diagnosisName) + ' ' + (diagnosisList[i].since ? diagnosisList[i].since : '')  + ' ' + (diagnosisList[i].diagnosisDesc ? diagnosisList[i].diagnosisDesc : '') + ' ' + (diagnosisList[i].notes ? diagnosisList[i].notes : '');
+                const htmlCode = ', ' + diagnosisList[i].diagnosisName + ' ' + tempStr;
                 temp.push(htmlCode)
             }
         }
@@ -305,7 +327,7 @@ class PreviewRx extends React.Component {
             followupFormatDate = Moment(followupFormatDate).format('DD-MM-YYYY');
             followupHead = Language.language.followup;
             const htmlCode = followupFormatDate;
-            
+
             temp.push(htmlCode)
         }
         return temp
@@ -318,11 +340,11 @@ class PreviewRx extends React.Component {
             // temp.push(htmlCode)
             if (i == 0) {
                 //const htmlCode = investigationList[i].investigationName;
-                const htmlCode = (investigationList[i].investigationName) + ' ' + (investigationList[i].notes ? '('+investigationList[i].notes+')' : '');
+                const htmlCode = (investigationList[i].investigationName) + ' ' + (investigationList[i].notes ? '(' + investigationList[i].notes + ')' : '');
                 temp.push(htmlCode)
             } else {
                 //const htmlCode = ', ' + investigationList[i].investigationName;
-                const htmlCode = ', ' + (investigationList[i].investigationName) + ' ' + (investigationList[i].notes ? '('+investigationList[i].notes +')' : '');
+                const htmlCode = ', ' + (investigationList[i].investigationName) + ' ' + (investigationList[i].notes ? '(' + investigationList[i].notes + ')' : '');
                 temp.push(htmlCode)
             }
         }
@@ -378,10 +400,10 @@ class PreviewRx extends React.Component {
         return (
             <View style={{ flex: 1, flexDirection: 'row' }}>
                 <View style={{ flex: 4, borderColor: '#ddd', borderWidth: 1 }}>
-                <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12,   marginRight: responsiveWidth(2) }}>• <Text style={{fontWeight:'bold'}}>{item.medicineName + ' ' + item.strength + '\n'}</Text> <Text style={{fontStyle: 'italic'}}>({item.medicineDesc})</Text></Text>
+                    <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, marginRight: responsiveWidth(2) }}>• <Text style={{ fontWeight: 'bold' }}>{item.medicineName + ' ' + item.strength + '\n'}</Text> <Text style={{ fontStyle: 'italic' }}>({item.medicineDesc})</Text></Text>
                 </View>
                 <View style={{ flex: 3, borderColor: '#ddd', borderWidth: 1 }}>
-                <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(2) }}>{item.dosagePattern} {item.medicineTimingFrequency == 'No Preference' ? null : ' (' + item.medicineTimingFrequency + ')'} { '\n' + 'dose: ' + item.dosages + ', ' + item.durationValue + ' ' + item.durationType}</Text>
+                    <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(2) }}>{item.dosagePattern} {item.medicineTimingFrequency == 'No Preference' ? null : ' (' + item.medicineTimingFrequency + ')'} {'\n' + 'dose: ' + item.dosages + ', ' + item.durationValue + ' ' + item.durationType}</Text>
                 </View>
                 <View style={{ flex: 2, borderColor: '#ddd', borderWidth: 1 }}>
                     <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(2) }}>{item.note}</Text>
@@ -401,12 +423,12 @@ class PreviewRx extends React.Component {
                             <Text style={{ color: Color.black, fontSize: CustomFont.font16, fontWeight: 'bold', marginLeft: responsiveWidth(4), fontFamily: CustomFont.fontName, }}>Prescription</Text>
                         </TouchableOpacity>
                     </View>
-{this.state.showNormalPrescription ? <View style={{ flex: 1, backgroundColor: Color.white, }}>
+                    {this.state.showNormalPrescription ? <View style={{ flex: 1, backgroundColor: Color.white, }}>
                         <ScrollView>
-                            <View style={{ flex: 1, minHeight:responsiveHeight(42) }}>
+                            <View style={{ flex: 1, minHeight: responsiveHeight(42) }}>
                                 <Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font18, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, }}>{prescriptionHeading}</Text>
                                 <View style={{ flexDirection: 'row', marginTop: responsiveWidth(2), }}>
-                                    <View style={{ flex: 3, borderWidth: 1, borderColor:Color.grayBorder, marginLeft:responsiveWidth(5),marginBottom:responsiveHeight(2)}}>
+                                    <View style={{ flex: 3, borderWidth: 1, borderColor: Color.grayBorder, marginLeft: responsiveWidth(5), marginBottom: responsiveHeight(2) }}>
                                         <Image source={{ uri: clinicInfo.clinicImageUrl }} style={{ width: responsiveWidth(22), height: responsiveHeight(15) }} />
                                     </View>
                                     <View style={{ flex: 5, }}>
@@ -435,18 +457,18 @@ class PreviewRx extends React.Component {
                                     </View>
                                 </View>
 
-                                {(symptomList && symptomList.length > 0) ? 
-                                <View>
-                                    <Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), marginTop: 0, }}><Text style={{fontWeight: 'bold'}}>{symptomList && symptomList.length > 0 ? symptomHead : ''}: </Text> {this.symptomsView(symptomList)}</Text>
-                                </View>
-                                :null}
+                                {(symptomList && symptomList.length > 0) ?
+                                    <View>
+                                        <Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), marginTop: 0, }}><Text style={{ fontWeight: 'bold' }}>{symptomList && symptomList.length > 0 ? symptomHead : ''}: </Text> {this.symptomsView(symptomList)}</Text>
+                                    </View>
+                                    : null}
 
-                                {(findingList && findingList.length > 0) ? 
-                                <View>
-                                    <Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), marginTop: 0 }}><Text style={{fontWeight: 'bold'}}>{findingList && findingList.length > 0 ? findingHead : ''}: </Text> {this.findingView(findingList)}</Text>
-                                </View>
-                                :null}
-                                
+                                {(findingList && findingList.length > 0) ?
+                                    <View>
+                                        <Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), marginTop: 0 }}><Text style={{ fontWeight: 'bold' }}>{findingList && findingList.length > 0 ? findingHead : ''}: </Text> {this.findingView(findingList)}</Text>
+                                    </View>
+                                    : null}
+
                                 {/* {(symptomList && symptomList.length > 0) || (findingList && findingList.length > 0) ? 
                                 <View style={{  flexDirection: 'row' }}>
                                     <View style={{ flex: 3, }}>
@@ -460,13 +482,13 @@ class PreviewRx extends React.Component {
                                 </View>:null} */}
 
                                 {diagnosisList && diagnosisList.length ?
-                                <View style={{  flexDirection: 'row' }}>
-                                    <Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}><Text style={{fontWeight: 'bold'}}>{diagionsisHead}: </Text> {this.diagnosisView(diagnosisList)}</Text>
-                                </View>
-                                :null}
-                                
+                                    <View style={{ flexDirection: 'row' }}>
+                                        <Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}><Text style={{ fontWeight: 'bold' }}>{diagionsisHead}: </Text> {this.diagnosisView(diagnosisList)}</Text>
+                                    </View>
+                                    : null}
+
                                 {medicineList && medicineList.length > 0 ? <View style={{ marginLeft: responsiveWidth(5), marginRight: responsiveWidth(5), marginTop: responsiveWidth(2) }}>
-                                    <View style={{  backgroundColor: '#14091529', flexDirection: 'row' }}>
+                                    <View style={{ backgroundColor: '#14091529', flexDirection: 'row' }}>
                                         <View style={{ flex: 4, borderColor: '#f1f1f1', borderWidth: 1 }}>
                                             <Text style={{ padding: 5, color: Color.black, marginLeft: responsiveWidth(2), fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5) }}>{medicine}:</Text>
                                         </View>
@@ -486,56 +508,56 @@ class PreviewRx extends React.Component {
                                     />
                                 </View> : null}
 
-                                {investigationList && investigationList.length > 0 ? <View style={{  marginTop: 5 }}>
-                                <Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}><Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}>{investigationAdvise}:</Text> {this.investigationsView(investigationList)}</Text>
+                                {investigationList && investigationList.length > 0 ? <View style={{ marginTop: 5 }}>
+                                    <Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}><Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}>{investigationAdvise}:</Text> {this.investigationsView(investigationList)}</Text>
                                 </View> : null}
 
-                                {instructionsList && instructionsList.length > 0 ? 
-                                <View style={{  marginTop: 5  }}>
-                                    <Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}><Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}>{instructionHead}: </Text>{this.instructionView(instructionsList)}</Text>
-                                    
-                                </View> : null}
+                                {instructionsList && instructionsList.length > 0 ?
+                                    <View style={{ marginTop: 5 }}>
+                                        <Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}><Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}>{instructionHead}: </Text>{this.instructionView(instructionsList)}</Text>
 
-                                {(procedureList && procedureList.length > 0) ? 
-                                <View>
-                                    <Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), marginTop: 0, }}><Text style={{fontWeight: 'bold'}}>{procedureList && procedureList.length > 0 ? procedureHead : ''}: </Text> {this.procedureView(procedureList)}</Text>
-                                </View>
-                                :null}
+                                    </View> : null}
+
+                                {(procedureList && procedureList.length > 0) ?
+                                    <View>
+                                        <Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), marginTop: 0, }}><Text style={{ fontWeight: 'bold' }}>{procedureList && procedureList.length > 0 ? procedureHead : ''}: </Text> {this.procedureView(procedureList)}</Text>
+                                    </View>
+                                    : null}
 
                                 {prescriptionNote.prescriptionNoteName ?
-                                 <View style={{  marginTop: 5 }}>
-                                    <Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}><Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), fontWeight: 'bold'}}>{notes}:</Text> {prescriptionNote.prescriptionNoteName}</Text>
-                                </View> : null}
+                                    <View style={{ marginTop: 5 }}>
+                                        <Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}><Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), fontWeight: 'bold' }}>{notes}:</Text> {prescriptionNote.prescriptionNoteName}</Text>
+                                    </View> : null}
 
                                 {followUpItem ?
-                                <View style={{ marginTop: 5}}>
-                                    <Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}><Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}>{followupHead}: </Text>{this.followUpView(followUpItem)}</Text>
-                                    
-                                </View>:null}
+                                    <View style={{ marginTop: 5 }}>
+                                        <Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}><Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}>{followupHead}: </Text>{this.followUpView(followUpItem)}</Text>
 
-                                
+                                    </View> : null}
 
-                                
+
+
+
                             </View>
                             {eSign ?
-                            <View>
-                            <View style={{ flexDirection: 'row', marginRight: responsiveWidth(5), marginTop: this.state.dynamicTop }}>
-                            <View style={{ flex: 6, }}>
-                            </View>
-                            <View style={{ flex: 3, borderColor: Color.grayTxt, borderWidth: 1, }}>
-                                <Image source={{ uri: eSign }} style={{ height: responsiveHeight(5), marginRight: 5, resizeMode: 'contain' }} />
-                            </View>
-                        </View>
-                        <View style={{ flexDirection: 'row' }}>
-                            <View style={{ flex: 6, }}>
-                            </View>
-                            <View style={{ flex: 4 }}>
-                            <Text style={{ color: Color.black, fontSize: CustomFont.font12, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), marginLeft: responsiveWidth(3) }}>Dr. {doctorInfo.firstName ? doctorInfo.firstName + ' ' + doctorInfo.lastName : null}</Text>
-                            </View>
-                        </View>
-</View>:null}
+                                <View>
+                                    <View style={{ flexDirection: 'row', marginRight: responsiveWidth(5), marginTop: this.state.dynamicTop }}>
+                                        <View style={{ flex: 6, }}>
+                                        </View>
+                                        <View style={{ flex: 3, borderColor: Color.grayTxt, borderWidth: 1, }}>
+                                            <Image source={{ uri: eSign }} style={{ height: responsiveHeight(5), marginRight: 5, resizeMode: 'contain' }} />
+                                        </View>
+                                    </View>
+                                    <View style={{ flexDirection: 'row' }}>
+                                        <View style={{ flex: 6, }}>
+                                        </View>
+                                        <View style={{ flex: 4 }}>
+                                            <Text style={{ color: Color.black, fontSize: CustomFont.font12, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), marginLeft: responsiveWidth(3) }}>Dr. {doctorInfo.firstName ? doctorInfo.firstName + ' ' + doctorInfo.lastName : null}</Text>
+                                        </View>
+                                    </View>
+                                </View> : null}
                         </ScrollView>
-                        
+
                     </View> : <View style={{ backgroundColor: Color.patientBackground, flex: 1 }}>
                         <View style={{ flex: 1 }}>
                             <PDFView
@@ -546,9 +568,9 @@ class PreviewRx extends React.Component {
                             />
                         </View>
                     </View>}
-                    
-                    
-                    
+
+
+
                     {/* <View style={{ backgroundColor: Color.patientBackground, flex: 1 }}>
                         <View style={{ flex: 1 }}>
                             <PDFView
@@ -559,15 +581,15 @@ class PreviewRx extends React.Component {
                             />
                         </View>
                     </View> */}
-                    
+
 
 
                     <View style={{ flexDirection: 'row', padding: 10, backgroundColor: Color.white, borderTopLeftRadius: 10, borderTopRightRadius: 10 }}>
                         <TouchableOpacity
                             onPress={() => {
-                                if(from=='normalPrescription')
-                                this.props.navigation.goBack();
-                                else{
+                                if (from == 'normalPrescription')
+                                    this.props.navigation.goBack();
+                                else {
                                     this.props.navigation.goBack(null);
                                     this.props.navigation.goBack(null);
                                 }
@@ -577,7 +599,7 @@ class PreviewRx extends React.Component {
                         </TouchableOpacity>
                         <TouchableOpacity
                             onPress={() => {
-                                this.props.navigation.navigate('BillingComplete', { filePath: this.state.filePath, prevScreenName: from})
+                                this.props.navigation.navigate('BillingComplete', { filePath: this.state.filePath, prevScreenName: from })
                             }}
                             style={{ margin: 5, borderRadius: 5, justifyContent: 'center', alignItems: 'center', backgroundColor: Color.primary, width: '60%', height: responsiveHeight(6) }}>
                             <Text style={{ color: Color.white, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: CustomFont.fontWeight600 }}>Next</Text>

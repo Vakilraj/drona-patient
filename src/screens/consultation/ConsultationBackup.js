@@ -291,9 +291,7 @@ class Consultation extends React.Component {
 			SymptomArr: SymptomFullArray, FindingArr: findingFullArray, DiagnosticArr: diagnosticFullArray, MedicineArr: medicineFullArray, InvestigationArray: InvestigationeFullArray, InstructionArray: InstructionFullArray,
 			notesData: NotesData, followupData: data.followUp, showFollowUpModal: false,ProcedureArr: ProcedureFullArray,
 		});
-
-		if (medicineFullArray.length == 0)
-			this.setState({ medicineFoundStatus: 'Medicine not found' });
+		
 		if (data.vitalMasters) {
 			vitalIsAddedStatus = '';
 			this.setState({ vitalsDataArray: data.vitalMasters })
@@ -603,7 +601,7 @@ procedureFlag = true;
 						if (temp && temp.length > 0) {
 							this.setState({ MedicineArr: temp });
 						} else {
-							this.setState({ MedicineArr: [] });
+							this.setState({ MedicineArr: [],medicineFoundStatus: 'Medicine not found' });
 						}
 						// temp.push({
 						// 	"medicineGuid": null,
@@ -2886,7 +2884,7 @@ if(clickItemName == 'Diagnostic'){
 											}, this) : <Text style={{ marginTop: responsiveHeight(10), marginLeft: responsiveWidth(30), color: Color.fontColor }}>{this.state.medicineFoundStatus}</Text>}
 										</View>
 										{
-											this.state.isSearchStart ?
+											this.state.isSearchStart && this.state.medicineSearchTxt?
 												<TouchableOpacity onPress={this.addPressClick} style={{ margin: responsiveWidth(3), alignItems: 'center', justifyContent: 'center' }}>
 													<Text style={{ color: Color.primaryBlue, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: CustomFont.fontWeight700 }}> + Add '{this.state.medicineSearchTxt}' as a New Medicine</Text>
 												</TouchableOpacity> : null

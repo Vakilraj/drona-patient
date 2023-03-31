@@ -516,7 +516,7 @@ class AddNewClinicDetails extends React.Component {
 
 									<Text style={styles.inputHeader}>Primary Phone Number *</Text>
 									<Text style={styles.createInputStyleMobile}>{signupDetails.mobile}</Text>
-
+									<Text style={ { fontFamily: CustomFont.fontName, fontSize: CustomFont.font10, color: Color.grayTxt, marginTop: responsiveHeight(1) }}>This number is visible only to you</Text>
 									<Text style={styles.inputHeader}>Clinic Number *</Text>
 									<View>
 										<TouchableOpacity style={{ position: 'absolute', marginTop: responsiveHeight(3), right: responsiveWidth(4), zIndex: 5 }} onPress={() => alert("Your patients will see this phone number on the public profile.")} >
@@ -534,7 +534,7 @@ class AddNewClinicDetails extends React.Component {
 											onBlur={() => this.callOnBlur('2')}
 											placeholderTextColor={Color.placeHolderColor}
 											style={[styles.createInputStyle, { borderColor: this.state.fld2, color: Color.headingTxtClr }]} placeholder="Enter clinic phone number" ref='cnumber' onSubmitEditing={() => this.refs.address.focus()} value={this.state.clinicNumber} maxLength={13} keyboardType={'phone-pad'} />
-
+<Text style={ { fontFamily: CustomFont.fontName, fontSize: CustomFont.font10, color: Color.grayTxt, marginTop: responsiveHeight(1) }}>This number is visible to your patients & Enables followup reminders to Patients on WA</Text>
 									</View>
 									<Text style={styles.inputHeader}>Address *</Text>
 									{/* <TextInput 

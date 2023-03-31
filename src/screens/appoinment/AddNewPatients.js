@@ -52,7 +52,6 @@ let objItem = {}
 let timeslot = {};
 let addPatientFromWhere = '';
 let isChange = false;
-let dobNullText = '';
 
 class AddNewPatients extends React.Component {
 	constructor(props) {
@@ -215,18 +214,25 @@ class AddNewPatients extends React.Component {
 		try {
 
 			let item = this.props.navigation.state.params.item ? this.props.navigation.state.params.item : '';
+			console.log('--------item--+  '+JSON.stringify(item))
 			from = this.props.navigation.state.params.from ? this.props.navigation.state.params.from : '';
 			isGetData = this.props.navigation.state.params.isGetData ? this.props.navigation.state.params.isGetData : false;
 
 			if (isGetData) {
 				this.callGetData();
+				item.dob=null; //ram
 			} else if (item && from === 'edit') {
 				let age = 0;
 					if (item.dob) {
 						age = Moment(new Date()).format('YYYY') - Moment(item.dob).format('YYYY');
-					} else {
-						age = item.age;
 					}
+					if (item.dateOfBirth){
+						this.setState({ isAgeEditable: false })
+						selectedDay = Moment(item.dateOfBirth).format('YYYY/MM/DD');
+						if(!item.dob){
+							age = Moment(new Date()).format('YYYY') - Moment(item.dateOfBirth).format('YYYY');
+						}
+					} 
 
 				this.setState({
 					isEdit: true,
@@ -234,17 +240,16 @@ class AddNewPatients extends React.Component {
 					lname: item.lastName,
 					referedName: item.referredBy,
 					mobile: item.contactNumber ? item.contactNumber : item.phoneNumber,
-					age: item.age == null ? '0' : age + '',
+					age: age,
 					email: item.emailAddress,
 					showSelectedDay: item.dob == null ? this.state.nullDate : Moment(item.dateOfBirth).format('DD/MM/YYYY'),
 					relationship: item.relationName,
 					showInitialDate: item.dob == null ? 'DD/MM/YYYY' : Moment(item.dateOfBirth).format('YYYY-MM-DD')
 				})
-				if (item.dateOfBirth) this.setState({ isAgeEditable: false })
+				
 
 				RelationGuid = item.relationGuid
 				patientGuid = item.patientGuid
-				selectedDay = Moment(item.dateOfBirth).format('YYYY/MM/DD');
 				try {
 					if (item.gender == 'M') {
 						this.setState({ isMale: true, isFemale: false, isOther: false });
@@ -388,20 +393,12 @@ class AddNewPatients extends React.Component {
 			this.setState({ fnameAlert: 'First name minimum 1 character' });
 			this.refs.fname.focus();
 		}
-		//  else if (!this.state.lname) {
-		// 	this.setState({ lnameAlert: 'Please enter last name' });
-		// 	this.refs.lname.focus();
-		// } else if (!Validator.isNameValidate(this.state.lname)) {
-		// 	this.setState({ lnameAlert: 'Name should contain only alphabets' });
-		// 	this.refs.lname.focus();
-		// }
 		else if (!this.state.isMale && !this.state.isFemale && !this.state.isOther) {
 			Snackbar.show({ text: 'Please select gender', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-		} else if (!selectedDay && !this.state.age) {
-			Snackbar.show({ text: 'Please select date of birth OR enter Age', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
+		} else if (!selectedDay && this.state.age==0) {
+			Snackbar.show({ text: 'Please enter patient\'s Age OR date of birth to continue ', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 		}
-		else if (this.state.age && !Validator.isMobileValidate(this.state.age.substring(0, 1))) {
-			// else if (this.state.age)
+		else if (this.state.age && !Validator.isMobileValidate(this.state.age)) {
 			this.setState({ ageAlert: 'Age should contain only number' });
 			this.refs.age.focus();
 		}
@@ -419,13 +416,10 @@ class AddNewPatients extends React.Component {
 			this.refs.email.focus();
 			this.setState({ emailAlert: "Please Enter valid email" })
 		}
-		// else if (this.props.navigation.state.params.from == 'famityadd' && !RelationGuid) {
-		// 	Snackbar.show({ text: 'Please select relationship', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-		// }
-		// else if (!DRONA.getAddress()) {
-		// 	Snackbar.show({ text: 'Please fill up Address', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-		// } 
-		else if (this.state.isValidAge) {
+		else if (!this.state.isValidAge) {
+			this.setState({ ageAlert: 'Please Enter valid email Age' });
+			this.refs.age.focus();
+		}else{
 			try {
 				if (!selectedDay && this.state.age) {
 					let y = parseInt(Moment(new Date()).format('YYYY')) - this.state.age;
@@ -464,7 +458,7 @@ class AddNewPatients extends React.Component {
 				}
 
 			} else {
-				let ageVal = this.state.age ? this.state.age.substring(0, 1) : 0;
+				//let ageVal = this.state.age ? this.state.age.substring(0, 1) : 0;
 				let params = {
 					"RoleCode": signupDetails.roleCode,
 					"UserGuid": from == 'famityadd' ? item.patientGuid : signupDetails.UserGuid,
@@ -484,7 +478,7 @@ class AddNewPatients extends React.Component {
 						"PatientGuid": from == 'edit' ? patientGuid ? patientGuid : null : null,
 						"RelationTypeGuid": RelationGuid ? RelationGuid : null,
 						"NDHMHealth": "",
-						"Age": ageVal,
+						"Age": this.state.age,
 						"PatientAddress1": addr1,
 						"PatientAddress2": addr2,
 						"PinCode": pincode,
@@ -510,7 +504,6 @@ class AddNewPatients extends React.Component {
 
 			}
 
-			// "Age": this.state.age ? this.state.age.substring(0, 1) : 0,
 		}
 	}
 	async UNSAFE_componentWillReceiveProps(newProps) {
@@ -584,6 +577,7 @@ class AddNewPatients extends React.Component {
 				let data = newProps.responseData.data
 				dataAll = data
 				let item = data
+				item.dob=null; //ram
 				if (from == 'addfamily') {
 					if (data.patientDetailsList) {
 						this.setState({ parentName: data.patientDetailsList.firstName + ' ' + data.patientDetailsList.lastName, mobile: data.patientDetailsList.phoneNumber })
@@ -592,17 +586,10 @@ class AddNewPatients extends React.Component {
 
 				} else {
 					let age = 0;
-					if(item.dob != null)
+					if(item.dob)
 					{
-						if (item.dob) {
-							age = Moment(new Date()).format('YYYY') - Moment(item.dob).format('YYYY');
-						} else {
-							age = item.age;
-						}
-					}
-					else
-					{
-						dobNullText = 'age'
+						age = Moment(new Date()).format('YYYY') - Moment(item.dob).format('YYYY');
+						
 					}
 
 					this.setState({
@@ -613,22 +600,23 @@ class AddNewPatients extends React.Component {
 						mobile: item.phoneNumber,
 						age: age + '',
 						email: item.email,
-						showSelectedDay: item.dob == null ? this.state.nullDate : Moment(item.dob).format('DD/MM/YYYY'),
+						showSelectedDay: !item.dob ? this.state.nullDate : Moment(item.dob).format('DD/MM/YYYY'),
 						// showHeaderDate: '',
 						// dateForfullCalendar: '',
 						//imageSource: null,
 						//isModalVisibleRelation: false,
 						//relationship: item.relationName,
-						showInitialDate: item.dob == null ? 'DD/MM/YYYY' : Moment(item.dob).format('YYYY-MM-DD')
+						showInitialDate: !item.dob  ? 'DD/MM/YYYY' : Moment(item.dob).format('YYYY-MM-DD')
 					})
 					// alert(this.state.age);
-					if (item.dob != null && item.dob != "") this.setState({ isAgeEditable: false })
+					if (item.dob) this.setState({ isAgeEditable: false })
 
 					// if (item.taglist && item.taglist.length > 0 && item.taglist[0].tagGuid)
 					// 	this.setState({ selectedData: item.taglist })
 
 					//RelationGuid = item.relationGuid
 					patientGuid = item.patientGuid
+					if(item.dob)
 					selectedDay = Moment(item.dob).format('YYYY/MM/DD');
 					try {
 						if (item.gender == 'Male') {
@@ -946,7 +934,7 @@ class AddNewPatients extends React.Component {
 											style={[styles.createInputStyle, { borderColor: this.state.fld3, borderWidth: 1 }]} keyboardType={'phone-pad'} maxLength={3}
 											ref='age' onChangeText={age => {
 												this.setState({ age, showDiscard: true })
-												if (Validator.isMobileValidate(age.substring(0, 1)) || age === '') {  //!mobile ||
+												if (Validator.isMobileValidate(age) || age === '') {  //!mobile ||
 													if (age > 150) {
 														this.setState({ ageAlert: 'Age should not be greater than 150 years' })
 														this.setState({ isValidAge: false })
@@ -1124,12 +1112,9 @@ class AddNewPatients extends React.Component {
 									selectYearTitle={true}
 									style={{ width: responsiveWidth(99) }}
 									onDateChange={date => {
-										//alert(date.toString())
 										selectedDay = Moment(date.toString()).format('YYYY/MM/DD');
 										//let showDate = Moment(selectedDay).format('DD MMM YYYY');
 										selectedDayReformat = Moment(date.toString()).format('DD/MM/YYYY');
-										//alert(selectedDay)
-										//this.setState({ dateForfullCalendar: date.toString() })  //, showHeaderDate: showDate 
 									}}
 									maxDate={new Date()}
 									minDate={new Date(1900, 1, 1)}

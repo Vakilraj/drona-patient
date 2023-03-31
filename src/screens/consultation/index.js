@@ -325,7 +325,6 @@ class CN extends React.Component {
 				</View>
 
 				<View style={{ flex: 1, backgroundColor: Color.white, }}>
-
 					{this.state.responseDataIndexTab ? <ScrollableTabView
 
 						renderTabBar={() => (

@@ -81,10 +81,10 @@ export function callLogin(url, apiType, params, token, tagName = null) {
 
   // LocationEnabler    important thing--> it is comment for ios and open for Android 
   if (tagName === 'afterShareLink' || tagName === 'getserverDateTime') {
-    baseUrl = 'https://mnkdrona-apim.azure-api.net/WebApp/Dev/';
+    baseUrl = 'https://mnkdrona-apim.azure-api.net/WebApp/Stag/';
   }
   else {
-    baseUrl = 'https://mnkdrona-apim.azure-api.net/DoctorApp/Dev/'  // Dev  Pilot Stag Live
+    baseUrl = 'https://mnkdrona-apim.azure-api.net/DoctorApp/Stag/'  // Dev  Pilot Stag Live
   }
   
   if (apiType === "get") {

@@ -272,7 +272,6 @@ class CN extends React.Component {
 			<View
 				style={{
 					flex: 1,
-					backgroundColor: Color.white,
 					margin: responsiveWidth(3),
 					borderRadius: 10
 				}}>
@@ -286,7 +285,7 @@ class CN extends React.Component {
 					data={this.state.vitalsDataArrayAll}
 					extraData={this.state}
 					keyExtractor={(item, index) => index.toString()}
-					style={{ marginBottom: responsiveHeight(6) }}
+					//style={{ marginBottom: responsiveHeight(6) }}
 					showsVerticalScrollIndicator={false}
 					renderItem={(({ item, index }) => {
 						return (
@@ -420,22 +419,10 @@ class CN extends React.Component {
 
 				/>
 				{this.state.vitalsDataArrayAll && this.state.vitalsDataArrayAll.length > 0 ?
-					<View style={{
-						width: '100%',
-						flex: 1, alignItems: 'center',
-						justifyContent: 'center',
-						marginBottom: responsiveHeight(3)
-					}}>
-						<TouchableOpacity style={{ alignItems: 'center', marginBottom: responsiveHeight(2.5), justifyContent: 'center', borderRadius: 5, height: responsiveHeight(6), width: responsiveWidth(93), backgroundColor: Color.white, marginTop: 30 }} onPress={() => {
-							// if (this.state.vitalsDataArrayAll && this.state.vitalsDataArrayAll.length > 0) {
-							this.updateVitals()
-							// } else {
-							// Snackbar.show({ text: 'No data available to submit ', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-							// }
-						}}>
+				<TouchableOpacity style={{ alignItems: 'center', marginBottom: responsiveHeight(-2.5), justifyContent: 'center', borderRadius: 5, height: responsiveHeight(5), width: responsiveWidth(93), backgroundColor: Color.white,zIndex:99 }}
+				 onPress={() => this.updateVitals()}>
 							<Text style={{ fontFamily: CustomFont.fontName, color: '#5715D2', fontSize: CustomFont.font16, textAlign: 'center' }}>Save</Text>
 						</TouchableOpacity>
-					</View>
 					: null}
 			</View>
 		);

@@ -363,14 +363,15 @@ class PreviewRxButton extends React.Component {
 			let temp = []
 			for (var i = 0; i < symptomList.length; i++) {
 				let tempStr = '';
-            if (symptomList[i].since)
-                tempStr = symptomList[i].since;
             if (symptomList[i].severityName)
-                tempStr += ', ' + symptomList[i].severityName;
+                tempStr = symptomList[i].severityName;
+            if (symptomList[i].since)
+                tempStr += tempStr ? ', ' + symptomList[i].since:symptomList[i].since;
             if (symptomList[i].notes)
-                tempStr += ', ' + symptomList[i].notes;
+                tempStr += tempStr ? ', ' + symptomList[i].notes:symptomList[i].notes;
             if (tempStr)
-                tempStr = '(' + tempStr + ')'
+                tempStr = '(' + tempStr + ')';
+
 				const htmlCode = (symptomList[i].symptomName) + ' ' + tempStr;
 					temp.push(htmlCode)
 			}
@@ -395,14 +396,15 @@ class PreviewRxButton extends React.Component {
 			let temp = []
 			for (var i = 0; i < findingList.length; i++) {
 				let tempStr = '';
-            if (findingList[i].since)
-                tempStr = findingList[i].since;
             if (findingList[i].severityName)
-                tempStr += ', ' + findingList[i].severityName;
+                tempStr = findingList[i].severityName;
+            if (findingList[i].since)
+                tempStr += tempStr ? ', ' + findingList[i].since :findingList[i].since;
             if (findingList[i].notes)
-                tempStr += ', ' + findingList[i].notes;
+                tempStr += tempStr ? ', ' + findingList[i].notes:findingList[i].notes;
             if (tempStr)
                 tempStr = '(' + tempStr + ')'
+				
 				// if (i == 0) {
 					//const htmlCode = findingList[i].findingName
 					const htmlCode = (findingList[i].findingName) + ' ' + tempStr;
@@ -436,12 +438,12 @@ class PreviewRxButton extends React.Component {
 				// if (i == 0) {
 					//const htmlCode = diagnosisList[i].diagnosisName ;
 					let tempStr = '';
-            if (diagnosisList[i].since)
-                tempStr = diagnosisList[i].since;
             if (diagnosisList[i].diagnosisStatus)
-                tempStr += ', ' + diagnosisList[i].diagnosisStatus;
+                tempStr = diagnosisList[i].diagnosisStatus;
+            if (diagnosisList[i].since)
+                tempStr += tempStr ? ', ' + diagnosisList[i].since :diagnosisList[i].since;
             if (diagnosisList[i].notes)
-                tempStr += ', ' + diagnosisList[i].notes;
+                tempStr += tempStr ? ', ' + diagnosisList[i].notes :diagnosisList[i].notes;
             if (tempStr)
                 tempStr = '(' + tempStr + ')'
 					const htmlCode = (diagnosisList[i].diagnosisName) + ' ' + tempStr;

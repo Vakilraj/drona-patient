@@ -246,6 +246,7 @@ class CN extends React.Component {
 				if (newProps.responseData.statusCode == "0" || newProps.responseData.statusCode == "-1") {
 					let { actions, signupDetails } = this.props;
 					signupDetails.appoinmentGuid = newProps.responseData.data.patientAppointmentGuid;
+					signupDetails.consultType = 'WalkIn'
 					actions.setSignupDetails(signupDetails);
 					let itemObj = item;
 					itemObj.appointmentStatus = 'booked'

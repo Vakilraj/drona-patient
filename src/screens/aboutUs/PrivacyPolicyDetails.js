@@ -98,6 +98,7 @@ class PrivacyPolicyDetails extends React.Component {
 										fontSize: CustomFont.font16,
 										fontWeight: CustomFont.fontWeight400,
 										color: '#292B2C',
+										lineHeight: 30,
 									}}>1.1</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										We, <Text style={{ fontWeight: 'bold' }}>Appify Infotech LLP</Text>
@@ -128,6 +129,7 @@ class PrivacyPolicyDetails extends React.Component {
 										fontSize: CustomFont.font16,
 										fontWeight: CustomFont.fontWeight400,
 										color: '#292B2C',
+										lineHeight: 30,
 									}}>2.1</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										This document sets out the policy (herein-after the <Text style={{ fontWeight: 'bold' }}>"Privacy Policy") </Text>
@@ -143,6 +145,7 @@ class PrivacyPolicyDetails extends React.Component {
 										fontSize: CustomFont.font16,
 										fontWeight: CustomFont.fontWeight400,
 										color: '#292B2C',
+										lineHeight: 30,
 									}}>2.2</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										This Privacy Policy describes how Your privacy is respected & protected and applies to inter-alia all stakeholders viz. healthcare professionals, patients, employees, consultants, clients and all visitors to Our Website/Application (herein-after referred to as <Text style={{ fontWeight: 'bold' }}> "Person/s" </Text> or <Text style={{ fontWeight: 'bold' }}>"You" </Text> or <Text style={{ fontWeight: 'bold' }}>"You"). </Text>
@@ -154,6 +157,7 @@ class PrivacyPolicyDetails extends React.Component {
 										fontSize: CustomFont.font16,
 										fontWeight: CustomFont.fontWeight400,
 										color: '#292B2C',
+										lineHeight: 30,
 									}}>2.3</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										By browsing Our Website/Application and/or providing Information in any other way, You understand and consent that We will collect, use, and disclose Information in accordance with the terms of this Privacy Policy. Please read this Privacy Policy carefully so that You understand Our privacy practices. Questions regarding privacy issues should be directed to Us at <Text style={{ color: 'blue', fontWeight: 'bold' }}
@@ -184,6 +188,7 @@ class PrivacyPolicyDetails extends React.Component {
 										fontSize: CustomFont.font16,
 										fontWeight: CustomFont.fontWeight400,
 										color: '#292B2C',
+										lineHeight: 30,
 									}}>3.1</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										Information collected by Us, is inter-alia required for the purposes of maintaining Our Website/Application, providing customer support, to allow You to participate in interactive features of Our Website/Application when You choose to do so, to detect, prevent and address technical issues, to monitor the usage of Our Website/Application; selection, record retention, employee evaluation, or other legitimate business purposes for which the Information is reasonably expected to be used, like exploring a business relation/opportunity, identification of prospective vendor/client, feedback/newsletter/communication about Our activities, researching and developing new products and services, demographic survey and other studies, like studies to identify generic behavioral patterns.
@@ -211,6 +216,7 @@ class PrivacyPolicyDetails extends React.Component {
 										fontSize: CustomFont.font16,
 										fontWeight: CustomFont.fontWeight400,
 										color: '#292B2C',
+										lineHeight: 30,
 									}}>4.1</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										Information collected by Us is generally in the nature of:
@@ -221,6 +227,7 @@ class PrivacyPolicyDetails extends React.Component {
 										fontSize: CustomFont.font16,
 										fontWeight: CustomFont.fontWeight400,
 										color: '#292B2C',
+										lineHeight: 30,
 									}}>4.1.1</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										Contact details, records of communication (whether audio or video) between You and Us.
@@ -231,6 +238,7 @@ class PrivacyPolicyDetails extends React.Component {
 										fontSize: CustomFont.font16,
 										fontWeight: CustomFont.fontWeight400,
 										color: '#292B2C',
+										lineHeight: 30,
 									}}>4.1.2</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										Identifying information including name, address, contact information and other personal information, demographic data including date of birth, gender, country of birth, language spoken at home etc., and may also include health record or other sensitive information, from/about You or other section of public who may be of a particular age, section, region, class and who are likely to join or participate in Our events and/or programs.
@@ -241,6 +249,7 @@ class PrivacyPolicyDetails extends React.Component {
 										fontSize: CustomFont.font16,
 										fontWeight: CustomFont.fontWeight400,
 										color: '#292B2C',
+										lineHeight: 30,
 									}}>4.1.3</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										Information required to conduct Our business activities or fulfilment of legal requirements etc.
@@ -251,6 +260,7 @@ class PrivacyPolicyDetails extends React.Component {
 										fontSize: CustomFont.font16,
 										fontWeight: CustomFont.fontWeight400,
 										color: '#292B2C',
+										lineHeight: 30,
 									}}>4.1.4</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										Cookies and Usage Data.
@@ -278,6 +288,7 @@ class PrivacyPolicyDetails extends React.Component {
 										fontSize: CustomFont.font16,
 										fontWeight: CustomFont.fontWeight400,
 										color: '#292B2C',
+										lineHeight: 30,
 									}}>5.1</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										<Text style={{ fontWeight: 'bold' }}>
@@ -290,6 +301,7 @@ class PrivacyPolicyDetails extends React.Component {
 										fontSize: CustomFont.font16,
 										fontWeight: CustomFont.fontWeight400,
 										color: '#292B2C',
+										lineHeight: 30,
 									}}>5.2</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										<Text style={{ fontWeight: 'bold' }}>
@@ -302,6 +314,7 @@ class PrivacyPolicyDetails extends React.Component {
 										fontSize: CustomFont.font16,
 										fontWeight: CustomFont.fontWeight400,
 										color: '#292B2C',
+										lineHeight: 30,
 									}}>5.2.1</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										The date and time of visit, web pages and content viewed and links clicked on while navigating within Our sites;
@@ -312,6 +325,7 @@ class PrivacyPolicyDetails extends React.Component {
 										fontSize: CustomFont.font16,
 										fontWeight: CustomFont.fontWeight400,
 										color: '#292B2C',
+										lineHeight: 30,
 									}}>5.2.2</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										Information about the type of content accessed via Our sites or applications;
@@ -322,6 +336,7 @@ class PrivacyPolicyDetails extends React.Component {
 										fontSize: CustomFont.font16,
 										fontWeight: CustomFont.fontWeight400,
 										color: '#292B2C',
+										lineHeight: 30,
 									}}>5.2.3</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										The site visited before and after visiting Our sites;
@@ -332,6 +347,7 @@ class PrivacyPolicyDetails extends React.Component {
 										fontSize: CustomFont.font16,
 										fontWeight: CustomFont.fontWeight400,
 										color: '#292B2C',
+										lineHeight: 30,
 									}}>5.2.4</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										Internet Protocol (IP) address (a numerical address assigned to computer by internet service provider so that other computers connected to the internet can communicate online) that can sometimes be used to derive general geographic area;
@@ -342,6 +358,7 @@ class PrivacyPolicyDetails extends React.Component {
 										fontSize: CustomFont.font16,
 										fontWeight: CustomFont.fontWeight400,
 										color: '#292B2C',
+										lineHeight: 30,
 									}}>5.2.5</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										Search terms entered using Our Website/Application;
@@ -352,6 +369,7 @@ class PrivacyPolicyDetails extends React.Component {
 										fontSize: CustomFont.font16,
 										fontWeight: CustomFont.fontWeight400,
 										color: '#292B2C',
+										lineHeight: 30,
 									}}>5.2.6</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										Unique identifiers, including non-global mobile device identification numbers;
@@ -362,6 +380,7 @@ class PrivacyPolicyDetails extends React.Component {
 										fontSize: CustomFont.font16,
 										fontWeight: CustomFont.fontWeight400,
 										color: '#292B2C',
+										lineHeight: 30,
 									}}>5.2.7</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										Information about computer device such as device type, screen size, browser type, language and other settings, memory capacity, plug-ins, internet domain, TCP configuration parameters, operating system, carrier code, time zone and the names, versions and package IDs of software installed on the device;
@@ -372,6 +391,7 @@ class PrivacyPolicyDetails extends React.Component {
 										fontSize: CustomFont.font16,
 										fontWeight: CustomFont.fontWeight400,
 										color: '#292B2C',
+										lineHeight: 30,
 									}}>5.2.8</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										Information collected through cookies, pixel tags and other tracking technologies; and
@@ -382,6 +402,7 @@ class PrivacyPolicyDetails extends React.Component {
 										fontSize: CustomFont.font16,
 										fontWeight: CustomFont.fontWeight400,
 										color: '#292B2C',
+										lineHeight: 30,
 									}}>5.2.9</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										If access to location information is allowed by You and location services are enabled, we may collect location information.
@@ -478,7 +499,8 @@ class PrivacyPolicyDetails extends React.Component {
 										fontSize: CustomFont.font14,
 										marginLeft: responsiveWidth(1),
 										color: '#292B2C',
-										fontWeight: CustomFont.fontWeight400
+										fontWeight: CustomFont.fontWeight400,
+										lineHeight: 30,
 									}}>9.1</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										The Company may share Information with the following entities:
@@ -492,7 +514,8 @@ class PrivacyPolicyDetails extends React.Component {
 									<Text style={{
 										fontSize: CustomFont.font14,
 										color: '#292B2C',
-										fontWeight: CustomFont.fontWeight400
+										fontWeight: CustomFont.fontWeight400,
+										lineHeight: 30,
 									}}>9.1.1</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										Governmental Agency or Courts or Regulators as required under the applicable law;
@@ -506,7 +529,8 @@ class PrivacyPolicyDetails extends React.Component {
 									<Text style={{
 										fontSize: CustomFont.font14,
 										color: '#292B2C',
-										fontWeight: CustomFont.fontWeight400
+										fontWeight: CustomFont.fontWeight400,
+										lineHeight: 30,
 									}}>9.1.2</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										Any agent, contractor, data processors or third party or service provider in connection with the Company's business;
@@ -520,7 +544,9 @@ class PrivacyPolicyDetails extends React.Component {
 									<Text style={{
 										fontSize: CustomFont.font14,
 										color: '#292B2C',
-										fontWeight: CustomFont.fontWeight400
+										fontWeight: CustomFont.fontWeight400,
+										lineHeight: 30,
+
 									}}>9.1.3</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										Any other person under duty of confidentiality to the Company viz employees; and
@@ -534,7 +560,9 @@ class PrivacyPolicyDetails extends React.Component {
 									<Text style={{
 										fontSize: CustomFont.font14,
 										color: '#292B2C',
-										fontWeight: CustomFont.fontWeight400
+										fontWeight: CustomFont.fontWeight400,
+										lineHeight: 30,
+
 									}}>9.1.4</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										Where we are required or authorised to do so by law.
@@ -609,7 +637,8 @@ class PrivacyPolicyDetails extends React.Component {
 										fontSize: CustomFont.font14,
 										marginLeft: responsiveWidth(1),
 										color: '#292B2C',
-										fontWeight: CustomFont.fontWeight400
+										fontWeight: CustomFont.fontWeight400,
+										lineHeight: 30,
 									}}>12.1</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										The Company observe the following guidelines when using, receiving, possessing, processing, storing, dealing, disclosing, transferring or handling the Information:
@@ -623,7 +652,9 @@ class PrivacyPolicyDetails extends React.Component {
 									<Text style={{
 										fontSize: CustomFont.font14,
 										color: '#292B2C',
-										fontWeight: CustomFont.fontWeight400
+										fontWeight: CustomFont.fontWeight400,
+										lineHeight: 30,
+
 									}}>12.1.1</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										Information will be collected, received, possessed, used, processed, stored, transferred, dealt, handled and disclosed in compliance with applicable statutory provisions;
@@ -637,7 +668,9 @@ class PrivacyPolicyDetails extends React.Component {
 									<Text style={{
 										fontSize: CustomFont.font14,
 										color: '#292B2C',
-										fontWeight: CustomFont.fontWeight400
+										fontWeight: CustomFont.fontWeight400,
+										lineHeight: 30,
+
 									}}>12.1.2</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										Information will be used for the purposes for which it has been collected or obtained; and
@@ -651,7 +684,9 @@ class PrivacyPolicyDetails extends React.Component {
 									<Text style={{
 										fontSize: CustomFont.font14,
 										color: '#292B2C',
-										fontWeight: CustomFont.fontWeight400
+										fontWeight: CustomFont.fontWeight400,
+										lineHeight: 30,
+
 									}}>12.1.3</Text>
 									<Text style={CommonStyle.customFontStyle} >
 										Appropriate reasonable measures will be taken to prevent unauthorized access, use, processing, and accidental loss, destruction or damage to such Information.
@@ -671,7 +706,7 @@ class PrivacyPolicyDetails extends React.Component {
 										color: '#292B2C',
 										marginTop: responsiveHeight(2),
 										marginLeft: responsiveWidth(4),
-										 borderBottomWidth: 1.5 
+									    borderBottomWidth: 1.5 
 									}}>LINKS TO OTHER SITES</Text>
 								</View>
 								<View style={{ flexDirection: 'row', marginTop: responsiveHeight(2), marginLeft: responsiveWidth(8) }}>

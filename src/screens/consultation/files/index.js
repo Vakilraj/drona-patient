@@ -34,7 +34,7 @@ import { setLogEvent } from '../../../service/Analytics';
 import Trace from '../../../service/Trace'
 import CustomFont from '../../../components/CustomFont';
 let timeRange = '', recordTypeList = '';
-let finalRecordTypeList = []
+let finalRecordTypeList = [];
 class FileList extends React.Component {
     constructor(props) {
         super(props);
@@ -270,7 +270,9 @@ class FileList extends React.Component {
                             imagArr.push(source)
                         })
                     }
-                    this.props.nav.navigation.navigate('AddFiles', { imageArr: imagArr })
+                    setTimeout(() => {
+                        this.props.nav.navigation.navigate('AddFiles', { imageArr: imagArr })
+                    }, 300)
                 })
         }
         catch (err) {

@@ -244,7 +244,7 @@ class FollowUpModal extends React.Component {
 
 				<Modal isVisible={this.state.isModalVisibleFollowUp}
 					onRequestClose={() => this.setState({ isModalVisibleFollowUp: false })} >
-					<View style={{ backgroundColor: Color.white, borderRadius: 7, alignItems: 'center' }}>
+					<View style={{ backgroundColor: Color.white, borderRadius: 7, alignSelf: 'center', width:responsiveWidth(95)}}>
 						<ScrollView>
 							<View style={{ flex: 1, flexDirection: 'column' }}>
 								<View style={{ width: '100%', backgroundColor: Color.primaryBlue, borderTopLeftRadius: 7, borderTopRightRadius: 7, }}>
@@ -320,7 +320,7 @@ class FollowUpModal extends React.Component {
 											this.setState({ selectedIndex: -1 })
 										} catch (e) { }
 									}}
-									style={{ height: responsiveHeight(60) }}
+									style={{ height: responsiveHeight(53) }}
 								/>
 
 							</View>

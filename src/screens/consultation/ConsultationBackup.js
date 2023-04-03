@@ -48,7 +48,7 @@ let medicineIndex = 0, medicineAddUpdateFlag = 'add', vitalIsAddedStatus = '';
 import Trace from '../../service/Trace'
 let timeRange = '', medicineTypeFullArray = [], prvLength = -1, bpAlertMsg = '', bmiIndex = 0;
 let sinceDataPatternArr = [{ label: '1 day', value: '1 day', isSelect: true }, { label: '1 week', value: '1 week', isSelect: false }, { label: '1 month', value: '1 month', isSelect: false }, { label: '1 year', value: '1 year', isSelect: true }];
-let selectedSeverityGuid = '', selectedSeverityName = '', sincePattern = '', selectedInputTxtLength = 5;
+let selectedSeverityGuid = null, selectedSeverityName = null, sincePattern = null, selectedInputTxtLength = 5;
 let severityArrySymptFind = [], severityArryDiagnostic = [];
 let clickItemIndex = 0, clickItemName = '', clickType = '';
 class Consultation extends React.Component {
@@ -167,9 +167,9 @@ class Consultation extends React.Component {
 		procedureFlag = false;
 		medicineIndex = 0;
 		medicineAddUpdateFlag = 'add';
-		selectedSeverityGuid = '';
-		sincePattern = '';
-		selectedSeverityName = '';
+		selectedSeverityGuid = null;
+		sincePattern =null;
+		selectedSeverityName = null;
 		ProcedureFullArray = [];
 	}
 	callOnFocus = (type) => {
@@ -1012,11 +1012,11 @@ procedureFlag = true;
 			clickItemIndex = index;
 			clickItemName = 'Symptom';
 			clickType = 'Add';
-			sincePattern = '';
-			selectedSeverityGuid = '';
-			selectedSeverityName = '';
+			sincePattern = null;
+			selectedSeverityGuid = null;
+			selectedSeverityName = null;
 //Add symptom severity
-			this.setState({ severityNameHeader: item.symptomName, sinceText: '', severityNotes: '', isModalOpenSeverity: true, SeverityDataArray: severityArrySymptFind, selectedSeverityIndex: -1 });
+			this.setState({ severityNameHeader: item.symptomName, sinceText: null, severityNotes: null, isModalOpenSeverity: true, SeverityDataArray: severityArrySymptFind, selectedSeverityIndex: -1 });
 			// selectedTempserviceArr.push(item)
 			// tempserviceArr.splice(index, 1);
 			// try {
@@ -1113,11 +1113,11 @@ procedureFlag = true;
 			clickItemIndex = index;
 			clickItemName = 'Finding';
 			clickType = 'Add';
-			sincePattern = '';
-			selectedSeverityGuid = '';
-			selectedSeverityName = '';
+			sincePattern = null;
+			selectedSeverityGuid = null;
+			selectedSeverityName = null;
 //Add Finding severity
-			this.setState({ severityNameHeader: item.findingName, sinceText: '', severityNotes: '', isModalOpenSeverity: true, SeverityDataArray: severityArrySymptFind, selectedSeverityIndex: -1 });
+			this.setState({ severityNameHeader: item.findingName, sinceText: null, severityNotes: null, isModalOpenSeverity: true, SeverityDataArray: severityArrySymptFind, selectedSeverityIndex: -1 });
 
 			// selectedTempserviceArr.push(item)
 			// tempserviceArr.splice(index, 1);
@@ -1213,11 +1213,11 @@ procedureFlag = true;
 			clickItemIndex = index;
 			clickItemName = 'Diagnostic';
 			clickType = 'Add';
-			sincePattern = '';
-			selectedSeverityGuid = '';
-			selectedSeverityName = '';
+			sincePattern = null;
+			selectedSeverityGuid = null;
+			selectedSeverityName = null;
 //Add Diagnostic severity
-			this.setState({ severityNameHeader: item.diagnosisName, sinceText: '', severityNotes: '', isModalOpenSeverity: true, SeverityDataArray: severityArryDiagnostic, selectedSeverityIndex: -1 });
+			this.setState({ severityNameHeader: item.diagnosisName, sinceText: null, severityNotes: null, isModalOpenSeverity: true, SeverityDataArray: severityArryDiagnostic, selectedSeverityIndex: -1 });
 
 			// selectedTempserviceArr.push(item)
 			// tempserviceArr.splice(index, 1);
@@ -2062,16 +2062,6 @@ SearchProcedure = (text) => {
 		}
 		return str.replace(/,\s*$/, "");
 	}
-	getSelectedMMedicineTxt = () => {
-		let tmpArr = [...this.state.SelectedSymptomArr];
-		let str = '';
-		if (tmpArr && tmpArr.length > 0) {
-			for (let i = 0; i < tmpArr.length; i++) {
-				str += tmpArr[i].symptomName + ', '
-			}
-		}
-		return str.replace(/,\s*$/, "");
-	}
 
 	getSelectedInvestigationsTxt = () => {
 		let tmpArr = [...this.state.SelectedInvestigationArr];
@@ -2222,16 +2212,30 @@ SearchProcedure = (text) => {
 		//this.dismissDialog()
 	}
 	getSelectedMMedicineTxt = (item) => {
-		let str = item.medicineName;
-		if (item.strength)
-			str += ' ' + item.strength;
-
-		if (item.medicineType)
-			str += ' ' + item.medicineType;
+		let tempStr = '';
+		if (item.dosages)
+			tempStr =item.dosages +' '+ item.medicineType;
 
 		if (item.dosagePattern)
-			str += ' ' + item.dosagePattern;
-		return str;
+			tempStr += tempStr ? ', ' + item.dosagePattern :item.dosagePattern;
+		if (item.medicineTimingFrequency)
+			tempStr += tempStr ? ', ' + item.medicineTimingFrequency :item.medicineTimingFrequency;
+		if (item.durationType && item.durationValue)
+			tempStr += ', ' + item.durationType +' '+item.durationValue;
+		if (tempStr)
+			tempStr = '(' + tempStr + ')'
+tempStr=item.medicineName + ' '+tempStr
+
+		// let str = item.medicineName;
+		// if (item.strength)
+		// 	str += ' ' + item.strength;
+
+		// if (item.medicineType)
+		// 	str += ' ' + item.medicineType;
+
+		// if (item.dosagePattern)
+		// 	str += ' ' + item.dosagePattern;
+		return tempStr;
 	}
 
 	ShowMedicineAfterSelect = (item) => {
@@ -2467,6 +2471,26 @@ if(clickItemName == 'Diagnostic'){
 		if(this.state.isModalVisibleInstructionInvest)
 		this.setState({ isModalVisibleInstructionInvest: false });
 	}
+	getSymptomFindingTxt=(item)=>{
+		let tempStr = '';
+            if (item.severityName)
+                tempStr = item.severityName;
+            if (item.since)
+                tempStr += ' ' + item.since;
+            if (tempStr)
+                tempStr = '(' + tempStr + ')'
+				return tempStr;
+	}
+	getDiagnosticTxt=(item)=>{
+		let tempStr = '';
+            if (item.diagnosisStatus)
+                tempStr = item.diagnosisStatus;
+            if (item.since)
+                tempStr += ' ' + item.since;
+            if (tempStr)
+                tempStr = '(' + tempStr + ')'
+				return tempStr;
+	}
 	render() {
 		let { actions, signupDetails } = this.props;
 		return (
@@ -2540,9 +2564,9 @@ if(clickItemName == 'Diagnostic'){
 												clickItemIndex = index;
 												clickItemName = 'Symptom';
 												clickType = 'Update';
-												sincePattern = item.since ? item.since : '';
+												sincePattern = item.since ? item.since : null;
 												selectedSeverityGuid = item.severityGuid;
-												selectedSeverityName = item.severityName ? item.severityName : '';
+												selectedSeverityName = item.severityName ? item.severityName : null;
 												let sevIndex = -1;
 												if (selectedSeverityName && severityArrySymptFind.length > 0)
 													for (let i = 0; i < severityArrySymptFind.length; i++) {
@@ -2554,7 +2578,7 @@ if(clickItemName == 'Diagnostic'){
 												this.setState({ severityNameHeader: item.symptomName, sinceText: item.since ? item.since : '', severityNotes: item.notes ? item.notes : '', isModalOpenSeverity: true, SeverityDataArray: severityArrySymptFind, selectedSeverityIndex: sevIndex,showSinceDropDown:false });
 											
 											}}>
-												<Text style={styles.txtSelect}>{item.symptomName} {item.severityName || item.since ? '(' + item.since + ' ' + item.severityName + ')' : ''}</Text>
+												<Text style={styles.txtSelect}>{item.symptomName} {this.getSymptomFindingTxt(item)}</Text>
 												<TouchableOpacity style={styles.crossSelected}
 													onPress={() => {
 														symptomFlag = true;
@@ -2642,9 +2666,9 @@ if(clickItemName == 'Diagnostic'){
 												clickItemIndex = index;
 												clickItemName = 'Finding';
 												clickType = 'Update';
-												sincePattern = item.since ? item.since : '';
+												sincePattern = item.since ? item.since : null;
 												selectedSeverityGuid = item.severityGuid;
-												selectedSeverityName = item.severityName ? item.severityName : '';
+												selectedSeverityName = item.severityName ? item.severityName : null;
 												let sevIndex = -1;
 												if (selectedSeverityName && severityArrySymptFind.length > 0)
 													for (let i = 0; i < severityArrySymptFind.length; i++) {
@@ -2656,7 +2680,7 @@ if(clickItemName == 'Diagnostic'){
 												this.setState({ severityNameHeader: item.findingName, sinceText: item.since ? item.since : '', severityNotes: item.notes ? item.notes : '', isModalOpenSeverity: true, SeverityDataArray: severityArrySymptFind, selectedSeverityIndex: sevIndex,showSinceDropDown:false });
 											
 											}}>
-												<Text style={styles.txtSelect}>{item.findingName}  {item.severityName || item.since ? '(' + item.since + ' ' + item.severityName + ')' : ''}</Text>
+												<Text style={styles.txtSelect}>{item.findingName} {this.getSymptomFindingTxt(item)}</Text>
 												<TouchableOpacity style={styles.crossSelected}
 													onPress={() => {
 														findingFlag = true;
@@ -2736,9 +2760,9 @@ if(clickItemName == 'Diagnostic'){
 												clickItemIndex = index;
 												clickItemName = 'Diagnostic';
 												clickType = 'Update';
-												sincePattern = item.since ? item.since : '';
+												sincePattern = item.since ? item.since : null;
 												selectedSeverityGuid = item.diagnosisStatusGuid;
-												selectedSeverityName = item.diagnosisStatus ? item.diagnosisStatus : '';
+												selectedSeverityName = item.diagnosisStatus ? item.diagnosisStatus : null;
 												let sevIndex = -1;
 												if (selectedSeverityName && severityArryDiagnostic.length > 0)
 													for (let i = 0; i < severityArryDiagnostic.length; i++) {
@@ -2750,7 +2774,7 @@ if(clickItemName == 'Diagnostic'){
 												this.setState({ severityNameHeader: item.diagnosisName, sinceText: item.since ? item.since : '', severityNotes: item.notes ? item.notes : '', isModalOpenSeverity: true, SeverityDataArray: severityArryDiagnostic, selectedSeverityIndex: sevIndex,showSinceDropDown:false });
 											
 											}}>
-												<Text style={styles.txtSelect}>{item.diagnosisName}  {item.diagnosisStatus || item.since ? '(' + item.since + ' ' + item.diagnosisStatus + ')' : ''}</Text>
+												<Text style={styles.txtSelect}>{item.diagnosisName} {this.getDiagnosticTxt(item)}</Text>
 												<TouchableOpacity style={styles.crossSelected}
 													onPress={() => {
 														diagnosticFlag = true;
@@ -2881,7 +2905,7 @@ if(clickItemName == 'Diagnostic'){
 													<Text style={{ marginRight: responsiveWidth(2), fontSize: CustomFont.font12, color: Color.fontColor, opacity: .6, fontFamily: CustomFont.fontName }}>{item.medicineType && item.medicineType.length > 3 ? item.medicineType.substr(0, 3) : item.medicineType}</Text>
 												</TouchableOpacity>
 												);
-											}, this) : <Text style={{ marginTop: responsiveHeight(10), marginLeft: responsiveWidth(30), color: Color.fontColor }}>{this.state.medicineFoundStatus}</Text>}
+											}, this) : null}
 										</View>
 										{
 											this.state.isSearchStart && this.state.medicineSearchTxt?
@@ -3413,7 +3437,7 @@ if(clickItemName == 'Diagnostic'){
 								</View>
 
 								<Text style={{ color: Color.patientSearchName, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: '700', marginTop: 10 }}>Since</Text>
-								<TextInput onBlur={this.callIsBlur2} onFocus={this.callIsFucused2} keyboardType={'phone-pad'} style={[styles.createInputStyle, { borderColor: this.state.InpborderColor2 }]} placeholder="one day" placeholderTextColor={Color.placeHolderColor} value={this.state.sinceText} maxLength={selectedInputTxtLength} onChangeText={(text) => this.handleSinceData(text)} ref='search' returnKeyType='done' />
+								<TextInput onBlur={this.callIsBlur2} onFocus={this.callIsFucused2} keyboardType={'phone-pad'} style={[styles.createInputStyle, { borderColor: this.state.InpborderColor2 }]} placeholder="1 day" placeholderTextColor={Color.placeHolderColor} value={this.state.sinceText} maxLength={selectedInputTxtLength} onChangeText={(text) => this.handleSinceData(text)} ref='search' returnKeyType='done' />
 								{this.state.sinceText && this.state.showSinceDropDown ?
 									<View style={{
 										borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,

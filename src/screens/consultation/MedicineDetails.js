@@ -21,7 +21,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import Snackbar from 'react-native-snackbar';
 import { setLogEvent } from '../../service/Analytics';
 import Validator from '../../components/Validator';
-let prevIndexTimings = 0, prevIndexDoase = 0, prevIndexDuration = 1, medicineTypeGuid = '', DurationType = 'days', DurationTypeValue = '5', MedicineDoasesGuId = '', doasestype = '', Dosages = '', TimingTypeGuid = '', dosagePattern = '';
+let prevIndexTimings = 0, prevIndexDoase = 0, prevIndexDuration = 1, medicineType = '', medicineTypeGuid = '', DurationType = 'days', DurationTypeValue = '5', MedicineDoasesGuId = '', doasestype = '', Dosages = '', TimingTypeGuid = '', dosagePattern = '';
 let doasagesPatterArr = [{ label: '1-0-0', value: '1-0-0', isSelect: true }, { label: '0-1-0', value: '0-1-0', isSelect: false }, { label: '0-0-1', value: '0-0-1', isSelect: false }, { label: '1-1-0', value: '1-1-0', isSelect: false }, { label: '0-1-1', value: '0-1-1', isSelect: false }, { label: '1-0-1', value: '1-0-1', isSelect: false }, { label: '1-1-1', value: '1-1-1', isSelect: false }, { label: '6 Hourly', value: '6 Hourly', isSelect: false }, { label: 'Alternate Day', value: 'Alternate Day', isSelect: false }, { label: 'Weekly', value: 'Weekly', isSelect: false }, { label: 'Monthly', value: 'Monthly', isSelect: false }, { label: 'SOS', value: 'SOS', isSelect: false }, { label: 'Custom dosage', value: 'Custom dosage', isSelect: false }]
 let clickFlag = 0, isEdit = false, prvLength = -1, InputTxtLengthDosage = 5, InputTxtLengthDuration = 5, InputTxtLengthUnit = 5;
 import Trace from '../../service/Trace'
@@ -76,6 +76,7 @@ class MedicineDetails extends React.Component {
 		let item = this.props.navigation.state.params.item;
 		console.log('item-------' + JSON.stringify(item))
 		medicineTypeGuid = item.medicineTypeGuid;
+		medicineType = item.medicineType;
 
 		if (item.medicineDosasesType && item.medicineDosasesType.length > 0) {
 			// let tempDoaseArr = [];
@@ -119,69 +120,69 @@ class MedicineDetails extends React.Component {
 
 		// }
 
-			//prefilled
-			setTimeout(() => {
-				try {
-					// let index = this.state.DosageArr.findIndex(x => x.value == item.dosages);
-					// if (index > -1) {
-					// 	this.state.DosageArr[prevIndexDoase].isSelect = false;
-					// 	prevIndexDoase = index;
-					// 	this.state.DosageArr[index].isSelect = true;
-					// 	this.setState({ DosageArr: this.state.DosageArr })
-					// } else {
-					// 	if (item.dosages && item.dosages != 0)
-					// 		this.state.DosageArr[prevIndexDoase].isSelect = false;
-					// 	this.setState({ doaseValue: item.dosages ? item.dosages : '', DosageArr: this.state.DosageArr })
-					// }
+		//prefilled
+		setTimeout(() => {
+			try {
+				// let index = this.state.DosageArr.findIndex(x => x.value == item.dosages);
+				// if (index > -1) {
+				// 	this.state.DosageArr[prevIndexDoase].isSelect = false;
+				// 	prevIndexDoase = index;
+				// 	this.state.DosageArr[index].isSelect = true;
+				// 	this.setState({ DosageArr: this.state.DosageArr })
+				// } else {
+				// 	if (item.dosages && item.dosages != 0)
+				// 		this.state.DosageArr[prevIndexDoase].isSelect = false;
+				// 	this.setState({ doaseValue: item.dosages ? item.dosages : '', DosageArr: this.state.DosageArr })
+				// }
 
-					Dosages = item.dosages ? item.dosages : 1;
-					DurationType = item.durationType ? item.durationType : 'days';
-					if (item.durationValue)
-						DurationTypeValue = item.durationValue;
+				Dosages = item.dosages ? item.dosages : 1;
+				DurationType = item.durationType ? item.durationType : 'days';
+				if (item.durationValue)
+					DurationTypeValue = item.durationValue;
+				if (item.medicineTimingFrequency)
+					medicineTimingFrequency = item.medicineTimingFrequency;
 
-						medicineTimingFrequency = item.medicineTimingFrequency;
+				this.setState({ noteData: item.note ? item.note : '' })
 
-					this.setState({ noteData: item.note ? item.note : ''})
-
-					if (item.dosagePattern) {
-						dosagePattern = item.dosagePattern;
-						InputTxtLengthDosage = dosagePattern.length;
-						if (dosagePattern && dosagePattern.indexOf('.')) {
-							this.setState({ CustomInput: true })
-						}
-						this.setState({ dosageSearchTxt: dosagePattern })
+				if (item.dosagePattern) {
+					dosagePattern = item.dosagePattern;
+					InputTxtLengthDosage = dosagePattern.length;
+					if (dosagePattern && dosagePattern.indexOf('.')) {
+						this.setState({ CustomInput: true })
 					}
-let durationRefileedTxt=DurationTypeValue + ' ' + DurationType;
-InputTxtLengthDuration=durationRefileedTxt.length;
+					this.setState({ dosageSearchTxt: dosagePattern })
+				}
+				let durationRefileedTxt = DurationTypeValue + ' ' + DurationType;
+				InputTxtLengthDuration = durationRefileedTxt.length;
 
-let unitRefileedTxt=Dosages + ' ' + doasestype;
-InputTxtLengthUnit=unitRefileedTxt.length;
+				let unitRefileedTxt = Dosages + ' ' + doasestype;
+				InputTxtLengthUnit = unitRefileedTxt.length;
 
-this.setState({dutaionTxt:durationRefileedTxt, unitTxt:unitRefileedTxt})
+				this.setState({ dutaionTxt: durationRefileedTxt, unitTxt: unitRefileedTxt })
 
-					// let indexDuratuion = this.state.DurationArr.findIndex(x => x.value == item.durationValue);
-					// if (indexDuratuion > -1) {
-					// 	this.state.DurationArr[prevIndexDuration].isSelect = false;
-					// 	prevIndexDuration = indexDuratuion;
-					// 	this.state.DurationArr[indexDuratuion].isSelect = true;
-					// 	this.setState({ DurationArr: this.state.DurationArr })
-					// } else {
-					// 	if (item.durationValue && item.durationValue != 0)
-					// 		this.state.DurationArr[prevIndexDuration].isSelect = false;
-					// 	this.setState({ durationValue: item.durationValue ? item.durationValue + '' : '', DurationArr: this.state.DurationArr })
-					// }
-					// if (item.durationValue)
-					// 	DurationTypeValue = item.durationValue;
-					//this.setState({ takingTimeIndex: timings == "Empty Stomach" ? 0 : timings == "Before Food" ? 1 : timings == "After Food" ? 2 : timings == "No Preference" ? 3 : 0 });
+				// let indexDuratuion = this.state.DurationArr.findIndex(x => x.value == item.durationValue);
+				// if (indexDuratuion > -1) {
+				// 	this.state.DurationArr[prevIndexDuration].isSelect = false;
+				// 	prevIndexDuration = indexDuratuion;
+				// 	this.state.DurationArr[indexDuratuion].isSelect = true;
+				// 	this.setState({ DurationArr: this.state.DurationArr })
+				// } else {
+				// 	if (item.durationValue && item.durationValue != 0)
+				// 		this.state.DurationArr[prevIndexDuration].isSelect = false;
+				// 	this.setState({ durationValue: item.durationValue ? item.durationValue + '' : '', DurationArr: this.state.DurationArr })
+				// }
+				// if (item.durationValue)
+				// 	DurationTypeValue = item.durationValue;
+				//this.setState({ takingTimeIndex: timings == "Empty Stomach" ? 0 : timings == "Before Food" ? 1 : timings == "After Food" ? 2 : timings == "No Preference" ? 3 : 0 });
 
-					//this.setState({ defaultTimingTitle: TimingTypeGuid })
-					
+				//this.setState({ defaultTimingTitle: TimingTypeGuid })
 
 
-				} catch (e) { }
 
-			
-			}, 1000)
+			} catch (e) { }
+
+
+		}, 1000)
 	}
 
 	saveData = () => {
@@ -198,6 +199,7 @@ this.setState({dutaionTxt:durationRefileedTxt, unitTxt:unitRefileedTxt})
 			medicineDesc: item.medicineDesc,
 			strength: item.strength,
 			medicineTypeGuid: medicineTypeGuid,
+			medicineType: medicineType,
 			durationType: DurationType,
 			durationValue: DurationTypeValue,
 			yellowFlag: true,
@@ -210,7 +212,7 @@ this.setState({dutaionTxt:durationRefileedTxt, unitTxt:unitRefileedTxt})
 			patientAppointmentMedicineGuId: item.patientAppointmentMedicineGuId,
 			medicineDosasesType: [{ medicineDoasesGuId: MedicineDoasesGuId, doasestype: doasestype }] //"medicineTypeGuid":medicineTypeGuid
 		}
-		//console.log('-----data---' + JSON.stringify(data));
+		console.log('-----data---' + JSON.stringify(data));
 		isEdit = true;
 		const { navigation } = this.props;
 		navigation.goBack();
@@ -340,13 +342,14 @@ this.setState({dutaionTxt:durationRefileedTxt, unitTxt:unitRefileedTxt})
 			DurationTypeValue = str[0];
 			InputTxtLengthDuration = item.label.length;
 		}
-		
-		
+
+
 		this.setState({ dutaionTxt: item.label, showDurationDropDown: false })
 	}
 
 	handleUnitData = (text) => {
 		if (text && Validator.isMobileValidate(text)) {
+			Dosages = text;
 			this.setState({ unitTxt: text, showUnitDropDown: true });
 		} else
 			this.setState({ unitTxt: text, showUnitDropDown: false });
@@ -355,9 +358,10 @@ this.setState({dutaionTxt:durationRefileedTxt, unitTxt:unitRefileedTxt})
 
 	clickOnUnit = (item) => {
 		doasestype = item.doasestype;
+		medicineType = item.doasestype;
 		medicineTypeGuid = item.medicineTypeGuid;
 		MedicineDoasesGuId = item.medicineDoasesGuId;
-		let str=this.state.unitTxt + ' ' + doasestype;
+		let str = this.state.unitTxt + ' ' + doasestype;
 		InputTxtLengthUnit = str.length;
 		this.setState({ unitTxt: str, showUnitDropDown: false })
 	}

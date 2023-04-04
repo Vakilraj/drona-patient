@@ -403,7 +403,7 @@ class PreviewRx extends React.Component {
                     <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, marginRight: responsiveWidth(2) }}>• <Text style={{ fontWeight: 'bold' }}>{item.medicineName + ' ' + item.strength + '\n'}</Text> <Text style={{ fontStyle: 'italic' }}>({item.medicineDesc})</Text></Text>
                 </View>
                 <View style={{ flex: 3, borderColor: '#ddd', borderWidth: 1 }}>
-                    <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(2) }}>{item.dosagePattern} {item.medicineTimingFrequency == 'No Preference' ? null : ' (' + item.medicineTimingFrequency + ')'} {'\n' + 'dose: ' + item.dosages + ', ' + item.durationValue + ' ' + item.durationType}</Text>
+                    <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(2) }}>{item.dosagePattern} {!item.medicineTimingFrequency || item.medicineTimingFrequency == 'No Preference' ? null : ' (' + item.medicineTimingFrequency + ')'} {'\n' + 'dose: ' + item.dosages + ', ' + item.durationValue + ' ' + item.durationType}</Text>
                 </View>
                 <View style={{ flex: 2, borderColor: '#ddd', borderWidth: 1 }}>
                     <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(2) }}>{item.note}</Text>

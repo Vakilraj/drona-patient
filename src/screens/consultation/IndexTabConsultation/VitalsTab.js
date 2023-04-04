@@ -22,7 +22,7 @@ import { TextInput } from 'react-native';
 
 let prvLength = -1, bpAlertMsg = '', bmiIndex = 0;
 let VitalAllData = '', FinalExtractNullData = [];
-let appoinmentGuid = "", vitalDate = null;
+let vitalDate = null;
 class CN extends React.Component {
 	constructor(props) {
 		super(props);
@@ -122,8 +122,9 @@ class CN extends React.Component {
 	}
 	async componentDidMount() {
 		let { signupDetails } = this.props;
-		appoinmentGuid = this.props.data && this.props.data.pastAppointmentGuid ? this.props.data.pastAppointmentGuid : signupDetails.appoinmentGuid;
-		VitalAllData = this.props.responseData.data.vitalMasters;
+
+		//VitalAllData = this.props.responseData.data.vitalMasters;
+		VitalAllData = this.props.responseDataIndexTab.vitalMasters;
 		let tempAr = [];
 		if (VitalAllData && VitalAllData.length > 0) {
 			for (let i = 0; i < VitalAllData.length; i++) {
@@ -136,7 +137,8 @@ class CN extends React.Component {
 
 
 
-		vitalDate = newProps.responseData.data.vitalDate
+		//vitalDate = newProps.responseData.data.vitalDate
+		//alert(vitalDate)
 		//this.calculateBMI();
 		setLogEvent("add_vital", { "customize_vital": "click", UserGuid: signupDetails.UserGuid })
 		// 			let { actions } = this.props;
@@ -254,17 +256,38 @@ class CN extends React.Component {
 				"ClinicGuid": signupDetails.clinicGuid,
 				"PatientGuid": signupDetails.patientGuid,
 				"Data": {
-					"AppointmentGuid": appoinmentGuid,
+					"AppointmentGuid": signupDetails.appoinmentGuid,
 					"PatientGuid": signupDetails.patientGuid,
 					"vitalMasters": FinalExtractNullData,
-					"vitalDate": vitalDate ? Moment(vitalDate).format('YYYY-MM-DD') : Moment(new Date()).format('YYYY-MM-DD'),
+					"vitalDate": Moment(new Date()).format('YYYY-MM-DD'),
 				}
 			}
-			actions.callLogin('V1/FuncForDrAppToAddUpdatePatientVitals_V2', 'post', params, signupDetails.accessToken, 'addUpdateVitalsData');
+			actions.callLogin('V1/FuncForDrAppToAddUpdatePatientVitals_V2', 'post', params, signupDetails.accessToken, 'addUpdateVitalsTab');
 
 		}
 	}
+	async UNSAFE_componentWillReceiveProps(newProps) {
+		if (newProps.responseData && newProps.responseData.tag) {
+			let tagname = newProps.responseData.tag;
+			if (tagname === 'addUpdateVitalsTab') {
+				setTimeout(()=>{
+					Snackbar.show({ text: newProps.responseData.statusMessage, duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 
+				},300)
+
+			} else if (tagname === 'postWalkinConfirmPatient') {
+				if (newProps.responseData.statusCode == "0" || newProps.responseData.statusCode == "-1") {
+					let { actions, signupDetails } = this.props;
+					signupDetails.appoinmentGuid = newProps.responseData.data.patientAppointmentGuid;
+					signupDetails.consultType = 'WalkIn'
+					actions.setSignupDetails(signupDetails);
+					let itemObj = item;
+					itemObj.appointmentStatus = 'booked'
+					this.props.navigation.navigate('ConsultationTab', { vitalMasterStatus: null, from: 'consultation', item: itemObj, date: date, tabIndex: 0 });
+				}
+			}
+		}
+	}
 	render() {
 		let { signupDetails } = this.props;
 		//let item = this.props.navigation.state.params.item;

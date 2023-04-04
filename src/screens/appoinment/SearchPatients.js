@@ -89,9 +89,9 @@ class SearchPatients extends React.Component {
 		} catch (e) { }
 		this.getSearchData();
 	}
-	patientSort = (pArray) => {
-		return pArray.sort((a, b) => a.firstName.toLowerCase().localeCompare(b.firstName.toLowerCase()));
-	}
+	// patientSort = (pArray) => {
+	// 	return pArray.sort((a, b) => a.firstName.toLowerCase().localeCompare(b.firstName.toLowerCase()));
+	// }
 	async UNSAFE_componentWillReceiveProps(newProps) {
 		if (newProps.responseData && newProps.responseData.tag) {
 			let tagname = newProps.responseData.tag;
@@ -107,7 +107,7 @@ class SearchPatients extends React.Component {
 				if (newProps.responseData.statusCode && newProps.responseData.data) {
 					fullArrayGlobal = newProps.responseData.data;
 
-					let sortedArray = this.patientSort(fullArrayGlobal);
+					// let sortedArray = this.patientSort(fullArrayGlobal);
 					this.setState({ dataArray: sortedArray, AddPatientWithNumberStatus: false });
 
 				} else {

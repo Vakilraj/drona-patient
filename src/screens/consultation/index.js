@@ -324,8 +324,28 @@ class CN extends React.Component {
 						<Image source={Edit} style={{ marginRight: responsiveWidth(1), height: responsiveWidth(4), width: responsiveWidth(4), resizeMode: 'contain' }} />
 					</TouchableOpacity>
 				</View>
+{signupDetails.isAssistantUser ? <View style={{ flex: 1, backgroundColor: Color.white, }}>
+					{this.state.responseDataIndexTab ? <ScrollableTabView
 
-				<View style={{ flex: 1, backgroundColor: Color.white, }}>
+						renderTabBar={() => (
+							<ScrollableTabBar />
+						)}
+						tabBarTextStyle={{ fontSize: CustomFont.font16 }}
+						tabBarInactiveTextColor={Color.optiontext}
+						tabBarActiveTextColor={Color.primary}
+						tabBarUnderlineStyle={{ backgroundColor: Color.primary, width: responsiveWidth(10), borderRadius: 4 }}
+						initialPage={this.state.initialPage}
+						ramPage={this.state.pageChangeIndex}
+						onChangeTab={(res) => {
+
+						}}
+					>
+					<FilesTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Files'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item}  data={this.props.navigation.getParam("data", null)} />
+						<VitalsTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Vitals'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} />
+						<MadicalHistryTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Medical History'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} />
+						{/* <PastPrescriptionTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Past Prescriptions'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} /> */}
+					</ScrollableTabView> : null}
+				</View>:<View style={{ flex: 1, backgroundColor: Color.white, }}>
 					{this.state.responseDataIndexTab ? <ScrollableTabView
 
 						renderTabBar={() => (
@@ -346,9 +366,8 @@ class CN extends React.Component {
 						<FilesTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Files'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item}  data={this.props.navigation.getParam("data", null)} />
 						<MadicalHistryTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Medical History'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} />
 					</ScrollableTabView> : null}
-
-
-				</View>
+				</View>}
+				
 				{
 					item.appointmentStatus == 'No Show' ? null :
 						<View style={{ backgroundColor: Color.white, flexDirection: 'row', alignItems: 'center', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 10 }}>

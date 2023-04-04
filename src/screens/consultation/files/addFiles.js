@@ -233,9 +233,7 @@ class AddFiles extends React.Component {
                             // this.setState({recordTypeGuid : data.recordType[0].recordTypeGuid});
                         }
                         recordTypeList= data.recordType;
-
-                      try {
-                        finalRecordTypeList=[
+                        finalRecordTypeList = [
                             {
                                 "recordTypeGuid": "",
                                 "recordTypeName": ""
@@ -251,64 +249,61 @@ class AddFiles extends React.Component {
                             {
                                 "recordTypeGuid": "",
                                 "recordTypeName": ""
-                            }
-                        ];
-                            if(recordTypeList.length>4)
-                            finalRecordTypeList = recordTypeList;
+                            }]
+                        try {
+                            if (recordTypeList.length > 4)
+                                finalRecordTypeList = recordTypeList;
                             else
-                            for (var i = 0; i < recordTypeList.length; i++) {
-                                if (signupDetails.isAssistantUser) {
-                                    if (recordTypeList[i].recordTypeName == 'Invoice') {
-                                        finalRecordTypeList[0].recordTypeName = 'Bills'
-                                        finalRecordTypeList[0].recordTypeGuid = recordTypeList[i].recordTypeGuid
+                                for (var i = 0; i < recordTypeList.length; i++) {
+                                    if (signupDetails.isAssistantUser) {
+                                        if (recordTypeList[i].recordTypeName == 'Invoice') {
+                                            finalRecordTypeList[0].recordTypeName = 'Bills'
+                                            finalRecordTypeList[0].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+                                        }
+                                        else if (recordTypeList[i].recordTypeName == 'Lab Reports') {
+                                            // finalRecordTypeList[1].recordTypeName = 'Lab Reports'
+                                            finalRecordTypeList[1].recordTypeName = 'Reports'
+                                            finalRecordTypeList[1].recordTypeGuid = recordTypeList[i].recordTypeGuid
+                                        }
+                                        else if
+                                            (recordTypeList[i].recordTypeName == 'Prescriptions') {
+                                            // finalRecordTypeList[2].recordTypeName = 'Erx'
+                                            finalRecordTypeList[2].recordTypeName = 'Prescriptions'
+                                            finalRecordTypeList[2].recordTypeGuid = recordTypeList[i].recordTypeGuid
+                                        }
+                                        else if (recordTypeList[i].recordTypeName == 'Other Attachments') {
+                                            finalRecordTypeList[3].recordTypeName = 'Others'
+                                            finalRecordTypeList[3].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+                                        }
 
                                     }
-                                    else if (recordTypeList[i].recordTypeName == 'Lab Reports') {
-                                        finalRecordTypeList[1].recordTypeName = 'Lab Reports'
-                                        finalRecordTypeList[1].recordTypeGuid = recordTypeList[i].recordTypeGuid
+                                    else {
+                                        if (recordTypeList[i].recordTypeName == 'Prescriptions') {
+                                            finalRecordTypeList[0].recordTypeName = 'Prescriptions'
+                                            finalRecordTypeList[0].recordTypeGuid = recordTypeList[i].recordTypeGuid
 
+                                        }
+                                        else if (recordTypeList[i].recordTypeName == 'Lab Reports') {
+                                            // finalRecordTypeList[1].recordTypeName = 'Lab Reports'
+                                            finalRecordTypeList[1].recordTypeName = 'Reports'
+                                            finalRecordTypeList[1].recordTypeGuid = recordTypeList[i].recordTypeGuid
+                                        }
+                                        else if (recordTypeList[i].recordTypeName == 'Invoice') {
+                                            finalRecordTypeList[2].recordTypeName = 'Bills'
+                                            finalRecordTypeList[2].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+
+                                        }
+                                        else if (recordTypeList[i].recordTypeName == 'Other Attachments') {
+                                            finalRecordTypeList[3].recordTypeName = 'Others'
+                                            finalRecordTypeList[3].recordTypeGuid = recordTypeList[i].recordTypeGuid
+
+                                        }
 
                                     }
-                                    else if
-                                        (recordTypeList[i].recordTypeName == 'Prescriptions') {
-                                        finalRecordTypeList[2].recordTypeName = 'Erx'
-                                        finalRecordTypeList[2].recordTypeGuid = recordTypeList[i].recordTypeGuid
-
-
-                                    }
-                                    else if (recordTypeList[i].recordTypeName == 'Other Attachments') {
-                                        finalRecordTypeList[3].recordTypeName = 'Others'
-                                        finalRecordTypeList[3].recordTypeGuid = recordTypeList[i].recordTypeGuid
-
-                                    }
-
                                 }
-                                else {
-                                    if (recordTypeList[i].recordTypeName == 'Prescriptions') {
-                                        finalRecordTypeList[0].recordTypeName = 'Prescriptions'
-                                        finalRecordTypeList[0].recordTypeGuid = recordTypeList[i].recordTypeGuid
-
-                                    }
-                                    else if (recordTypeList[i].recordTypeName == 'Lab Reports') {
-                                        finalRecordTypeList[1].recordTypeName = 'Lab Reports'
-                                        finalRecordTypeList[1].recordTypeGuid = recordTypeList[i].recordTypeGuid
-
-
-                                    }
-                                    else if (recordTypeList[i].recordTypeName == 'Invoice') {
-                                        finalRecordTypeList[2].recordTypeName = 'Bills'
-                                        finalRecordTypeList[2].recordTypeGuid = recordTypeList[i].recordTypeGuid
-
-
-                                    }
-                                    else if (recordTypeList[i].recordTypeName == 'Other Attachments') {
-                                        finalRecordTypeList[3].recordTypeName = 'Others'
-                                        finalRecordTypeList[3].recordTypeGuid = recordTypeList[i].recordTypeGuid
-
-                                    }
-
-                                }
-                            }
 
                         } catch (error) {
                             finalRecordTypeList = recordTypeList;

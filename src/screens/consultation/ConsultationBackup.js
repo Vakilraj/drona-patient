@@ -1321,7 +1321,7 @@ procedureFlag = true;
 	SearchMedicine = (text) => {
 
 		var searchResult = _.filter(medicineFullArray, function (item) {
-			return item.medicineName.toLowerCase().indexOf(text.toLowerCase()) > -1;
+			return item?.medicineName?.toLowerCase().indexOf(text?.toLowerCase()) > -1;
 		});
 		// if (searchResult.length == 0) {
 		// 	searchResult.push({

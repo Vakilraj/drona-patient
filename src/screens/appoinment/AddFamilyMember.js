@@ -58,7 +58,7 @@ class AddFamily extends React.Component {
 		if (item) {
 			if(item.age == null)
 			{
-				Snackbar.show({ text: 'Please enter patient\'s DOB or Age to continue', duration: Snackbar.LENGTH_LONG, backgroundColor: Color.primary });
+				Snackbar.show({ text: 'Please enter patient\'s Age to continue', duration: Snackbar.LENGTH_LONG, backgroundColor: Color.primary });
 
 				this.props.navigation.navigate('AddNewPatients', { item: item, from: 'editfamily', isGetData: true, Refresh: this.Refresh, onEditPatient: this.onEditPatient });
 			}

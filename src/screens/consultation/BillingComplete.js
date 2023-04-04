@@ -582,7 +582,7 @@ class BillingComplete extends React.Component {
                                 this.completeConsultation('withOutNotification');
                             }}
                             style={{ margin: 5, borderRadius: 5, justifyContent: 'center', alignItems: 'center', backgroundColor: Color.primary, flex: 1, height: responsiveHeight(6) }}>
-                            <Text style={{ color: Color.white, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: CustomFont.fontWeight600 }}>Print RX</Text>
+                            <Text style={{ color: Color.white, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: CustomFont.fontWeight600 }}>Print Rx</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => { this.completeConsultation('withNotification'); }}
                             style={{ margin: 5, borderRadius: 5, justifyContent: 'center', alignItems: 'center', backgroundColor: Color.primary, flex: 1, height: responsiveHeight(6), flexDirection: 'row' }}>

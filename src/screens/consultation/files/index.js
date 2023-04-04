@@ -124,17 +124,15 @@ class FileList extends React.Component {
 
                                         }
                                         else if (recordTypeList[i].recordTypeName == 'Lab Reports') {
-                                            finalRecordTypeList[1].recordTypeName = 'Lab Reports'
+                                            // finalRecordTypeList[1].recordTypeName = 'Lab Reports'
+                                            finalRecordTypeList[1].recordTypeName = 'Reports'
                                             finalRecordTypeList[1].recordTypeGuid = recordTypeList[i].recordTypeGuid
-
-
                                         }
                                         else if
                                             (recordTypeList[i].recordTypeName == 'Prescriptions') {
-                                            finalRecordTypeList[2].recordTypeName = 'Erx'
+                                            // finalRecordTypeList[2].recordTypeName = 'Erx'
+                                            finalRecordTypeList[2].recordTypeName = 'Prescriptions'
                                             finalRecordTypeList[2].recordTypeGuid = recordTypeList[i].recordTypeGuid
-
-
                                         }
                                         else if (recordTypeList[i].recordTypeName == 'Other Attachments') {
                                             finalRecordTypeList[3].recordTypeName = 'Others'
@@ -150,10 +148,9 @@ class FileList extends React.Component {
 
                                         }
                                         else if (recordTypeList[i].recordTypeName == 'Lab Reports') {
-                                            finalRecordTypeList[1].recordTypeName = 'Lab Reports'
+                                            // finalRecordTypeList[1].recordTypeName = 'Lab Reports'
+                                            finalRecordTypeList[1].recordTypeName = 'Reports'
                                             finalRecordTypeList[1].recordTypeGuid = recordTypeList[i].recordTypeGuid
-
-
                                         }
                                         else if (recordTypeList[i].recordTypeName == 'Invoice') {
                                             finalRecordTypeList[2].recordTypeName = 'Bills'

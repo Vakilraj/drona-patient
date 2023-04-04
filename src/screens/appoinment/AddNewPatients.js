@@ -108,7 +108,7 @@ class AddNewPatients extends React.Component {
 			showDiscard: false,
 			showDiscardDialog: false,
 			showInitialDate: new Date(),
-			nullDate : 'DD/MM/YYYY',
+			nullDate: 'DD/MM/YYYY',
 			isValidAge: true,
 			parentName: ''
 		};
@@ -214,25 +214,24 @@ class AddNewPatients extends React.Component {
 		try {
 
 			let item = this.props.navigation.state.params.item ? this.props.navigation.state.params.item : '';
-			console.log('--------item--+  '+JSON.stringify(item))
+			console.log('--------item--+  ' + JSON.stringify(item))
 			from = this.props.navigation.state.params.from ? this.props.navigation.state.params.from : '';
 			isGetData = this.props.navigation.state.params.isGetData ? this.props.navigation.state.params.isGetData : false;
 
 			if (isGetData) {
 				this.callGetData();
-				item.dob=null; //ram
 			} else if (item && from === 'edit') {
 				let age = 0;
-					if (item.dob) {
-						age = Moment(new Date()).format('YYYY') - Moment(item.dob).format('YYYY');
+				if (item.dob) {
+					age = Moment(new Date()).format('YYYY') - Moment(item.dob).format('YYYY');
+				}
+				if (item.dateOfBirth) {
+					this.setState({ isAgeEditable: false })
+					selectedDay = Moment(item.dateOfBirth).format('YYYY/MM/DD');
+					if (!item.dob) {
+						age = Moment(new Date()).format('YYYY') - Moment(item.dateOfBirth).format('YYYY');
 					}
-					if (item.dateOfBirth){
-						this.setState({ isAgeEditable: false })
-						selectedDay = Moment(item.dateOfBirth).format('YYYY/MM/DD');
-						if(!item.dob){
-							age = Moment(new Date()).format('YYYY') - Moment(item.dateOfBirth).format('YYYY');
-						}
-					} 
+				}
 
 				this.setState({
 					isEdit: true,
@@ -246,7 +245,7 @@ class AddNewPatients extends React.Component {
 					relationship: item.relationName,
 					showInitialDate: item.dob == null ? 'DD/MM/YYYY' : Moment(item.dateOfBirth).format('YYYY-MM-DD')
 				})
-				
+
 
 				RelationGuid = item.relationGuid
 				patientGuid = item.patientGuid
@@ -395,7 +394,7 @@ class AddNewPatients extends React.Component {
 		}
 		else if (!this.state.isMale && !this.state.isFemale && !this.state.isOther) {
 			Snackbar.show({ text: 'Please select gender', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-		} else if (!selectedDay && this.state.age==0) {
+		} else if (!selectedDay && this.state.age == 0) {
 			Snackbar.show({ text: 'Please enter patient\'s Age OR date of birth to continue ', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 		}
 		else if (this.state.age && !Validator.isMobileValidate(this.state.age)) {
@@ -419,7 +418,7 @@ class AddNewPatients extends React.Component {
 		else if (!this.state.isValidAge) {
 			this.setState({ ageAlert: 'Please Enter valid email Age' });
 			this.refs.age.focus();
-		}else{
+		} else {
 			try {
 				if (!selectedDay && this.state.age) {
 					let y = parseInt(Moment(new Date()).format('YYYY')) - this.state.age;
@@ -563,7 +562,7 @@ class AddNewPatients extends React.Component {
 						}
 
 					};
-					
+
 					//this.setState({ successAddPatient: true });
 				} else {
 					this.setState({ isPatientAddStatus: true });
@@ -577,7 +576,6 @@ class AddNewPatients extends React.Component {
 				let data = newProps.responseData.data
 				dataAll = data
 				let item = data
-				item.dob=null; //ram
 				if (from == 'addfamily') {
 					if (data.patientDetailsList) {
 						this.setState({ parentName: data.patientDetailsList.firstName + ' ' + data.patientDetailsList.lastName, mobile: data.patientDetailsList.phoneNumber })
@@ -586,10 +584,9 @@ class AddNewPatients extends React.Component {
 
 				} else {
 					let age = 0;
-					if(item.dob)
-					{
+					if (item.dob) {
 						age = Moment(new Date()).format('YYYY') - Moment(item.dob).format('YYYY');
-						
+
 					}
 
 					this.setState({
@@ -606,7 +603,7 @@ class AddNewPatients extends React.Component {
 						//imageSource: null,
 						//isModalVisibleRelation: false,
 						//relationship: item.relationName,
-						showInitialDate: !item.dob  ? 'DD/MM/YYYY' : Moment(item.dob).format('YYYY-MM-DD')
+						showInitialDate: !item.dob ? 'DD/MM/YYYY' : Moment(item.dob).format('YYYY-MM-DD')
 					})
 					// alert(this.state.age);
 					if (item.dob) this.setState({ isAgeEditable: false })
@@ -616,8 +613,8 @@ class AddNewPatients extends React.Component {
 
 					//RelationGuid = item.relationGuid
 					patientGuid = item.patientGuid
-					if(item.dob)
-					selectedDay = Moment(item.dob).format('YYYY/MM/DD');
+					if (item.dob)
+						selectedDay = Moment(item.dob).format('YYYY/MM/DD');
 					try {
 						if (item.gender == 'Male') {
 							this.setState({ isMale: true, isFemale: false, isOther: false });
@@ -901,22 +898,6 @@ class AddNewPatients extends React.Component {
 
 								<View style={{ flexDirection: 'row', marginTop: 7 }}>
 
-									<View style={{ flex: 3 }}>
-										<Text style={styles.inputHeader}>Date of Birth *</Text>
-										<TouchableOpacity style={{ height: responsiveHeight(6), borderColor: Color.createInputBorder, borderWidth: 1, borderRadius: 5, backgroundColor: Color.white, alignItems: 'center', justifyContent: 'center', marginTop: responsiveHeight(1.2), flexDirection: 'row' }}
-											onPress={() => {
-												this.setState({ isModalVisible: true })
-											}}>
-											<Text style={{ fontSize: CustomFont.font14, color: Color.placeHolderColor, textAlign: 'center', fontWeight: CustomFont.fontWeight400, fontFamily: CustomFont.fontName, }}>{this.state.showSelectedDay}</Text>
-											<Image source={calenderIcon} style={{ height: responsiveFontSize(3), width: responsiveFontSize(3), marginLeft: 10 }} />
-
-										</TouchableOpacity>
-									</View>
-
-									<View style={{ flex: 1, alignItems: 'center' }}>
-										<Text style={{ fontSize: CustomFont.font12, color: Color.optiontext, marginTop: responsiveHeight(7.5), fontFamily: CustomFont.fontName, fontWeight: '500' }}>OR</Text>
-									</View>
-
 									<View style={{ flex: 2 }}>
 										<View style={{ flexDirection: 'row' }}>
 											<Text style={styles.inputHeader}>Age</Text>
@@ -926,7 +907,7 @@ class AddNewPatients extends React.Component {
 												fontFamily: CustomFont.fontName,
 												fontWeight: '200',
 												marginTop: responsiveHeight(2.2),
-											}}> ( In Years)</Text>
+											}}> ( In Years)*</Text>
 										</View>
 										<TextInput returnKeyType="done"
 											onFocus={() => this.callOnFocus('3')}
@@ -963,6 +944,24 @@ class AddNewPatients extends React.Component {
 											//editable={this.state.isAgeEditable}
 											value={this.state.age && this.state.age.includes('y') ? this.state.age.split("y")[0] : this.state.age} />
 										{this.state.ageAlert ? <Text style={{ marginLeft: 5, fontSize: CustomFont.font12, color: Color.red }}>{this.state.ageAlert}</Text> : null}
+									</View>
+
+
+
+									<View style={{ flex: 1, alignItems: 'center' }}>
+										<Text style={{ fontSize: CustomFont.font12, color: Color.optiontext, marginTop: responsiveHeight(7.5), fontFamily: CustomFont.fontName, fontWeight: '500' }}>OR</Text>
+									</View>
+
+									<View style={{ flex: 3 }}>
+										<Text style={styles.inputHeader}>Date of Birth *</Text>
+										<TouchableOpacity style={{ height: responsiveHeight(6), borderColor: Color.createInputBorder, borderWidth: 1, borderRadius: 5, backgroundColor: Color.white, alignItems: 'center', justifyContent: 'center', marginTop: responsiveHeight(1.2), flexDirection: 'row' }}
+											onPress={() => {
+												this.setState({ isModalVisible: true })
+											}}>
+											<Text style={{ fontSize: CustomFont.font14, color: Color.placeHolderColor, textAlign: 'center', fontWeight: CustomFont.fontWeight400, fontFamily: CustomFont.fontName, }}>{this.state.showSelectedDay}</Text>
+											<Image source={calenderIcon} style={{ height: responsiveFontSize(3), width: responsiveFontSize(3), marginLeft: 10 }} />
+
+										</TouchableOpacity>
 									</View>
 								</View>
 

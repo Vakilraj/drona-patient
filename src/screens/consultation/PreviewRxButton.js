@@ -482,7 +482,7 @@ class PreviewRxButton extends React.Component {
 				const htmlCode = `
 				 <tr>
 				 <td style="width:35%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;"><b>`+ medicineList[i].medicineName + ` ` + medicineList[i].strength + `</b></br>` + `(<i>` + medicineList[i].medicineDesc + `</i>)` +`</td>
-					<td style="width:40%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;"> `+ (medicineList[i].dosagePattern) + (medicineList[i].medicineTimingFrequency == 'No Preference' ? ' ' : ' (' + medicineList[i].medicineTimingFrequency + ')') + ` </br> ` + 'dose: ' + medicineList[i].dosages + `, ` + medicineList[i].durationValue + ` ` + medicineList[i].durationType + ` </td>
+					<td style="width:40%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;"> `+ (medicineList[i].dosagePattern) + (!medicineList[i].medicineTimingFrequency || medicineList[i].medicineTimingFrequency == 'No Preference' ? '' : ' (' + medicineList[i].medicineTimingFrequency + ')') + ` </br> ` + 'dose: ' + medicineList[i].dosages + `, ` + medicineList[i].durationValue + ` ` + medicineList[i].durationType + ` </td>
 					<td style="width:25%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;">`+ medicineList[i].note + `</td>
 				  </tr>
 				 `

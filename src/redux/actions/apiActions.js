@@ -136,7 +136,7 @@ export function callLogin(url, apiType, params, token, tagName = null) {
     console.log("\n\n" + url + " headers- " + JSON.stringify(headersValue))
     
     return (dispatch) => {
-      let str = 'GetCommunityInfo GetFilter viewpost SearchForSymptom SearchForSymptom SearchForFindings SearchForDiagnosis SearchForMedicine SearchForInvestigation SearchForInstructions SearchFamilyConditions SearchForConditions SearchForcurrentMedication SearchFoAllergies sharepostby AddSymptoms getserverDateTime ResentOtpForLogin GetActivationPackages tt GetWeekPasswordList GetWeekPass AddInvestigation AddInstruction ReasonOfVisitList'
+      let str = 'GetCommunityInfo GetFilter viewpost SearchForSymptom SearchForSymptom SearchForFindings SearchForDiagnosis SearchForMedicine SearchForInvestigation SearchForInstructions SearchFamilyConditions SearchForConditions SearchForcurrentMedication SearchFoAllergies sharepostby AddSymptoms getserverDateTime ResentOtpForLogin GetActivationPackages tt GetWeekPasswordList GetWeekPass AddInvestigation AddInstruction ReasonOfVisitList getEditAssistanceDetailsOnBoarding'
       if (str.includes(tagName)) {
         dispatch(removeLoader());
       } else {

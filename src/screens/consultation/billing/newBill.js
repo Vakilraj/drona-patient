@@ -714,7 +714,7 @@ class NewBill extends React.Component {
          <tr>
                  <td width="6tkl00%" style="vertical-align:top; ">			
                  <p>Name :&ensp; ` + `<b>` + this.showOriginalValueView(patientInfo.name) + `</b>` + `</p>
-                 <p>Sex/Age :&ensp; ` + `<b>` + this.showOriginalValueView(patientInfo.age) + `</b>` + `</p>
+                 <p>Sex/Age :&ensp; ` + `<b>` + this.showOriginalValueView(patientInfo.sexAge) + `</b>` + `</p>
                  <p>Mobile :&ensp; ` + `<b>` + this.showOriginalValueView(patientInfo.mobile) + `</b>` + `</p>
                  <p>Consult ID :&ensp; ` + `<b>` + this.showOriginalValueView(patientInfo.patientCode) + `</b>` + `</p>
                  </td>

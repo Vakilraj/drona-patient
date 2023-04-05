@@ -361,10 +361,10 @@ class CN extends React.Component {
 
 						}}
 					>
+						<PastPrescriptionTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Prescriptions'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} />
 						<VitalsTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Vitals'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} />
-						<PastPrescriptionTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Past Prescriptions'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} />
-						<FilesTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Files'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} data={this.props.navigation.getParam("data", null)} />
 						<MadicalHistryTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Medical History'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} />
+						<FilesTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Files'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} data={this.props.navigation.getParam("data", null)} />						
 					</ScrollableTabView> : null}
 				</View>}
 

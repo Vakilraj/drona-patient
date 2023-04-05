@@ -110,7 +110,10 @@ class AddNewPatients extends React.Component {
 			showInitialDate: new Date(),
 			nullDate: 'DD/MM/YYYY',
 			isValidAge: true,
-			parentName: ''
+			parentName: '',
+			isGender: false,
+			isAge: false,
+			isRelationShip: false
 		};
 		selectedDay = ''; selectedDayReformat = ''; RelationGuid = '';
 		pincode = ''; city = ''; stateName = ''; addr1 = ''; addr2 = ''; landmark = ''; patientGuid = ''; base64 = null; filename = '';
@@ -348,22 +351,21 @@ class AddNewPatients extends React.Component {
 	clickGender = (gender) => {
 		if (gender === 'male') {
 			this.setState({
-				isMale: true, isFemale: false, isOther: false, showDiscard: true,
+				isMale: true, isFemale: false, isOther: false, showDiscard: true, isGender: false
 			})
 			this.getRelationShip('M')
 		} else if (gender === 'female') {
 			this.setState({
-				isMale: false, isFemale: true, isOther: false, showDiscard: true,
+				isMale: false, isFemale: true, isOther: false, showDiscard: true, isGender: false
 			})
 			this.getRelationShip('F')
 
 		}
 		else {
 			this.setState({
-				isMale: false, isFemale: false, isOther: true, showDiscard: true,
+				isMale: false, isFemale: false, isOther: true, showDiscard: true, isGender: false
 			})
 			this.getRelationShip('O')
-
 		}
 	}
 
@@ -393,8 +395,10 @@ class AddNewPatients extends React.Component {
 			this.refs.fname.focus();
 		}
 		else if (!this.state.isMale && !this.state.isFemale && !this.state.isOther) {
+			this.setState({isGender: true})
 			Snackbar.show({ text: 'Please select gender', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 		} else if (!selectedDay && this.state.age == 0) {
+			this.setState({isAge: true})
 			Snackbar.show({ text: 'Please enter patient\'s Age OR date of birth to continue ', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 		}
 		else if (this.state.age && !Validator.isMobileValidate(this.state.age)) {
@@ -452,8 +456,9 @@ class AddNewPatients extends React.Component {
 						}
 					}
 					actions.callLogin('V11/FuncForDrAppToInsertUpdatePatientFamilyMember', 'post', params, signupDetails.accessToken, 'AddPatient');
-				} else {
+				} else {					
 					Snackbar.show({ text: 'Please select relationship', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
+					this.setState({ isRelationShip: true})
 				}
 
 			} else {
@@ -500,9 +505,7 @@ class AddNewPatients extends React.Component {
 					}
 				}
 				actions.callLogin('V11/FuncForDrAppToAddPatient', 'post', params, signupDetails.accessToken, 'AddPatient');
-
 			}
-
 		}
 	}
 	async UNSAFE_componentWillReceiveProps(newProps) {
@@ -873,7 +876,7 @@ class AddNewPatients extends React.Component {
 
 								<Text style={styles.inputHeader}>Gender *</Text>
 								<View style={{ flexDirection: 'row', marginTop: 10, }}>
-									<TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: responsiveHeight(6), borderColor: this.state.isMale ? Color.liveBg : Color.createInputBorder, borderWidth: 1.5, borderRadius: 4, backgroundColor: this.state.isMale ? Color.genderSelection : Color.white, marginEnd: 5, }} onPress={() => this.clickGender('male')}>
+									<TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: responsiveHeight(6), borderColor: this.state.isMale ? Color.liveBg :(this.state.isGender ? Color.primary : Color.createInputBorder), borderWidth: 1.5, borderRadius: 4, backgroundColor: this.state.isMale ? Color.genderSelection : Color.white, marginEnd: 5, }} onPress={() => this.clickGender('male')}>
 										<Text style={{ color: this.state.isMale ? Color.optiontext : Color.optiontext, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight500 }}>Male</Text>
 									</TouchableOpacity>
 									<TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: responsiveHeight(6), borderColor: this.state.isFemale ? Color.liveBg : Color.createInputBorder, borderWidth: 1.5, borderRadius: 4, backgroundColor: this.state.isFemale ? Color.genderSelection : Color.white, marginEnd: 5, }} onPress={() => this.clickGender('female')}>
@@ -912,9 +915,9 @@ class AddNewPatients extends React.Component {
 										<TextInput returnKeyType="done"
 											onFocus={() => this.callOnFocus('3')}
 											onBlur={() => this.callOnBlur('3')}
-											style={[styles.createInputStyle, { borderColor: this.state.fld3, borderWidth: 1 }]} keyboardType={'phone-pad'} maxLength={3}
+											style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: responsiveHeight(6), borderColor: this.state.isMale ? Color.liveBg :(this.state.isGender ? Color.primary : Color.createInputBorder), borderWidth: 1.5, borderRadius: 4, backgroundColor: this.state.isMale ? Color.genderSelection : Color.white, marginEnd: 5, }} keyboardType={'phone-pad'} maxLength={3}
 											ref='age' onChangeText={age => {
-												this.setState({ age, showDiscard: true })
+												this.setState({ age, showDiscard: true, isAge: false })
 												if (Validator.isMobileValidate(age) || age === '') {  //!mobile ||
 													if (age > 150) {
 														this.setState({ ageAlert: 'Age should not be greater than 150 years' })
@@ -956,7 +959,7 @@ class AddNewPatients extends React.Component {
 										<Text style={styles.inputHeader}>Date of Birth *</Text>
 										<TouchableOpacity style={{ height: responsiveHeight(6), borderColor: Color.createInputBorder, borderWidth: 1, borderRadius: 5, backgroundColor: Color.white, alignItems: 'center', justifyContent: 'center', marginTop: responsiveHeight(1.2), flexDirection: 'row' }}
 											onPress={() => {
-												this.setState({ isModalVisible: true })
+												this.setState({ isModalVisible: true, isAge: false  })
 											}}>
 											<Text style={{ fontSize: CustomFont.font14, color: Color.placeHolderColor, textAlign: 'center', fontWeight: CustomFont.fontWeight400, fontFamily: CustomFont.fontName, }}>{this.state.showSelectedDay}</Text>
 											<Image source={calenderIcon} style={{ height: responsiveFontSize(3), width: responsiveFontSize(3), marginLeft: 10 }} />
@@ -967,8 +970,8 @@ class AddNewPatients extends React.Component {
 
 								{from == 'addfamily' || from == 'editfamily' ? <View style={{ marginTop: responsiveHeight(1) }}>
 									<Text style={styles.inputHeader}>Relationship (Optional)</Text>
-									<TouchableOpacity style={{ flexDirection: 'row', height: responsiveHeight(6), borderColor: Color.createInputBorder, borderWidth: 1.5, borderRadius: 5, backgroundColor: Color.white, marginTop: responsiveHeight(1.2), alignItems: 'center', justifyContent: 'space-between' }}
-										onPress={() => this.setState({ isModalVisibleRelation: true })}>
+									<TouchableOpacity style={{ flexDirection: 'row', height: responsiveHeight(6), borderColor: this.state.isRelationShip? Color.primary: Color.createInputBorder, borderWidth: 1.5, borderRadius: 5, backgroundColor: Color.white, marginTop: responsiveHeight(1.2), alignItems: 'center', justifyContent: 'space-between' }}
+										onPress={() => this.setState({ isModalVisibleRelation: true, isRelationShip: false  })}>
 										<Text style={{ fontSize: CustomFont.font14, color: Color.placeHolderColor, paddingLeft: 10, paddingRight: 10 }}>{this.state.relationship}</Text><Image source={down} style={{ height: responsiveFontSize(2), width: responsiveFontSize(2), resizeMode: 'contain', marginRight: responsiveWidth(3) }} />
 									</TouchableOpacity>
 								</View> : null}

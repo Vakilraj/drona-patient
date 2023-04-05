@@ -336,11 +336,12 @@ class Consultation extends React.Component {
 				instructionFlag = true;
 
 			if (selectedProcedure)
-				procedureFlag = true;
+				procedureFlag = true;				
 
 		}
 		severityArrySymptFind = patientConsultation.severityMaster;
-		severityArryDiagnostic = patientConsultation.diagnoisisStatusMaster;
+		// severityArryDiagnostic = patientConsultation.diagnoisisStatusMaster;
+		severityArryDiagnostic = [patientConsultation.diagnoisisStatusMaster[2], patientConsultation.diagnoisisStatusMaster[1], patientConsultation.diagnoisisStatusMaster[0],];
 	}
 	componentWillUnmount() {
 		Trace.stopTrace()
@@ -2274,7 +2275,7 @@ class Consultation extends React.Component {
 					disabled={false}
 					value={this.state.selectedSeverityIndex == index}
 					tintColors={{ true: Color.primary, false: Color.unselectedCheckBox }}
-					style={{ height: responsiveFontSize(2.5), width: responsiveFontSize(2.5), color: Color.mediumGrayTxt, margin: 2 }}
+					style={{ height: responsiveFontSize(2.5), width: responsiveFontSize(2.5), color: Color.mediumGrayTxt, margin: 4 }}
 					onValueChange={() => this.setState({ selectedSeverityIndex: index })}
 
 				/>

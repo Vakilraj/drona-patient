@@ -2385,7 +2385,6 @@ class Consultation extends React.Component {
 							<TouchableOpacity onPress={() => this.setState({ isModalVisibleAbout: true, })} disabled={signupDetails.isAssistantUser}>
 								<View style={{ backgroundColor: Color.white, marginTop: responsiveHeight(1.5), marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), borderRadius: 10, marginBottom: responsiveHeight(0) }}>
 									<View style={{ margin: responsiveWidth(5) }}>
-
 										<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
 											<Text style={{ fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, color: Color.yrColor, fontFamily: CustomFont.fontName }}>Notes</Text>
 											{signupDetails.isAssistantUser ? null :
@@ -3188,7 +3187,7 @@ class Consultation extends React.Component {
 									</View>
 									<View style={{ flex: 1 }}>
 
-										<TextInput blurOnSubmit={false} returnKeyType="next"
+										<TextInput blurOnSubmit={false} 
 											onFocus={() => this.callOnFocus('8')}
 											onBlur={() => this.callOnBlur('8')}
 											placeholderTextColor={Color.placeHolderColor}

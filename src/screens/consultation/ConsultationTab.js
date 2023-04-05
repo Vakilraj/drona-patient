@@ -55,6 +55,7 @@ class ConsultationTab extends React.Component {
 			responseDataVisitInfo: null,
 			isSaveTabDataModal:false,
 			pageChangeIndex:0,
+			isDataSaved: false,
 		};
 		DRONA.setIsConsultationChange(false)
 	}
@@ -254,7 +255,7 @@ class ConsultationTab extends React.Component {
 								ramPage={this.state.pageChangeIndex}
 								onChangeTab={(res) => {
 									//console.log(res.i+'-----+++++++++-----'+res.from)
-									if(DRONA.getIsConsultationChange() && signupDetails.roleCode==10 && !loading){
+									if(DRONA.getIsConsultationChange() && signupDetails.roleCode==10 && !loading && !this.state.isDataSaved){
 										setTimeout(()=>{
 											this.setState({ isSaveTabDataModal:true });
 										},1000)	
@@ -344,7 +345,7 @@ class ConsultationTab extends React.Component {
                             <TouchableOpacity
                                 onPress={() => {
 									DRONA.setIsNeedForTabChane(true);
-                                  this.setState({isSaveTabDataModal:false,pageChangeIndex: fromTab });
+                                  this.setState({isSaveTabDataModal:false,pageChangeIndex: fromTab, isDataSaved: true });
                                 }}
                                 style={styles.markComp}>
                                 <Text style={{ color: Color.white, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: '600' }}>Yes, save</Text>

@@ -37,13 +37,15 @@ import { setLogEvent } from '../../service/Analytics';
 import Validator from '../../components/Validator';
 import CustomModalOne from '../../components/CustomModalOne';
 // import CustomModalTwo from '../../components/CustomModalTwo';
+import minus_gray from '../../../assets/minus_gray.png';
 
-let SymptomFullArray = [], findingFullArray = [], diagnosticFullArray = [], medicineFullArray = [], InvestigationeFullArray = [], InstructionFullArray = [], NotesData = '',ProcedureFullArray=[],
+
+let SymptomFullArray = [], findingFullArray = [], diagnosticFullArray = [], medicineFullArray = [], InvestigationeFullArray = [], InstructionFullArray = [], NotesData = '', ProcedureFullArray = [],
 	VitalAllData = '', medTiming = null, FinalExtractNullData = [];
 let appoinmentGuid = "", patientGuid = '', vitalDate = null;
 let appointmentStatus = null, vitalLoadSTatus = 0;
 let normalListBackup = [], selectedListBackup = [], noteGuid = '';
-let vitalFlag = false, symptomFlag = false, findingFlag = false, diagnosticFlag = false, medicineFlag = false, instructionFlag = false, investigationFlag = false, notesFlag = false,procedureFlag = false;;
+let vitalFlag = false, symptomFlag = false, findingFlag = false, diagnosticFlag = false, medicineFlag = false, instructionFlag = false, investigationFlag = false, notesFlag = false, procedureFlag = false;;
 let medicineIndex = 0, medicineAddUpdateFlag = 'add', vitalIsAddedStatus = '';
 import Trace from '../../service/Trace'
 let timeRange = '', medicineTypeFullArray = [], prvLength = -1, bpAlertMsg = '', bmiIndex = 0;
@@ -97,7 +99,7 @@ class Consultation extends React.Component {
 			ProcedureArr: [],
 			SelectedProcedureArr: [],
 			procedureSearchTxt: '',
-			isProcedureModalOpen:false,
+			isProcedureModalOpen: false,
 			isVitalEmpty: true,
 			showFollowUpModal: true,
 
@@ -168,7 +170,7 @@ class Consultation extends React.Component {
 		medicineIndex = 0;
 		medicineAddUpdateFlag = 'add';
 		selectedSeverityGuid = null;
-		sincePattern =null;
+		sincePattern = null;
 		selectedSeverityName = null;
 		ProcedureFullArray = [];
 	}
@@ -277,7 +279,7 @@ class Consultation extends React.Component {
 		medicineFullArray = patientConsultation.medicineList ? patientConsultation.medicineList : []
 		InvestigationeFullArray = patientConsultation.investigationList ? patientConsultation.investigationList : []
 		InstructionFullArray = patientConsultation.instructionsList ? patientConsultation.instructionsList : []
-		ProcedureFullArray = patientConsultation.procedureList ? patientConsultation.procedureList:[]
+		ProcedureFullArray = patientConsultation.procedureList ? patientConsultation.procedureList : []
 		NotesData = patientConsultation.prescriptionNote ? patientConsultation.prescriptionNote.prescriptionNoteName : ''
 		let selectedSymptoms = patientConsultation.selectedSymptoms && patientConsultation.selectedSymptoms.length > 0 ? patientConsultation.selectedSymptoms : []
 		let selectedInvestigations = patientConsultation.selectedInvestigations && patientConsultation.selectedInvestigations.length > 0 ? patientConsultation.selectedInvestigations : []
@@ -289,9 +291,9 @@ class Consultation extends React.Component {
 		noteGuid = patientConsultation.prescriptionNote ? patientConsultation.prescriptionNote.prescriptionNoteGuid : ''
 		this.setState({
 			SymptomArr: SymptomFullArray, FindingArr: findingFullArray, DiagnosticArr: diagnosticFullArray, MedicineArr: medicineFullArray, InvestigationArray: InvestigationeFullArray, InstructionArray: InstructionFullArray,
-			notesData: NotesData, followupData: data.followUp, showFollowUpModal: false,ProcedureArr: ProcedureFullArray,
+			notesData: NotesData, followupData: data.followUp, showFollowUpModal: false, ProcedureArr: ProcedureFullArray,
 		});
-		
+
 		if (data.vitalMasters) {
 			vitalIsAddedStatus = '';
 			this.setState({ vitalsDataArray: data.vitalMasters })
@@ -300,7 +302,7 @@ class Consultation extends React.Component {
 			this.setState({ vitalsDataArray: [] })
 		}
 
-		this.setState({ SelectedSymptomArr: selectedSymptoms, SelectedInvestigationArr: selectedInvestigations, SelectedInstructionArr: selectedInstructions, SelectedFindingArr: selectedFindings, SelectedDiagnosticArr: selectedDiagnosis, SelectedMedicineArr: selectedMedicines,SelectedProcedureArr: selectedProcedure, })
+		this.setState({ SelectedSymptomArr: selectedSymptoms, SelectedInvestigationArr: selectedInvestigations, SelectedInstructionArr: selectedInstructions, SelectedFindingArr: selectedFindings, SelectedDiagnosticArr: selectedDiagnosis, SelectedMedicineArr: selectedMedicines, SelectedProcedureArr: selectedProcedure, })
 		medTiming = patientConsultation.medTiming;
 		setTimeout(() => {
 			this.setState({ showFollowUpModal: true });
@@ -333,8 +335,8 @@ class Consultation extends React.Component {
 			if (selectedInstructions)
 				instructionFlag = true;
 
-if (selectedProcedure)
-procedureFlag = true;
+			if (selectedProcedure)
+				procedureFlag = true;
 
 		}
 		severityArrySymptFind = patientConsultation.severityMaster;
@@ -350,16 +352,16 @@ procedureFlag = true;
 		if (symptomFlag || findingFlag || diagnosticFlag || medicineFlag || instructionFlag || investigationFlag || notesFlag || procedureFlag) {
 			let { actions, signupDetails } = this.props;
 			let tmpMedicineArr = [...this.state.SelectedMedicineArr];
-			console.log('-----tmpMedicineArr---'+JSON.stringify(tmpMedicineArr));
+			console.log('-----tmpMedicineArr---' + JSON.stringify(tmpMedicineArr));
 			let tmpArr = []
 			for (let i = 0; i < tmpMedicineArr.length; i++) {
 				let doaseArr = tmpMedicineArr[i].medicineDosasesType;
-				let tempObj = Object.assign({ medicineDosasesTypeGuid: doaseArr[0].medicineDoasesGuId,}, tmpMedicineArr[i]); // medicineDosasesType: doaseArr[0].doasestype 
+				let tempObj = Object.assign({ medicineDosasesTypeGuid: doaseArr[0].medicineDoasesGuId, }, tmpMedicineArr[i]); // medicineDosasesType: doaseArr[0].doasestype 
 				tempObj.medicineDosasesType = doaseArr[0].doasestype;
 				tempObj.medicineTimingShift = null;
 				tmpArr.push(tempObj);
 			}
-			console.log('-----tmpArr---'+JSON.stringify(tmpArr));
+			console.log('-----tmpArr---' + JSON.stringify(tmpArr));
 			let params = {
 				"UserGuid": signupDetails.UserGuid,
 				"DoctorGuid": signupDetails.doctorGuid,
@@ -601,7 +603,7 @@ procedureFlag = true;
 						if (temp && temp.length > 0) {
 							this.setState({ MedicineArr: temp });
 						} else {
-							this.setState({ MedicineArr: [],medicineFoundStatus: 'Medicine not found' });
+							this.setState({ MedicineArr: [], medicineFoundStatus: 'Medicine not found' });
 						}
 						// temp.push({
 						// 	"medicineGuid": null,
@@ -845,7 +847,7 @@ procedureFlag = true;
 					procedureFlag = false;
 				}
 				Snackbar.show({ text: newProps.responseData.statusMessage, duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-			}else if (tagname === 'SearchForProcedure') {
+			} else if (tagname === 'SearchForProcedure') {
 				if (newProps.responseData.statusCode == '0') {
 					if (newProps.responseData.data && newProps.responseData.data.length > 0) {
 						let temp = newProps.responseData.data;
@@ -1015,7 +1017,7 @@ procedureFlag = true;
 			sincePattern = null;
 			selectedSeverityGuid = null;
 			selectedSeverityName = null;
-//Add symptom severity
+			//Add symptom severity
 			this.setState({ severityNameHeader: item.symptomName, sinceText: null, severityNotes: null, isModalOpenSeverity: true, SeverityDataArray: severityArrySymptFind, selectedSeverityIndex: -1 });
 			// selectedTempserviceArr.push(item)
 			// tempserviceArr.splice(index, 1);
@@ -1116,7 +1118,7 @@ procedureFlag = true;
 			sincePattern = null;
 			selectedSeverityGuid = null;
 			selectedSeverityName = null;
-//Add Finding severity
+			//Add Finding severity
 			this.setState({ severityNameHeader: item.findingName, sinceText: null, severityNotes: null, isModalOpenSeverity: true, SeverityDataArray: severityArrySymptFind, selectedSeverityIndex: -1 });
 
 			// selectedTempserviceArr.push(item)
@@ -1216,7 +1218,7 @@ procedureFlag = true;
 			sincePattern = null;
 			selectedSeverityGuid = null;
 			selectedSeverityName = null;
-//Add Diagnostic severity
+			//Add Diagnostic severity
 			this.setState({ severityNameHeader: item.diagnosisName, sinceText: null, severityNotes: null, isModalOpenSeverity: true, SeverityDataArray: severityArryDiagnostic, selectedSeverityIndex: -1 });
 
 			// selectedTempserviceArr.push(item)
@@ -1382,8 +1384,8 @@ procedureFlag = true;
 			clickItemIndex = index;
 			clickItemName = 'Investigation';
 			clickType = 'Add';
-//Add Investigation severity
-			this.setState({ severityNameHeader: item.investigationName,  instInstructNotes: '', isModalVisibleInstructionInvest: true });
+			//Add Investigation severity
+			this.setState({ severityNameHeader: item.investigationName, instInstructNotes: '', isModalVisibleInstructionInvest: true });
 
 			// selectedTempserviceArr.push(item)
 			// tempserviceArr.splice(index, 1);
@@ -1553,101 +1555,101 @@ procedureFlag = true;
 
 	}
 
-// procedure functions
+	// procedure functions
 
-clickOnProcedure = (item, index) => {
-	//SelectedIndex = index
-	let tempserviceArr = [...this.state.ProcedureArr];
-	let selectedTempserviceArr = [...this.state.SelectedProcedureArr];
-	item.procedureName = item.procedureName.replace("Add new Procedure “", "").replace('”', "")
-	let isProcedureExist = false;
-	try {
-		if (selectedTempserviceArr && selectedTempserviceArr.length > 0)
-			for (let i = 0; i < selectedTempserviceArr.length; i++) {
-				if (selectedTempserviceArr[i].procedureName.toLowerCase() == item.procedureName.toLowerCase()) {
-					isProcedureExist = true;
-					break;
+	clickOnProcedure = (item, index) => {
+		//SelectedIndex = index
+		let tempserviceArr = [...this.state.ProcedureArr];
+		let selectedTempserviceArr = [...this.state.SelectedProcedureArr];
+		item.procedureName = item.procedureName.replace("Add new Procedure “", "").replace('”', "")
+		let isProcedureExist = false;
+		try {
+			if (selectedTempserviceArr && selectedTempserviceArr.length > 0)
+				for (let i = 0; i < selectedTempserviceArr.length; i++) {
+					if (selectedTempserviceArr[i].procedureName.toLowerCase() == item.procedureName.toLowerCase()) {
+						isProcedureExist = true;
+						break;
+					}
 				}
+		} catch (error) {
+
+		}
+
+		if (isProcedureExist) {
+			Snackbar.show({ text: item.procedureName + ' already added', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
+		} else {
+			normalListBackup = [...this.state.ProcedureArr];
+			selectedListBackup = [...this.state.SelectedProcedureArr];
+
+
+			selectedTempserviceArr.push(item)
+			tempserviceArr.splice(index, 1);
+			try {
+				ProcedureFullArray = _.differenceBy(ProcedureFullArray, [item], 'procedureGuid');
+			} catch (error) { }
+			this.setState({ SelectedProcedureArr: selectedTempserviceArr, ProcedureArr: tempserviceArr, procedureSearchTxt: '', ProcedureArr: ProcedureFullArray })
+
+			if (!item.procedureGuid) {
+				let { actions, signupDetails } = this.props;
+				let params = {
+					"userGuid": signupDetails.UserGuid,
+					"DoctorGuid": signupDetails.doctorGuid,
+					"ClinicGuid": signupDetails.clinicGuid,
+					"Version": "",
+					"Data": {
+						"AppointmentGuid": appoinmentGuid, // item.appointmentGuid,
+						"ProcedureName": item.procedureName,
+						// "ProcedureDesc": item.procedureDesc,
+						"ProcedureGuid": item.procedureGuid,
+					}
+				}
+				actions.callLogin('V14/FuncForDrAppToAddProcedures', 'post', params, signupDetails.accessToken, 'AddProcedure');
 			}
-	} catch (error) {
+		}
+
 
 	}
+	removeSelectedProcedure = (item, index) => {
+		let tempserviceArr = [...this.state.ProcedureArr];
+		let selectedTempserviceArr = [...this.state.SelectedProcedureArr];
 
-	if (isProcedureExist) {
-		Snackbar.show({ text: item.procedureName + ' already added', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-	} else {
 		normalListBackup = [...this.state.ProcedureArr];
 		selectedListBackup = [...this.state.SelectedProcedureArr];
 
-
-		selectedTempserviceArr.push(item)
-		tempserviceArr.splice(index, 1);
-		try {
-			ProcedureFullArray = _.differenceBy(ProcedureFullArray, [item], 'procedureGuid');
-		} catch (error) { }
-		this.setState({ SelectedProcedureArr: selectedTempserviceArr, ProcedureArr: tempserviceArr, procedureSearchTxt: '', ProcedureArr: ProcedureFullArray })
-
-		if (!item.procedureGuid) {
+		tempserviceArr.unshift(item)
+		selectedTempserviceArr.splice(index, 1);
+		this.setState({ SelectedProcedureArr: selectedTempserviceArr, ProcedureArr: tempserviceArr })
+		ProcedureFullArray.push(item)
+	}
+	SearchProcedure = (text) => {
+		var searchResult = _.filter(ProcedureFullArray, function (item) {
+			return item.procedureName.toLowerCase().indexOf(text.toLowerCase()) > -1;
+		});
+		if (searchResult.length == 0) {
+			searchResult.push({
+				"ProcedureDesc": null,
+				// "ProcedureDesc": '',
+				"ProcedureName": "Add new Procedure “" + text + '”'
+			})
+		}
+		this.setState({
+			ProcedureArr: searchResult, procedureSearchTxt: text
+		});
+		if (text.length > 2) {
 			let { actions, signupDetails } = this.props;
 			let params = {
-				"userGuid": signupDetails.UserGuid,
+				"UserGuid": signupDetails.UserGuid,
 				"DoctorGuid": signupDetails.doctorGuid,
 				"ClinicGuid": signupDetails.clinicGuid,
 				"Version": "",
 				"Data": {
-					"AppointmentGuid": appoinmentGuid, // item.appointmentGuid,
-					"ProcedureName": item.procedureName,
-					// "ProcedureDesc": item.procedureDesc,
-					"ProcedureGuid": item.procedureGuid,
+					"SearchText": text
 				}
 			}
-			actions.callLogin('V14/FuncForDrAppToAddProcedures', 'post', params, signupDetails.accessToken, 'AddProcedure');
+			actions.callLogin('V14/FuncForDrAppToSearchForProcedure', 'post', params, signupDetails.accessToken, 'SearchForProcedure');
 		}
+
 	}
-
-
-}
-removeSelectedProcedure = (item, index) => {
-	let tempserviceArr = [...this.state.ProcedureArr];
-	let selectedTempserviceArr = [...this.state.SelectedProcedureArr];
-
-	normalListBackup = [...this.state.ProcedureArr];
-	selectedListBackup = [...this.state.SelectedProcedureArr];
-
-	tempserviceArr.unshift(item)
-	selectedTempserviceArr.splice(index, 1);
-	this.setState({ SelectedProcedureArr: selectedTempserviceArr, ProcedureArr: tempserviceArr })
-	ProcedureFullArray.push(item)
-}
-SearchProcedure = (text) => {
-	var searchResult = _.filter(ProcedureFullArray, function (item) {
-		return item.procedureName.toLowerCase().indexOf(text.toLowerCase()) > -1;
-	});
-	if (searchResult.length == 0) {
-		searchResult.push({
-			"ProcedureDesc": null,
-			// "ProcedureDesc": '',
-			"ProcedureName": "Add new Procedure “" + text + '”'
-		})
-	}
-	this.setState({
-		ProcedureArr: searchResult, procedureSearchTxt: text
-	});
-	if (text.length > 2) {
-		let { actions, signupDetails } = this.props;
-		let params = {
-			"UserGuid": signupDetails.UserGuid,
-			"DoctorGuid": signupDetails.doctorGuid,
-			"ClinicGuid": signupDetails.clinicGuid,
-			"Version": "",
-			"Data": {
-				"SearchText": text
-			}
-		}
-		actions.callLogin('V14/FuncForDrAppToSearchForProcedure', 'post', params, signupDetails.accessToken, 'SearchForProcedure');
-	}
-
-}
 
 	// SearchInvestigation = (text) => {
 	// 	var searchResult = _.filter(InvestigationeFullArray, function (item) {
@@ -2214,17 +2216,17 @@ SearchProcedure = (text) => {
 	getSelectedMMedicineTxt = (item) => {
 		let tempStr = '';
 		if (item.dosages)
-			tempStr =item.dosages +' '+ item.medicineType;
+			tempStr = item.dosages + ' ' + item.medicineType;
 
 		if (item.dosagePattern)
-			tempStr += tempStr ? ', ' + item.dosagePattern :item.dosagePattern;
+			tempStr += tempStr ? ', ' + item.dosagePattern : item.dosagePattern;
 		if (item.medicineTimingFrequency)
-			tempStr += tempStr ? ', ' + item.medicineTimingFrequency :item.medicineTimingFrequency;
+			tempStr += tempStr ? ', ' + item.medicineTimingFrequency : item.medicineTimingFrequency;
 		if (item.durationType && item.durationValue)
-			tempStr += ', ' + item.durationType +' '+item.durationValue;
+			tempStr += ', ' + item.durationType + ' ' + item.durationValue;
 		if (tempStr)
 			tempStr = '(' + tempStr + ')'
-tempStr=item.medicineName + ' '+tempStr
+		tempStr = item.medicineName + ' ' + tempStr
 
 		// let str = item.medicineName;
 		// if (item.strength)
@@ -2258,14 +2260,14 @@ tempStr=item.medicineName + ' '+tempStr
 	}
 	renderSeverityItem = (item, index) => {
 		return (
-			<TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center',marginRight:20}} onPress={() => {
-if(clickItemName == 'Diagnostic'){
-	selectedSeverityGuid = this.state.SeverityDataArray[index].diagnosisStatusGuid;
-	selectedSeverityName = this.state.SeverityDataArray[index].diagnosisStatus;
-}else{
-	selectedSeverityGuid = this.state.SeverityDataArray[index].severityGuid;
-	selectedSeverityName = this.state.SeverityDataArray[index].severityName;
-}	
+			<TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', marginRight: 20 }} onPress={() => {
+				if (clickItemName == 'Diagnostic') {
+					selectedSeverityGuid = this.state.SeverityDataArray[index].diagnosisStatusGuid;
+					selectedSeverityName = this.state.SeverityDataArray[index].diagnosisStatus;
+				} else {
+					selectedSeverityGuid = this.state.SeverityDataArray[index].severityGuid;
+					selectedSeverityName = this.state.SeverityDataArray[index].severityName;
+				}
 				this.setState({ selectedSeverityIndex: index });
 			}}>
 				<CheckBox
@@ -2273,9 +2275,10 @@ if(clickItemName == 'Diagnostic'){
 					value={this.state.selectedSeverityIndex == index}
 					tintColors={{ true: Color.primary, false: Color.unselectedCheckBox }}
 					style={{ height: responsiveFontSize(2.5), width: responsiveFontSize(2.5), color: Color.mediumGrayTxt, margin: 2 }}
+					onValueChange={() => this.setState({ selectedSeverityIndex: index })}
 
 				/>
-				<Text style={{ fontSize: CustomFont.font14, color: Color.optiontext, marginLeft: 10, fontWeight: CustomFont.fontWeight400, fontFamily: CustomFont.fontName, }}>{clickItemName == 'Diagnostic' ? item.diagnosisStatus : item.severityName}</Text>
+				<Text style={{ fontSize: CustomFont.font14, color: Color.optiontext, marginLeft: 7, fontWeight: CustomFont.fontWeight400, fontFamily: CustomFont.fontName, }}>{clickItemName == 'Diagnostic' ? item.diagnosisStatus : item.severityName}</Text>
 			</TouchableOpacity>
 		)
 	}
@@ -2343,7 +2346,7 @@ if(clickItemName == 'Diagnostic'){
 				this.setState({ SelectedSymptomArr: selectedTempserviceArr })
 			}
 			symptomFlag = true;
-		}else if(clickItemName == 'Finding'){
+		} else if (clickItemName == 'Finding') {
 			let tempserviceArr = [...this.state.FindingArr];
 			let selectedTempserviceArr = [...this.state.SelectedFindingArr];
 			if (clickType == 'Add') {
@@ -2352,29 +2355,29 @@ if(clickItemName == 'Diagnostic'){
 				item.severityGuid = selectedSeverityGuid
 				item.since = sincePattern
 				item.notes = this.state.severityNotes;
-		selectedTempserviceArr.push(item)
-			tempserviceArr.splice(clickItemIndex, 1);
-			try {
-				findingFullArray = _.differenceBy(findingFullArray, [item], 'findingGuid');
-			} catch (error) { }
-			this.setState({ SelectedFindingArr: selectedTempserviceArr, findingSearchTxt: '', FindingArr: findingFullArray })
+				selectedTempserviceArr.push(item)
+				tempserviceArr.splice(clickItemIndex, 1);
+				try {
+					findingFullArray = _.differenceBy(findingFullArray, [item], 'findingGuid');
+				} catch (error) { }
+				this.setState({ SelectedFindingArr: selectedTempserviceArr, findingSearchTxt: '', FindingArr: findingFullArray })
 
-			if (!item.findingGuid) {
-				let { actions, signupDetails } = this.props;
-				let params = {
-					"userGuid": signupDetails.UserGuid,
-					"DoctorGuid": signupDetails.doctorGuid,
-					"ClinicGuid": signupDetails.clinicGuid,
-					"Version": "",
-					"Data": {
-						"AppointmentGuid": appoinmentGuid,
-						"FindingName": item.findingName,
-						"FindingDesc": item.findingDesc,
-						"FindingGuid": item.findingGuid,
+				if (!item.findingGuid) {
+					let { actions, signupDetails } = this.props;
+					let params = {
+						"userGuid": signupDetails.UserGuid,
+						"DoctorGuid": signupDetails.doctorGuid,
+						"ClinicGuid": signupDetails.clinicGuid,
+						"Version": "",
+						"Data": {
+							"AppointmentGuid": appoinmentGuid,
+							"FindingName": item.findingName,
+							"FindingDesc": item.findingDesc,
+							"FindingGuid": item.findingGuid,
+						}
 					}
+					actions.callLogin('V1/FuncForDrAppToAddFinding', 'post', params, signupDetails.accessToken, 'AddFinding');
 				}
-				actions.callLogin('V1/FuncForDrAppToAddFinding', 'post', params, signupDetails.accessToken, 'AddFinding');
-			}
 			} else { //update symptom
 				let item = selectedTempserviceArr[clickItemIndex]
 				item.severityName = selectedSeverityName;
@@ -2385,38 +2388,38 @@ if(clickItemName == 'Diagnostic'){
 				this.setState({ SelectedFindingArr: selectedTempserviceArr })
 			}
 			findingFlag = true;
-		}else if(clickItemName == 'Diagnostic'){
+		} else if (clickItemName == 'Diagnostic') {
 			let tempserviceArr = [...this.state.DiagnosticArr];
-		let selectedTempserviceArr = [...this.state.SelectedDiagnosticArr];
+			let selectedTempserviceArr = [...this.state.SelectedDiagnosticArr];
 			if (clickType == 'Add') {
 				let item = tempserviceArr[clickItemIndex]
 				item.diagnosisStatus = selectedSeverityName;
 				item.diagnosisStatusGuid = selectedSeverityGuid
 				item.since = sincePattern
 				item.notes = this.state.severityNotes;
-		selectedTempserviceArr.push(item)
-			tempserviceArr.splice(clickItemIndex, 1);
-			try {
-				diagnosticFullArray = _.differenceBy(diagnosticFullArray, [item], 'diagnosisGuid');
-			} catch (error) { }
+				selectedTempserviceArr.push(item)
+				tempserviceArr.splice(clickItemIndex, 1);
+				try {
+					diagnosticFullArray = _.differenceBy(diagnosticFullArray, [item], 'diagnosisGuid');
+				} catch (error) { }
 
-			this.setState({ SelectedDiagnosticArr: selectedTempserviceArr, diagnosticSearchTxt: '', DiagnosticArr: diagnosticFullArray })
-			if (!item.diagnosisGuid) {
-				let { actions, signupDetails } = this.props;
-				let params = {
-					"userGuid": signupDetails.UserGuid,
-					"DoctorGuid": signupDetails.doctorGuid,
-					"ClinicGuid": signupDetails.clinicGuid,
-					"Version": "",
-					"Data": {
-						"AppointmentGuid": appoinmentGuid,
-						"DiagnosisName": item.diagnosisName,
-						"DiagnosisDesc": item.diagnosisDesc,
-						"DiagnosisGuid": item.diagnosisGuid,
+				this.setState({ SelectedDiagnosticArr: selectedTempserviceArr, diagnosticSearchTxt: '', DiagnosticArr: diagnosticFullArray })
+				if (!item.diagnosisGuid) {
+					let { actions, signupDetails } = this.props;
+					let params = {
+						"userGuid": signupDetails.UserGuid,
+						"DoctorGuid": signupDetails.doctorGuid,
+						"ClinicGuid": signupDetails.clinicGuid,
+						"Version": "",
+						"Data": {
+							"AppointmentGuid": appoinmentGuid,
+							"DiagnosisName": item.diagnosisName,
+							"DiagnosisDesc": item.diagnosisDesc,
+							"DiagnosisGuid": item.diagnosisGuid,
+						}
 					}
+					actions.callLogin('V1/FuncForDrAppToAddDiagnosis', 'post', params, signupDetails.accessToken, 'AddDiagnosis');
 				}
-				actions.callLogin('V1/FuncForDrAppToAddDiagnosis', 'post', params, signupDetails.accessToken, 'AddDiagnosis');
-			}
 			} else { //update symptom
 				let item = selectedTempserviceArr[clickItemIndex]
 				item.diagnosisStatus = selectedSeverityName;
@@ -2427,37 +2430,37 @@ if(clickItemName == 'Diagnostic'){
 				this.setState({ SelectedDiagnosticArr: selectedTempserviceArr })
 			}
 			diagnosticFlag = true;
-		}else if(clickItemName == 'Investigation'){
+		} else if (clickItemName == 'Investigation') {
 			let tempserviceArr = [...this.state.InvestigationArray];
-		let selectedTempserviceArr = [...this.state.SelectedInvestigationArr];
+			let selectedTempserviceArr = [...this.state.SelectedInvestigationArr];
 			if (clickType == 'Add') {
 				let item = tempserviceArr[clickItemIndex]
 				item.notes = this.state.instInstructNotes;
-		selectedTempserviceArr.push(item)
-			tempserviceArr.splice(clickItemIndex, 1);
-			try {
-				InvestigationeFullArray = _.differenceBy(InvestigationeFullArray, [item], 'investigationGuid');
-			} catch (error) { }
-			this.setState({ SelectedInvestigationArr: selectedTempserviceArr, investigationSearchTxt: '', InvestigationArray: InvestigationeFullArray })
+				selectedTempserviceArr.push(item)
+				tempserviceArr.splice(clickItemIndex, 1);
+				try {
+					InvestigationeFullArray = _.differenceBy(InvestigationeFullArray, [item], 'investigationGuid');
+				} catch (error) { }
+				this.setState({ SelectedInvestigationArr: selectedTempserviceArr, investigationSearchTxt: '', InvestigationArray: InvestigationeFullArray })
 
-			if (!item.investigationGuid) {
-				let { actions, signupDetails } = this.props;
-				let params = {
-					"UserGuid": signupDetails.UserGuid,
-					"DoctorGuid": signupDetails.doctorGuid,
-					"ClinicGuid": signupDetails.clinicGuid,
-					"Version": "",
-					"Data": {
-						"AppointmentGuid": appoinmentGuid,
-						"InvestigationName": item.investigationName,
-						"InvestigationDesc": item.investigationDesc,
-						"InvestigationGuid": item.investigationGuid
+				if (!item.investigationGuid) {
+					let { actions, signupDetails } = this.props;
+					let params = {
+						"UserGuid": signupDetails.UserGuid,
+						"DoctorGuid": signupDetails.doctorGuid,
+						"ClinicGuid": signupDetails.clinicGuid,
+						"Version": "",
+						"Data": {
+							"AppointmentGuid": appoinmentGuid,
+							"InvestigationName": item.investigationName,
+							"InvestigationDesc": item.investigationDesc,
+							"InvestigationGuid": item.investigationGuid
+						}
+
 					}
 
+					actions.callLogin('V1/FuncForDrAppToAddInvestigation', 'post', params, signupDetails.accessToken, 'AddInvestigation');
 				}
-
-				actions.callLogin('V1/FuncForDrAppToAddInvestigation', 'post', params, signupDetails.accessToken, 'AddInvestigation');
-			}
 			} else { //update symptom
 				let item = selectedTempserviceArr[clickItemIndex]
 				item.notes = this.state.instInstructNotes;
@@ -2466,30 +2469,30 @@ if(clickItemName == 'Diagnostic'){
 			}
 			investigationFlag = true;
 		}
-		if(this.state.isModalOpenSeverity)
-		this.setState({ isModalOpenSeverity: false });
-		if(this.state.isModalVisibleInstructionInvest)
-		this.setState({ isModalVisibleInstructionInvest: false });
+		if (this.state.isModalOpenSeverity)
+			this.setState({ isModalOpenSeverity: false });
+		if (this.state.isModalVisibleInstructionInvest)
+			this.setState({ isModalVisibleInstructionInvest: false });
 	}
-	getSymptomFindingTxt=(item)=>{
+	getSymptomFindingTxt = (item) => {
 		let tempStr = '';
-            if (item.severityName)
-                tempStr = item.severityName;
-            if (item.since)
-                tempStr += ' ' + item.since;
-            if (tempStr)
-                tempStr = '(' + tempStr + ')'
-				return tempStr;
+		if (item.severityName)
+			tempStr = item.severityName;
+		if (item.since)
+			tempStr += ' ' + item.since;
+		if (tempStr)
+			tempStr = '(' + tempStr + ')'
+		return tempStr;
 	}
-	getDiagnosticTxt=(item)=>{
+	getDiagnosticTxt = (item) => {
 		let tempStr = '';
-            if (item.diagnosisStatus)
-                tempStr = item.diagnosisStatus;
-            if (item.since)
-                tempStr += ' ' + item.since;
-            if (tempStr)
-                tempStr = '(' + tempStr + ')'
-				return tempStr;
+		if (item.diagnosisStatus)
+			tempStr = item.diagnosisStatus;
+		if (item.since)
+			tempStr += ' ' + item.since;
+		if (tempStr)
+			tempStr = '(' + tempStr + ')'
+		return tempStr;
 	}
 	render() {
 		let { actions, signupDetails } = this.props;
@@ -2544,19 +2547,20 @@ if(clickItemName == 'Diagnostic'){
 
 							<View style={{ backgroundColor: Color.white, marginTop: responsiveHeight(1.5), marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), borderRadius: 10 }}>
 								<View style={{ margin: responsiveWidth(4) }}>
-									<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-										<Text style={{ fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, color: Color.yrColor, fontFamily: CustomFont.fontName }}>Symptoms</Text>
-										{signupDetails.isAssistantUser ? null : <TouchableOpacity onPress={() => {
-											let { signupDetails } = this.props;
-											timeRange = Trace.getTimeRange();
-											Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Symptoms', signupDetails.firebaseLocation)
-											Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Symptoms", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
-											this.setState({ isSymptomModalOpen: !this.state.isSymptomModalOpen });
-										}}>
-											{this.state.SelectedSymptomArr && this.state.SelectedSymptomArr.length > 0 ? <Image source={edit_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), margin: 5, resizeMode: 'contain' }} /> : <Image source={plus_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), resizeMode: 'contain', margin: 5 }} />}
-										</TouchableOpacity>}
+									{signupDetails.isAssistantUser ? null : <TouchableOpacity onPress={() => {
+										let { signupDetails } = this.props;
+										timeRange = Trace.getTimeRange();
+										Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Symptoms', signupDetails.firebaseLocation)
+										Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Symptoms", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+										this.setState({ isSymptomModalOpen: !this.state.isSymptomModalOpen });
+									}}>
+										<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+											<Text style={{ fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, color: Color.yrColor, fontFamily: CustomFont.fontName }}>Symptoms</Text>
 
-									</View>
+											{this.state.SelectedSymptomArr && this.state.SelectedSymptomArr.length > 0 ? <Image source={this.state.isSymptomModalOpen ? minus_gray : edit_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), margin: 5, resizeMode: 'contain', tintColor: Color.primary }} /> : <Image source={!this.state.isSymptomModalOpen ? plus_new : minus_gray} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), resizeMode: 'contain', margin: 5, tintColor: this.state.isSymptomModalOpen ? Color.primary : null }} />}
+
+										</View>
+									</TouchableOpacity>}
 
 									<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', marginLeft: responsiveWidth(-1.6) }}>
 										{this.state.SelectedSymptomArr && this.state.SelectedSymptomArr.length > 0 ? this.state.SelectedSymptomArr.map((item, index) => {
@@ -2575,8 +2579,8 @@ if(clickItemName == 'Diagnostic'){
 															break;
 														}
 													}
-												this.setState({ severityNameHeader: item.symptomName, sinceText: item.since ? item.since : '', severityNotes: item.notes ? item.notes : '', isModalOpenSeverity: true, SeverityDataArray: severityArrySymptFind, selectedSeverityIndex: sevIndex,showSinceDropDown:false });
-											
+												this.setState({ severityNameHeader: item.symptomName, sinceText: item.since ? item.since : '', severityNotes: item.notes ? item.notes : '', isModalOpenSeverity: true, SeverityDataArray: severityArrySymptFind, selectedSeverityIndex: sevIndex, showSinceDropDown: false });
+
 											}}>
 												<Text style={styles.txtSelect}>{item.symptomName} {this.getSymptomFindingTxt(item)}</Text>
 												<TouchableOpacity style={styles.crossSelected}
@@ -2647,19 +2651,21 @@ if(clickItemName == 'Diagnostic'){
 
 							<View style={{ backgroundColor: Color.white, marginTop: responsiveHeight(1.5), marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), borderRadius: 10 }}>
 								<View style={{ margin: responsiveWidth(4) }}>
-									<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-										<Text style={{ fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, color: Color.yrColor, fontFamily: CustomFont.fontName }}>Examination Findings</Text>
-										{signupDetails.isAssistantUser ? null : <TouchableOpacity onPress={() => {
-											let { signupDetails } = this.props;
-											timeRange = Trace.getTimeRange();
-											Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Symptoms', signupDetails.firebaseLocation)
-											Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Symptoms", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
-											this.setState({ isFindingModalOpen: !this.state.isFindingModalOpen });
-										}}>
-											{this.state.SelectedFindingArr && this.state.SelectedFindingArr.length > 0 ? <Image source={edit_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), margin: 5, resizeMode: 'contain' }} /> : <Image source={plus_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), resizeMode: 'contain', margin: 5 }} />}
-										</TouchableOpacity>}
+									{signupDetails.isAssistantUser ? null : <TouchableOpacity onPress={() => {
+										let { signupDetails } = this.props;
+										timeRange = Trace.getTimeRange();
+										Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Symptoms', signupDetails.firebaseLocation)
+										Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Symptoms", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+										this.setState({ isFindingModalOpen: !this.state.isFindingModalOpen });
+									}}>
+										<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+											<Text style={{ fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, color: Color.yrColor, fontFamily: CustomFont.fontName }}>Examination Findings</Text>
 
-									</View>
+											{this.state.SelectedFindingArr && this.state.SelectedFindingArr.length > 0 ? <Image source={this.state.isFindingModalOpen ? minus_gray : edit_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), margin: 5, resizeMode: 'contain', tintColor: Color.primary }} /> : <Image source={!this.state.isFindingModalOpen ? plus_new : minus_gray} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), resizeMode: 'contain', margin: 5, tintColor: this.state.isFindingModalOpen ? Color.primary : null }} />}
+
+
+										</View>
+									</TouchableOpacity>}
 									<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', marginLeft: responsiveWidth(-1.6) }}>
 										{this.state.SelectedFindingArr && this.state.SelectedFindingArr.length > 0 ? this.state.SelectedFindingArr.map((item, index) => {
 											return (<TouchableOpacity style={styles.selectedView} onPress={() => {
@@ -2677,8 +2683,8 @@ if(clickItemName == 'Diagnostic'){
 															break;
 														}
 													}
-												this.setState({ severityNameHeader: item.findingName, sinceText: item.since ? item.since : '', severityNotes: item.notes ? item.notes : '', isModalOpenSeverity: true, SeverityDataArray: severityArrySymptFind, selectedSeverityIndex: sevIndex,showSinceDropDown:false });
-											
+												this.setState({ severityNameHeader: item.findingName, sinceText: item.since ? item.since : '', severityNotes: item.notes ? item.notes : '', isModalOpenSeverity: true, SeverityDataArray: severityArrySymptFind, selectedSeverityIndex: sevIndex, showSinceDropDown: false });
+
 											}}>
 												<Text style={styles.txtSelect}>{item.findingName} {this.getSymptomFindingTxt(item)}</Text>
 												<TouchableOpacity style={styles.crossSelected}
@@ -2736,21 +2742,23 @@ if(clickItemName == 'Diagnostic'){
 							{/* -------diagnostic section--------- */}
 							<View style={{ backgroundColor: Color.white, marginTop: responsiveHeight(1.5), marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), borderRadius: 10 }}>
 								<View style={{ margin: responsiveWidth(4) }}>
-									<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-										<Text style={{ fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, color: Color.yrColor, fontFamily: CustomFont.fontName }}>Diagnosis</Text>
-										{signupDetails.isAssistantUser ? null :
-											<TouchableOpacity onPress={() => {
-												let { signupDetails } = this.props;
-												timeRange = Trace.getTimeRange();
-												Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Diagnosis', signupDetails.firebaseLocation)
-												Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Diagnosis", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
-												this.setState({
-													isDiagnosticModalOpen: !this.state.isDiagnosticModalOpen
-												});
-											}}>
-												{this.state.SelectedDiagnosticArr && this.state.SelectedDiagnosticArr.length > 0 ? <Image source={edit_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), margin: 5, resizeMode: 'contain' }} /> : <Image source={plus_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), resizeMode: 'contain', margin: 5 }} />}
-											</TouchableOpacity>}
-									</View>
+									{signupDetails.isAssistantUser ? null :
+										<TouchableOpacity onPress={() => {
+											let { signupDetails } = this.props;
+											timeRange = Trace.getTimeRange();
+											Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Diagnosis', signupDetails.firebaseLocation)
+											Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Diagnosis", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+											this.setState({
+												isDiagnosticModalOpen: !this.state.isDiagnosticModalOpen
+											});
+										}}>
+											<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+												<Text style={{ fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, color: Color.yrColor, fontFamily: CustomFont.fontName }}>Diagnosis</Text>
+
+												{this.state.SelectedDiagnosticArr && this.state.SelectedDiagnosticArr.length > 0 ? <Image source={this.state.isDiagnosticModalOpen ? minus_gray : edit_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), margin: 5, resizeMode: 'contain', tintColor: Color.primary }} /> : <Image source={!this.state.isDiagnosticModalOpen ? plus_new : minus_gray} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), resizeMode: 'contain', margin: 5, tintColor: this.state.isDiagnosticModalOpen ? Color.primary : null }} />}
+
+											</View>
+										</TouchableOpacity>}
 
 
 
@@ -2771,8 +2779,8 @@ if(clickItemName == 'Diagnostic'){
 															break;
 														}
 													}
-												this.setState({ severityNameHeader: item.diagnosisName, sinceText: item.since ? item.since : '', severityNotes: item.notes ? item.notes : '', isModalOpenSeverity: true, SeverityDataArray: severityArryDiagnostic, selectedSeverityIndex: sevIndex,showSinceDropDown:false });
-											
+												this.setState({ severityNameHeader: item.diagnosisName, sinceText: item.since ? item.since : '', severityNotes: item.notes ? item.notes : '', isModalOpenSeverity: true, SeverityDataArray: severityArryDiagnostic, selectedSeverityIndex: sevIndex, showSinceDropDown: false });
+
 											}}>
 												<Text style={styles.txtSelect}>{item.diagnosisName} {this.getDiagnosticTxt(item)}</Text>
 												<TouchableOpacity style={styles.crossSelected}
@@ -2834,19 +2842,21 @@ if(clickItemName == 'Diagnostic'){
 							{/* -------Medicine section--------- */}
 							<View style={{ backgroundColor: Color.white, marginTop: responsiveHeight(1.5), marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), borderRadius: 10 }}>
 								<View style={{ margin: responsiveWidth(4) }}>
-									<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-										<Text style={{ fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, color: Color.yrColor, fontFamily: CustomFont.fontName }}>Medicines</Text>
-										{signupDetails.isAssistantUser ? null :
-											<TouchableOpacity onPress={() => {
-												let { signupDetails } = this.props;
-												timeRange = Trace.getTimeRange();
-												Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Medicines', signupDetails.firebaseLocation)
-												Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Medicines", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
-												this.setState({ isSearchStart: false, isMedicineModalOpen: !this.state.isMedicineModalOpen, medTiming: medTiming, medicineSearchTxt: '', MedicineArr: medicineFullArray })
-											}}>
-												{this.state.SelectedMedicineArr && this.state.SelectedMedicineArr.length > 0 ? <Image source={edit_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), margin: 5, resizeMode: 'contain' }} /> : <Image source={plus_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), resizeMode: 'contain', margin: 5 }} />}
-											</TouchableOpacity>}
-									</View>
+									{signupDetails.isAssistantUser ? null :
+										<TouchableOpacity onPress={() => {
+											let { signupDetails } = this.props;
+											timeRange = Trace.getTimeRange();
+											Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Medicines', signupDetails.firebaseLocation)
+											Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Medicines", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+											this.setState({ isSearchStart: false, isMedicineModalOpen: !this.state.isMedicineModalOpen, medTiming: medTiming, medicineSearchTxt: '', MedicineArr: medicineFullArray })
+										}}>
+											<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+												<Text style={{ fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, color: Color.yrColor, fontFamily: CustomFont.fontName }}>Medicines</Text>
+
+												{this.state.SelectedMedicineArr && this.state.SelectedMedicineArr.length > 0 ? <Image source={this.state.isMedicineModalOpen ? minus_gray : edit_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), margin: 5, resizeMode: 'contain', tintColor: Color.primary }} /> : <Image source={!this.state.isMedicineModalOpen ? plus_new : minus_gray} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), resizeMode: 'contain', margin: 5, tintColor: this.state.isMedicineModalOpen ? Color.primary : null }} />}
+
+											</View>
+										</TouchableOpacity>}
 
 									<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', marginLeft: responsiveWidth(-1.6) }}>
 										{this.state.SelectedMedicineArr && this.state.SelectedMedicineArr.length > 0 ? this.state.SelectedMedicineArr.map((item, index) => {
@@ -2908,7 +2918,7 @@ if(clickItemName == 'Diagnostic'){
 											}, this) : null}
 										</View>
 										{
-											this.state.isSearchStart && this.state.medicineSearchTxt?
+											this.state.isSearchStart && this.state.medicineSearchTxt ?
 												<TouchableOpacity onPress={this.addPressClick} style={{ margin: responsiveWidth(3), alignItems: 'center', justifyContent: 'center' }}>
 													<Text style={{ color: Color.primaryBlue, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: CustomFont.fontWeight700 }}> + Add '{this.state.medicineSearchTxt}' as a New Medicine</Text>
 												</TouchableOpacity> : null
@@ -2923,38 +2933,40 @@ if(clickItemName == 'Diagnostic'){
 
 							<View style={{ backgroundColor: Color.white, marginTop: responsiveHeight(1.5), marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), borderRadius: 10 }}>
 								<View style={{ margin: responsiveWidth(4) }}>
-									<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-										<Text style={{ fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, color: Color.yrColor, fontFamily: CustomFont.fontName }}>Investigations</Text>
-										{signupDetails.isAssistantUser ? null :
-											<TouchableOpacity onPress={() => {
+									{signupDetails.isAssistantUser ? null :
+										<TouchableOpacity onPress={() => {
 
-												let { signupDetails } = this.props;
-												timeRange = Trace.getTimeRange();
-												Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Investigation', signupDetails.firebaseLocation)
-												Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Investigation", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+											let { signupDetails } = this.props;
+											timeRange = Trace.getTimeRange();
+											Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Investigation', signupDetails.firebaseLocation)
+											Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Investigation", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 
-												this.setState({
-													// awardsTitle: '',
-													// awardsProvider: '',
-													// awardsYear: '',
-													isModalVisibleInvestigations: !this.state.isModalVisibleInvestigations,
-													InvestigationArray: InvestigationeFullArray
-												})
-											}}>
-												{this.getSelectedInvestigationsTxt() ? <Image source={edit_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), margin: 5, resizeMode: 'contain' }} /> : <Image source={plus_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), resizeMode: 'contain', margin: 5 }} />}
-											</TouchableOpacity>}
-									</View>
+											this.setState({
+												// awardsTitle: '',
+												// awardsProvider: '',
+												// awardsYear: '',
+												isModalVisibleInvestigations: !this.state.isModalVisibleInvestigations,
+												InvestigationArray: InvestigationeFullArray
+											})
+										}}>
+											<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+												<Text style={{ fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, color: Color.yrColor, fontFamily: CustomFont.fontName }}>Investigations</Text>
+
+												{this.getSelectedInvestigationsTxt() ? <Image source={this.state.isModalVisibleInvestigations ? minus_gray : edit_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), margin: 5, resizeMode: 'contain', tintColor: Color.primary }} /> : <Image source={!this.state.isModalVisibleInvestigations ? plus_new : minus_gray} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), resizeMode: 'contain', margin: 5, tintColor: this.state.isModalVisibleInvestigations ? Color.primary : null }} />}
+
+											</View>
+										</TouchableOpacity>}
 
 									<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', marginLeft: responsiveWidth(-1.6) }}>
 										{this.state.SelectedInvestigationArr && this.state.SelectedInvestigationArr.length > 0 ? this.state.SelectedInvestigationArr.map((item, index) => {
-											return (<TouchableOpacity style={styles.selectedView}  onPress={() => {
+											return (<TouchableOpacity style={styles.selectedView} onPress={() => {
 												clickItemIndex = index;
 												clickItemName = 'Investigation';
 												clickType = 'Update';
 												this.setState({ severityNameHeader: item.investigationName, instInstructNotes: item.notes ? item.notes : '', isModalVisibleInstructionInvest: true });
-											
+
 											}}>
-												<Text style={styles.txtSelect}>{item.investigationName} {item.notes ? '(' + item.notes  + ')' : ''}</Text>
+												<Text style={styles.txtSelect}>{item.investigationName} {item.notes ? '(' + item.notes + ')' : ''}</Text>
 												<TouchableOpacity style={styles.crossSelected}
 													onPress={() => {
 														investigationFlag = true;
@@ -3026,22 +3038,23 @@ if(clickItemName == 'Diagnostic'){
 
 							<View style={{ backgroundColor: Color.white, marginTop: responsiveHeight(1.5), marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), borderRadius: 10 }}>
 								<View style={{ margin: responsiveWidth(4) }}>
-									<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-										<Text style={{ fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, color: Color.yrColor, fontFamily: CustomFont.fontName }}>Instructions</Text>
-										{signupDetails.isAssistantUser ? null :
-											<TouchableOpacity onPress={() => {
-												let { signupDetails } = this.props;
-												timeRange = Trace.getTimeRange();
-												Trace.startTrace(timeRange, signupDetails.mobile, signupDetails.age, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Instructions', signupDetails.firebaseLocation)
-												Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Instructions", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
-												this.setState({
-													isModalVisibleInstruction: !this.state.isModalVisibleInstruction,
-													InstructionArray: InstructionFullArray
-												})
-											}}>
-												{this.state.InstructionArray && this.state.InstructionArray.length > 0 && this.getSelectedInstructionTxt() ? <Image source={edit_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), margin: 5, resizeMode: 'contain' }} /> : <Image source={plus_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), resizeMode: 'contain', margin: 5 }} />}
-											</TouchableOpacity>}
-									</View>
+									{signupDetails.isAssistantUser ? null :
+										<TouchableOpacity onPress={() => {
+											let { signupDetails } = this.props;
+											timeRange = Trace.getTimeRange();
+											Trace.startTrace(timeRange, signupDetails.mobile, signupDetails.age, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Instructions', signupDetails.firebaseLocation)
+											Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Instructions", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+											this.setState({
+												isModalVisibleInstruction: !this.state.isModalVisibleInstruction,
+												InstructionArray: InstructionFullArray
+											})
+										}}>
+											<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+												<Text style={{ fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, color: Color.yrColor, fontFamily: CustomFont.fontName }}>Instructions</Text>
+
+												{this.state.InstructionArray && this.state.InstructionArray.length > 0 && this.getSelectedInstructionTxt() ? <Image source={this.state.isModalVisibleInstruction ? minus_gray : edit_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), margin: 5, resizeMode: 'contain', tintColor: Color.primary }} /> : <Image source={!this.state.isModalVisibleInstruction ? plus_new : minus_gray} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), resizeMode: 'contain', margin: 5, tintColor: this.state.isModalVisibleInstruction ? Color.primary : null }} />}
+											</View>
+										</TouchableOpacity>}
 
 									<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', marginLeft: responsiveWidth(-1.6) }}>
 										{this.state.SelectedInstructionArr && this.state.SelectedInstructionArr.length > 0 ? this.state.SelectedInstructionArr.map((item, index) => {
@@ -3114,19 +3127,21 @@ if(clickItemName == 'Diagnostic'){
 
 							<View style={{ backgroundColor: Color.white, marginTop: responsiveHeight(1.5), marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), borderRadius: 10 }}>
 								<View style={{ margin: responsiveWidth(4) }}>
-									<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-										<Text style={{ fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, color: Color.yrColor, fontFamily: CustomFont.fontName }}>Procedures</Text>
-										{signupDetails.isAssistantUser ? null : <TouchableOpacity onPress={() => {
-											let { signupDetails } = this.props;
-											timeRange = Trace.getTimeRange();
-											Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Procedure', signupDetails.firebaseLocation)
-											Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Procedure", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
-											this.setState({ isProcedureModalOpen: !this.state.isProcedureModalOpen });
-										}}>
-											{this.state.SelectedProcedureArr && this.state.SelectedProcedureArr.length > 0 ? <Image source={edit_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), margin: 5, resizeMode: 'contain' }} /> : <Image source={plus_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), resizeMode: 'contain', margin: 5 }} />}
-										</TouchableOpacity>}
+									{signupDetails.isAssistantUser ? null : <TouchableOpacity onPress={() => {
+										let { signupDetails } = this.props;
+										timeRange = Trace.getTimeRange();
+										Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Procedure', signupDetails.firebaseLocation)
+										Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Procedure", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+										this.setState({ isProcedureModalOpen: !this.state.isProcedureModalOpen });
+									}}>
+										<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+											<Text style={{ fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, color: Color.yrColor, fontFamily: CustomFont.fontName }}>Procedures</Text>
 
-									</View>
+											{this.state.SelectedProcedureArr && this.state.SelectedProcedureArr.length > 0 ? <Image source={this.state.isProcedureModalOpen ? minus_gray : edit_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), margin: 5, resizeMode: 'contain', tintColor: Color.primary }} /> : <Image source={!this.state.isProcedureModalOpen ? plus_new : minus_gray} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), resizeMode: 'contain', margin: 5, tintColor: this.state.isProcedureModalOpen ? Color.primary : null }} />}
+
+
+										</View>
+									</TouchableOpacity>}
 
 									<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', marginLeft: responsiveWidth(-1.6) }}>
 										{this.state.SelectedProcedureArr && this.state.SelectedProcedureArr.length > 0 ? this.state.SelectedProcedureArr.map((item, index) => {
@@ -3198,18 +3213,20 @@ if(clickItemName == 'Diagnostic'){
 
 							<View style={{ backgroundColor: Color.white, marginTop: responsiveHeight(1.5), marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), borderRadius: 10 }}>
 								<View style={{ margin: responsiveWidth(4) }}>
-									<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-										<Text style={{ fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, color: Color.yrColor, fontFamily: CustomFont.fontName }}>Notes</Text>
-										{signupDetails.isAssistantUser ? null :
-											<TouchableOpacity onPress={() => {
-												let timeRange = Trace.getTimeRange();
-												Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + "Consultation_Notes", signupDetails.firebaseLocation);
-												Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Consultation_Notes", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
-												this.setState({ isModalVisibleAbout: !this.state.isModalVisibleAbout })
-											}}>
-												{this.state.notesData && this.state.notesData.length > 0 ? <Image source={edit_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), margin: 5, resizeMode: 'contain' }} /> : <Image source={plus_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), resizeMode: 'contain', margin: 5 }} />}
-											</TouchableOpacity>}
-									</View>
+									{signupDetails.isAssistantUser ? null :
+										<TouchableOpacity onPress={() => {
+											let timeRange = Trace.getTimeRange();
+											Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + "Consultation_Notes", signupDetails.firebaseLocation);
+											Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Consultation_Notes", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+											this.setState({ isModalVisibleAbout: !this.state.isModalVisibleAbout })
+										}}>
+											<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+												<Text style={{ fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, color: Color.yrColor, fontFamily: CustomFont.fontName }}>Notes</Text>
+
+												{this.state.notesData && this.state.notesData.length > 0 ? <Image source={this.state.isModalVisibleAbout ? minus_gray : edit_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), margin: 5, resizeMode: 'contain', tintColor: Color.primary }} /> : <Image source={!this.state.isModalVisibleAbout ? plus_new : minus_gray} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), resizeMode: 'contain', margin: 5, tintColor: this.state.isModalVisibleAbout ? Color.primary : null }} />}
+
+											</View>
+										</TouchableOpacity>}
 									{this.state.isModalVisibleAbout ? <View>
 										<TextInput blurOnSubmit={false} returnKeyType="next"
 											onFocus={() => this.callOnFocus('8')}
@@ -3424,57 +3441,58 @@ if(clickItemName == 'Diagnostic'){
 				<Modal isVisible={this.state.isModalOpenSeverity} avoidKeyboard={true}
 					onRequestClose={() => this.setState({ isModalOpenSeverity: false })}>
 					<View style={styles.modelViewSeverity}>
-					<ScrollView style={{marginTop:20}} keyboardShouldPersistTaps='always'>
-						<View style={{ marginBottom: responsiveHeight(20) }}>
-							<View style={{ margin: responsiveWidth(5) }}>
-								<View style={{ height: responsiveHeight(7), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-									<View >
-										<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font18, color: Color.black, fontWeight: CustomFont.fontWeight700, }}>{this.state.severityNameHeader}</Text>
+						<ScrollView style={{ marginTop: 20 }} keyboardShouldPersistTaps='always'>
+							<View style={{ marginBottom: responsiveHeight(20) }}>
+								<View style={{ margin: responsiveWidth(5) }}>
+									<View style={{ height: responsiveHeight(7), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+										<View >
+											<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font18, color: Color.black, fontWeight: CustomFont.fontWeight700, }}>{this.state.severityNameHeader}</Text>
+										</View>
+										<TouchableOpacity onPress={() => this.setState({ isModalOpenSeverity: false })}>
+											<Image source={cross_close} style={{ tintColor: Color.primary, height: responsiveFontSize(2.5), width: responsiveFontSize(2.5), margin: 10, resizeMode: 'contain' }} />
+										</TouchableOpacity>
 									</View>
-									<TouchableOpacity onPress={() => this.setState({ isModalOpenSeverity: false })}>
-										<Image source={cross_close} style={{ tintColor: Color.primary, height: responsiveFontSize(2.5), width: responsiveFontSize(2.5), margin: 10, resizeMode: 'contain' }} />
+
+									<Text style={{ color: Color.patientSearchName, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: '700', marginTop: 10 }}>Since</Text>
+									<TextInput onBlur={this.callIsBlur2} onFocus={this.callIsFucused2} keyboardType={'phone-pad'} style={[styles.createInputStyle, { borderColor: this.state.InpborderColor2 }]} placeholder="1 day" placeholderTextColor={Color.placeHolderColor} value={this.state.sinceText} maxLength={selectedInputTxtLength} onChangeText={(text) => this.handleSinceData(text)} ref='search' returnKeyType='done' />
+									{this.state.sinceText && this.state.showSinceDropDown ?
+										<View style={{
+											borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,
+											borderBottomColor: Color.createInputBorder, borderTopColor: Color.white, marginTop: responsiveHeight(-.8)
+										}}><FlatList style={{ backgroundColor: '#fafafa' }}
+											data={this.state.sinceDropdownArr}
+											renderItem={({ item, index }) => (
+												<TouchableOpacity style={{ height: responsiveHeight(7), justifyContent: 'flex-start' }}
+													onPress={() => this.clickOnSince(item)}>
+													<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }}>{item.value}</Text>
+												</TouchableOpacity>
+											)}
+											keyExtractor={(item, index) => index.toString()}
+											/>
+										</View> : null}
+									<Text style={{ color: Color.patientSearchName, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: '700', marginTop: 15, marginBottom: 20 }}>
+										Severity
+									</Text>
+									<FlatList
+										data={this.state.SeverityDataArray}
+										horizontal={true}
+										showsHorizontalScrollIndicator={false}
+										renderItem={({ item, index }) => this.renderSeverityItem(item, index)}
+										keyExtractor={(item, index) => index.toString()}
+									/>
+									<Text style={{ color: Color.patientSearchName, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: '700', marginTop: 20 }}>
+										Notes</Text>
+									<TextInput returnKeyType="done" style={{ height: responsiveHeight(10), borderColor: Color.createInputBorder, borderWidth: 1, borderRadius: 5, backgroundColor: Color.white, fontSize: CustomFont.font14, color: Color.placeHolderColor, paddingLeft: 10, paddingRight: 10, marginTop: 15 }} multiline={true} numberOfLines={4} placeholder="Enter Notes" placeholderTextColor={Color.placeHolderColor} onChangeText={(severityNotes) => {
+										this.setState({ severityNotes });
+									}} value={this.state.severityNotes} />
+
+									<TouchableOpacity style={{ alignItems: 'center', marginBottom: responsiveHeight(2.5), justifyContent: 'center', borderRadius: 5, height: responsiveHeight(6), backgroundColor: Color.primary, marginTop: responsiveHeight(5) }} onPress={() => {
+										this.saveSeverity()
+									}}>
+										<Text style={{ fontFamily: CustomFont.fontName, color: Color.white, fontSize: CustomFont.font16, textAlign: 'center' }}>Save</Text>
 									</TouchableOpacity>
 								</View>
-
-								<Text style={{ color: Color.patientSearchName, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: '700', marginTop: 10 }}>Since</Text>
-								<TextInput onBlur={this.callIsBlur2} onFocus={this.callIsFucused2} keyboardType={'phone-pad'} style={[styles.createInputStyle, { borderColor: this.state.InpborderColor2 }]} placeholder="1 day" placeholderTextColor={Color.placeHolderColor} value={this.state.sinceText} maxLength={selectedInputTxtLength} onChangeText={(text) => this.handleSinceData(text)} ref='search' returnKeyType='done' />
-								{this.state.sinceText && this.state.showSinceDropDown ?
-									<View style={{
-										borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,
-										borderBottomColor: Color.createInputBorder, borderTopColor: Color.white, marginTop: responsiveHeight(-.8)
-									}}><FlatList style={{ backgroundColor: '#fafafa' }}
-										data={this.state.sinceDropdownArr}
-										renderItem={({ item, index }) => (
-											<TouchableOpacity style={{ height: responsiveHeight(7), justifyContent: 'flex-start' }}
-												onPress={() => this.clickOnSince(item)}>
-												<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }}>{item.value}</Text>
-											</TouchableOpacity>
-										)}
-										keyExtractor={(item, index) => index.toString()}
-										/>
-									</View> : null}
-								<Text style={{ color: Color.patientSearchName, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: '700', marginTop: 15,marginBottom:20 }}>
-									Severity
-								</Text>
-								<FlatList
-									data={this.state.SeverityDataArray}
-									horizontal={true}
-									renderItem={({ item, index }) => this.renderSeverityItem(item, index)}
-									keyExtractor={(item, index) => index.toString()}
-								/>
-								<Text style={{ color: Color.patientSearchName, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: '700', marginTop: 20 }}>
-									Notes</Text>
-								<TextInput returnKeyType="done" style={{ height: responsiveHeight(10), borderColor: Color.createInputBorder, borderWidth: 1, borderRadius: 5, backgroundColor: Color.white, fontSize: CustomFont.font14, color: Color.placeHolderColor, paddingLeft: 10, paddingRight: 10, marginTop: 15 }} multiline={true} numberOfLines={4} placeholder="Enter Notes" placeholderTextColor={Color.placeHolderColor} onChangeText={(severityNotes) => {
-									this.setState({ severityNotes });
-								}} value={this.state.severityNotes} />
-
-								<TouchableOpacity style={{ alignItems: 'center', marginBottom: responsiveHeight(2.5), justifyContent: 'center', borderRadius: 5, height: responsiveHeight(6), backgroundColor: Color.primary, marginTop: responsiveHeight(5) }} onPress={() => {
-									this.saveSeverity()
-								}}>
-									<Text style={{ fontFamily: CustomFont.fontName, color: Color.white, fontSize: CustomFont.font16, textAlign: 'center' }}>Save</Text>
-								</TouchableOpacity>
 							</View>
-						</View>
 						</ScrollView>
 					</View>
 				</Modal>
@@ -3484,7 +3502,7 @@ if(clickItemName == 'Diagnostic'){
 				<Modal isVisible={this.state.isModalVisibleInstructionInvest} avoidKeyboard={true}
 					onRequestClose={() => this.setState({ isModalVisibleInstructionInvest: false })}>
 					<View style={[styles.modelView3dots, { height: responsiveHeight(50) }]}>
-						<ScrollView style={{marginTop:20}}>
+						<ScrollView style={{ marginTop: 20 }}>
 							<View style={{ marginBottom: responsiveHeight(32) }}>
 								<View style={{ margin: responsiveWidth(5) }}>
 									<View style={{ height: responsiveHeight(7), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -3500,9 +3518,9 @@ if(clickItemName == 'Diagnostic'){
 									<View>
 										<Text style={{ color: Color.patientSearchName, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: '700', marginBottom: 10 }}>
 											Notes</Text>
-										<TextInput returnKeyType="done" style={{ height: responsiveHeight(10), borderColor: Color.createInputBorder, borderWidth: 1, borderRadius: 5, backgroundColor: Color.white, fontSize: CustomFont.font14, color: Color.placeHolderColor, paddingLeft: 10, paddingRight: 10 }} multiline={true} numberOfLines={3} placeholder="Enter Notes"  placeholderTextColor={Color.placeHolderColor} onChangeText={(instInstructNotes) => {
-									this.setState({ instInstructNotes });
-								}} value={this.state.instInstructNotes}></TextInput>
+										<TextInput returnKeyType="done" style={{ height: responsiveHeight(10), borderColor: Color.createInputBorder, borderWidth: 1, borderRadius: 5, backgroundColor: Color.white, fontSize: CustomFont.font14, color: Color.placeHolderColor, paddingLeft: 10, paddingRight: 10 }} multiline={true} numberOfLines={3} placeholder="Enter Notes" placeholderTextColor={Color.placeHolderColor} onChangeText={(instInstructNotes) => {
+											this.setState({ instInstructNotes });
+										}} value={this.state.instInstructNotes}></TextInput>
 										<View style={{ width: '100%', flex: 1, alignItems: 'center', justifyContent: 'center', borderRadius: 4, height: responsiveHeight(11), backgroundColor: Color.white, borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
 											<TouchableOpacity style={{ alignItems: 'center', marginBottom: responsiveHeight(2.5), justifyContent: 'center', borderRadius: 5, height: responsiveHeight(6), width: responsiveWidth(93), backgroundColor: '#5715D2', marginTop: 20 }} onPress={() => {
 												this.saveSeverity()

@@ -446,6 +446,7 @@ class MedicineDetails extends React.Component {
 								items={this.state.whenToTakeArr}
 								containerStyle={{ borderRadius: responsiveWidth(2), height: responsiveHeight(6), marginTop: responsiveHeight(1.6) }}
 								style={{ backgroundColor: '#ffffff', color: Color.textGrey }}
+								textStyle={{ fontSize: CustomFont.font16 }}
 								itemStyle={{
 									justifyContent: 'flex-start'
 								}}
@@ -453,9 +454,9 @@ class MedicineDetails extends React.Component {
 								onChangeItem={item => {
 									medicineTimingFrequency = item.value;
 								}}
-								globalTextStyle={{ color: Color.fontColor }}
+								globalTextStyle={{ color: Color.fontColor, fontSize: CustomFont.font16 }}
 								placeholder="Empty Stomach"
-								placeholderTextColor={Color.placeHolderColor}
+								placeholderStyle={{ color: Color.placeHolderColor, fontSize: CustomFont.font16 }}
 							/>
 							{/* ------- Duration------- */}
 							<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>Duration</Text>

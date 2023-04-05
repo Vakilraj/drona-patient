@@ -452,7 +452,7 @@ class FileList extends React.Component {
                                 }}>Add New</Text>
                             </TouchableOpacity>
                         </View>
-                        <View style={{ marginStart: 10, marginEnd: 10, marginTop: 15, marginBottom: 15 }}>
+                        <View style={{ marginStart: 8, marginEnd: 8, marginTop: 15, marginBottom: 15 }}>
                             {finalRecordTypeList && finalRecordTypeList.length > 0 ? <FlatList
                                 data={finalRecordTypeList}
                                 horizontal

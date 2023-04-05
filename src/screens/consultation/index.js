@@ -237,7 +237,7 @@ class CN extends React.Component {
 
 					// let data = newProps.responseData.data.patientDetail;
 					// this.setState({ data: data });
-					this.setState({ responseDataIndexTab: newProps.responseData.data});
+					this.setState({ responseDataIndexTab: newProps.responseData.data });
 				} else {
 					Snackbar.show({ text: newProps.responseData.statusMessage, duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 				}
@@ -324,7 +324,7 @@ class CN extends React.Component {
 						<Image source={Edit} style={{ marginRight: responsiveWidth(1), height: responsiveWidth(4), width: responsiveWidth(4), resizeMode: 'contain' }} />
 					</TouchableOpacity>
 				</View>
-{signupDetails.isAssistantUser ? <View style={{ flex: 1, backgroundColor: Color.white, }}>
+				{signupDetails.isAssistantUser ? <View style={{ flex: 1, backgroundColor: Color.white, }}>
 					{this.state.responseDataIndexTab ? <ScrollableTabView
 
 						renderTabBar={() => (
@@ -340,12 +340,12 @@ class CN extends React.Component {
 
 						}}
 					>
-					<FilesTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Files'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item}  data={this.props.navigation.getParam("data", null)} />
+						<FilesTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Files'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} data={this.props.navigation.getParam("data", null)} />
 						<VitalsTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Vitals'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} />
 						<MadicalHistryTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Medical History'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} />
 						{/* <PastPrescriptionTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Past Prescriptions'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} /> */}
 					</ScrollableTabView> : null}
-				</View>:<View style={{ flex: 1, backgroundColor: Color.white, }}>
+				</View> : <View style={{ flex: 1, backgroundColor: Color.white, }}>
 					{this.state.responseDataIndexTab ? <ScrollableTabView
 
 						renderTabBar={() => (
@@ -363,11 +363,11 @@ class CN extends React.Component {
 					>
 						<VitalsTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Vitals'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} />
 						<PastPrescriptionTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Past Prescriptions'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} />
-						<FilesTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Files'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item}  data={this.props.navigation.getParam("data", null)} />
+						<FilesTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Files'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} data={this.props.navigation.getParam("data", null)} />
 						<MadicalHistryTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Medical History'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} />
 					</ScrollableTabView> : null}
 				</View>}
-				
+
 				{
 					item.appointmentStatus == 'No Show' ? null :
 						<View style={{ backgroundColor: Color.white, flexDirection: 'row', alignItems: 'center', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 10 }}>
@@ -395,7 +395,7 @@ class CN extends React.Component {
 								</View> :
 								<View>
 									<TouchableOpacity style={{ height: responsiveHeight(6), width: responsiveWidth(78), justifyContent: 'center', alignItems: 'center', marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), backgroundColor: Color.primary, borderRadius: 5, marginTop: 7, marginBottom: 7 }}
-										onPress={() => { this.props.navigation.navigate('AppoinmentTimesShow', { from: 'normal' }) }}>
+										onPress={() => { this.props.navigation.navigate('AppoinmentTimesShow', { from: 'newConsultant', item: item }) }}>
 										<Text style={{ fontFamily: CustomFont.fontName, color: Color.white, fontSize: CustomFont.font14, textAlign: 'center', fontWeight: CustomFont.fontWeight600 }}>Add New Appointment</Text>
 									</TouchableOpacity>
 								</View>}

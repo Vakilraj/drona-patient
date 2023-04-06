@@ -915,7 +915,7 @@ class AddNewPatients extends React.Component {
 										<TextInput returnKeyType="done"
 											onFocus={() => this.callOnFocus('3')}
 											onBlur={() => this.callOnBlur('3')}
-											style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: responsiveHeight(6), borderColor: this.state.isMale ? Color.liveBg :(this.state.isGender ? Color.primary : Color.createInputBorder), borderWidth: 1.5, borderRadius: 4, backgroundColor: this.state.isMale ? Color.genderSelection : Color.white, marginEnd: 5, }} keyboardType={'phone-pad'} maxLength={3}
+											style={[styles.createInputStyle, { borderColor: this.state.isAge ? Color.primary :  this.state.fld3, borderWidth: 1 }]} keyboardType={'phone-pad'} maxLength={3}
 											ref='age' onChangeText={age => {
 												this.setState({ age, showDiscard: true, isAge: false })
 												if (Validator.isMobileValidate(age) || age === '') {  //!mobile ||

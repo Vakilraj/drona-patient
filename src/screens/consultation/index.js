@@ -246,7 +246,7 @@ class CN extends React.Component {
 				if (newProps.responseData.statusCode == "0" || newProps.responseData.statusCode == "-1") {
 					let { actions, signupDetails } = this.props;
 					signupDetails.appoinmentGuid = newProps.responseData.data.patientAppointmentGuid;
-					signupDetails.consultType = 'WalkIn'
+					signupDetails.consultType = 'Walk-In'
 					actions.setSignupDetails(signupDetails);
 					let itemObj = item;
 					itemObj.appointmentStatus = 'booked'
@@ -349,19 +349,20 @@ class CN extends React.Component {
 					{this.state.responseDataIndexTab ? <ScrollableTabView
 
 						renderTabBar={() => (
-							<ScrollableTabBar />
+							<ScrollableTabBar 
+							
+							/>
 						)}
-						tabBarTextStyle={{ fontSize: CustomFont.font16 }}
+						tabBarTextStyle={{ fontSize: CustomFont.font14 }}
 						tabBarInactiveTextColor={Color.optiontext}
 						tabBarActiveTextColor={Color.primary}
 						tabBarUnderlineStyle={{ backgroundColor: Color.primary, width: responsiveWidth(10), borderRadius: 4 }}
 						initialPage={this.state.initialPage}
 						ramPage={this.state.pageChangeIndex}
 						onChangeTab={(res) => {
-
 						}}
 					>
-						<PastPrescriptionTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Prescriptions'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} />
+						<PastPrescriptionTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Prescriptions'} style={{ flex: 1}} nav={{ navigation: this.props.navigation }} item={item} />
 						<VitalsTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Vitals'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} />
 						<MadicalHistryTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Medical History'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} />
 						<FilesTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Files'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} data={this.props.navigation.getParam("data", null)} />						

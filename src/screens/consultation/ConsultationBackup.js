@@ -2271,12 +2271,29 @@ class Consultation extends React.Component {
 				}
 				this.setState({ selectedSeverityIndex: index });
 			}}>
-				<CheckBox
+				{/* <CheckBox
 					disabled={false}
 					value={this.state.selectedSeverityIndex == index}
 					tintColors={{ true: Color.primary, false: Color.unselectedCheckBox }}
 					style={{ height: responsiveFontSize(2.5), width: responsiveFontSize(2.5), color: Color.mediumGrayTxt, margin: 4 }}
 					onValueChange={() => this.setState({ selectedSeverityIndex: index })}
+
+				/> */}
+				<CheckBox
+					disabled={false}
+					value={this.state.selectedSeverityIndex == index}
+					tintColors={{ true: Color.primary, false: Color.unselectedCheckBox }}
+					style={{ height: responsiveFontSize(2.5), width: responsiveFontSize(2.5), color: Color.mediumGrayTxt, margin: 4 }}
+					onValueChange={() => {
+						if (clickItemName == 'Diagnostic') {
+							selectedSeverityGuid = this.state.SeverityDataArray[index].diagnosisStatusGuid;
+							selectedSeverityName = this.state.SeverityDataArray[index].diagnosisStatus;
+						} else {
+							selectedSeverityGuid = this.state.SeverityDataArray[index].severityGuid;
+							selectedSeverityName = this.state.SeverityDataArray[index].severityName;
+						}
+						this.setState({ selectedSeverityIndex: index })
+					}}
 
 				/>
 				<Text style={{ fontSize: CustomFont.font14, color: Color.optiontext, marginLeft: 7, fontWeight: CustomFont.fontWeight400, fontFamily: CustomFont.fontName, }}>{clickItemName == 'Diagnostic' ? item.diagnosisStatus : item.severityName}</Text>
@@ -3229,7 +3246,7 @@ class Consultation extends React.Component {
 											</View>
 										</TouchableOpacity>}
 									{this.state.isModalVisibleAbout ? <View>
-										<TextInput blurOnSubmit={false} returnKeyType="next"
+										<TextInput blurOnSubmit={false} 
 											onFocus={() => this.callOnFocus('8')}
 											onBlur={() => this.callOnBlur('8')}
 											placeholderTextColor={Color.placeHolderColor}
@@ -3244,8 +3261,6 @@ class Consultation extends React.Component {
 
 										</View>
 									</View> : null}
-
-
 								</View>
 							</View>
 
@@ -3483,7 +3498,7 @@ class Consultation extends React.Component {
 									/>
 									<Text style={{ color: Color.patientSearchName, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: '700', marginTop: 20 }}>
 										Notes</Text>
-									<TextInput returnKeyType="done" style={{ height: responsiveHeight(10), borderColor: Color.createInputBorder, borderWidth: 1, borderRadius: 5, backgroundColor: Color.white, fontSize: CustomFont.font14, color: Color.placeHolderColor, paddingLeft: 10, paddingRight: 10, marginTop: 15 }} multiline={true} numberOfLines={4} placeholder="Enter Notes" placeholderTextColor={Color.placeHolderColor} onChangeText={(severityNotes) => {
+									<TextInput style={{ height: responsiveHeight(10), borderColor: Color.createInputBorder, borderWidth: 1, borderRadius: 5, backgroundColor: Color.white, fontSize: CustomFont.font14, color: Color.placeHolderColor, paddingLeft: 10, paddingRight: 10, marginTop: 15 }} multiline={true} numberOfLines={4} placeholder="Enter Notes" placeholderTextColor={Color.placeHolderColor} onChangeText={(severityNotes) => {
 										this.setState({ severityNotes });
 									}} value={this.state.severityNotes} />
 

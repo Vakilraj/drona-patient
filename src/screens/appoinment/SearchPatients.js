@@ -89,9 +89,9 @@ class SearchPatients extends React.Component {
 		} catch (e) { }
 		this.getSearchData();
 	}
-	// patientSort = (pArray) => {
-	// 	return pArray.sort((a, b) => a.firstName.toLowerCase().localeCompare(b.firstName.toLowerCase()));
-	// }
+	patientSort = (pArray) => {
+		return pArray.sort((a, b) => a.firstName.toLowerCase().localeCompare(b.firstName.toLowerCase()));
+	}
 	async UNSAFE_componentWillReceiveProps(newProps) {
 		if (newProps.responseData && newProps.responseData.tag) {
 			let tagname = newProps.responseData.tag;
@@ -108,17 +108,17 @@ class SearchPatients extends React.Component {
 					fullArrayGlobal = newProps.responseData.data;
 
 					// let sortedArray = this.patientSort(fullArrayGlobal);
+					let sortedArray = fullArrayGlobal;
 					this.setState({ dataArray: sortedArray, AddPatientWithNumberStatus: false });
 
 				} else {
 					this.setState({ dataArray: [], AddPatientWithNumberStatus: true });
 				}
 			}
-
 			// tempArr.splice(0, 0, { patientName: 'AddnewPatient', phoneNumber: 'AddnewPatient' })
-
 		}
 	}
+
 	getNamechar = (fname, lname) => {
 		fname = fname ? fname.trim() : '';
 		lname = lname ? lname.trim() : '';

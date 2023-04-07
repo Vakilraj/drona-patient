@@ -405,7 +405,7 @@ class MedicineDetails extends React.Component {
 									data={this.state.UnitDropdownArr}
 									renderItem={({ item, index }) => (
 										<TouchableOpacity style={{ zIndex: 999, height: responsiveHeight(7), justifyContent: 'flex-start', }} onPress={() => this.clickOnUnit(item)}>
-											<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }} >{this.state.unitTxt} {this.state.unitTxt == 1 ? item.doasestype : item.doasestype + 's'}</Text>
+											<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }} >{this.state.unitTxt} {this.state.unitTxt == 1 ? item.doasestype : item.doasestype}</Text>
 										</TouchableOpacity>
 									)}
 									keyExtractor={(item, index) => index.toString()}

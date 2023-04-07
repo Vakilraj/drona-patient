@@ -28,21 +28,25 @@ class DisplayQrCode extends React.Component {
 			QRCodeGuid: '',
 			doctorName: '',
 			clinicName: '',
-			urcodeUrl : '',
+			urcodeUrl: '',
 		};
 	}
 	async componentDidMount() {
+
 		tempImg = this.props.navigation.getParam("qrcode");
 		let qrId = this.props.navigation.getParam("qrCodeId");
 		let tempClinicName = this.props.navigation.getParam("cName");
 		let tempDoctorName = this.props.navigation.getParam("dName");
-		this.setState({ qrCodeImageContent: tempImg });
 		this.setState({ QRCodeGuid: qrId });
 		this.setState({ doctorName: tempDoctorName });
 		this.setState({ clinicName: tempClinicName });
 
-		let temp = this.props.navigation.getParam("qrUrl"); 
-		this.setState({urcodeUrl : temp});
+		let temp = this.props.navigation.getParam("qrUrl");
+		this.setState({ urcodeUrl: temp });
+		setTimeout(() => {
+
+			this.generateQRCode()
+		}, 1000);
 	}
 	async UNSAFE_componentWillReceiveProps(newProps) {
 		if (newProps.responseData && newProps.responseData.tag) {
@@ -50,11 +54,9 @@ class DisplayQrCode extends React.Component {
 			if (tagname === 'resetqrcode') {
 				if (newProps.responseData.statusCode == '-1') {
 					let data = newProps.responseData.data;
-					this.setState({ qrCodeImageContent: data.qrCodeImgPath })
 					this.setState({ QRCodeGuid: data.qrCodeGuid })
 					setTimeout(() => {
 						Snackbar.show({ text: newProps.responseData.statusMessage, duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-						//alert(newProps.responseData.statusMessage)
 					}, 400);
 				}
 			}
@@ -73,13 +75,15 @@ class DisplayQrCode extends React.Component {
 		})
 			.then(response => {
 				const { uri, width, height, base64 } = response;
-				//console.log(JSON.stringify(base64))
+				console.log('response' + JSON.stringify(response))
 				// qrCodeStr = { uri: 'data:image/jpeg;base64,' + base64 };
-				// this.setState({qrCodeImageContent : 'data:image/jpeg;base64,' + base64});
-				this.callAPIResetQRCode(base64);
+				this.setState({ qrCodeImageContent: 'data:image/jpeg;base64,' + base64 });
+				// this.callAPIResetQRCode(base64);
 
 			})
-			.catch(error => {});
+			.catch(error => {
+				console.log(JSON.stringify(error))
+			});
 	}
 
 	callAPIResetQRCode = (base64) => {
@@ -100,7 +104,7 @@ class DisplayQrCode extends React.Component {
 		actions.callLogin('V1/FuncForResetOrSaveGeneratedQRCode', 'post', params, signupDetails.accessToken, 'resetqrcode');
 
 	}
-	getBase64=()=>{
+	getBase64 = () => {
 		this.refs.viewShot.capture().then((uri) => {
 			this.downloadQrCode(uri)
 		});
@@ -121,7 +125,7 @@ class DisplayQrCode extends React.Component {
 				);
 				if (granted === PermissionsAndroid.RESULTS.GRANTED) {
 					CameraRoll.save(uri, { type: 'photo' });
-			 	Snackbar.show({ text: 'Qr code downloaded successfully', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
+					Snackbar.show({ text: 'Qr code downloaded successfully', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 				} else {
 					// If permission denied then show alert
 					alert('Storage Permission Not Granted');
@@ -130,7 +134,7 @@ class DisplayQrCode extends React.Component {
 				//console.warn(err);
 			}
 		}
-	//
+		//
 	}
 
 	render() {
@@ -141,7 +145,7 @@ class DisplayQrCode extends React.Component {
 				<Toolbar
 					title={"QR Code"}
 					onBackPress={() => this.props.navigation.navigate('Setting')}
-					isQrReset={signupDetails.isAssistantUser ? false:true}
+					isQrReset={signupDetails.isAssistantUser ? false : true}
 					onResetQrCode={() => {
 						let { signupDetails } = this.props;
 						setLogEvent("setting", { "resetQR": "click", UserGuid: signupDetails.UserGuid })
@@ -164,7 +168,7 @@ class DisplayQrCode extends React.Component {
 							<Text style={{ textAlign: 'center', fontFamily: CustomFont.fontName, fontWeight: CustomFont.fontWeightBold, fontSize: CustomFont.font24, color: Color.fontColor, }}>
 								{this.state.clinicName}
 							</Text>
-							<Text style={{ textAlign: 'center', fontFamily: CustomFont.fontName, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.2), color: Color.darkText }}> {this.state.doctorName.replace('  ',' ')}</Text>
+							<Text style={{ textAlign: 'center', fontFamily: CustomFont.fontName, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.2), color: Color.darkText }}> {this.state.doctorName.replace('  ', ' ')}</Text>
 							<Text style={{ textAlign: 'center', width: responsiveWidth(90), fontFamily: CustomFont.fontName, fontWeight: CustomFont.fontWeightBold, fontSize: CustomFont.font16, marginTop: responsiveHeight(3.5), color: Color.primary }}>Scan the QR Code to Check-In or Register</Text>
 
 							<View style={{

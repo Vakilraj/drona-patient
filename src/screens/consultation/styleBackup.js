@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   crossSearch: {tintColor:Color.primary, height: responsiveHeight(2), width: responsiveHeight(2), borderRadius: responsiveHeight(1), alignSelf: 'center', marginEnd: 10 },
   selectedView: { flexDirection: 'row', margin: responsiveWidth(1.6), borderRadius: 5, borderWidth:.7,  backgroundColor: Color.selectedBgSymptom, borderColor:Color.primary  },
   unSelectView: { flexDirection: 'row', margin: responsiveWidth(1.6), height: responsiveWidth(10), borderRadius: 5, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: Color.borderColor, },
-  txtSelect: { margin: responsiveWidth(3),marginLeft:responsiveWidth(3), fontSize: CustomFont.font14, color: Color.optiontext,fontWeight:CustomFont.fontWeight500,fontFamily:CustomFont.fontName },
+  txtSelect: { margin: responsiveWidth(3), fontSize: CustomFont.font14, color: Color.optiontext,fontWeight:CustomFont.fontWeight500,fontFamily:CustomFont.fontName },
   txtSelectMed: { marginLeft: responsiveWidth(2.5), marginRight: responsiveWidth(2.5), fontSize: CustomFont.font16, marginLeft: responsiveWidth(4), marginRight: responsiveWidth(4) },
   crossSelected: {
     alignItems: 'center', justifyContent: 'center',

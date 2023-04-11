@@ -2887,7 +2887,7 @@ class Consultation extends React.Component {
 													medicineIndex = index;
 													medicineAddUpdateFlag = 'update';
 													this.props.nav.navigation.navigate('MedicineDetails', { item: item, medTiming: medTiming, Refresh: this.RefreshData });
-												}}>
+												}} style={{maxWidth:responsiveWidth(82) }}>
 													<Text style={styles.txtSelect}>{this.getSelectedMMedicineTxt(item)}</Text>
 												</TouchableOpacity>
 												<TouchableOpacity style={styles.crossSelected}
@@ -2902,7 +2902,7 @@ class Consultation extends React.Component {
 										}, this) : null}
 									</View>
 									{this.state.isMedicineModalOpen ? <View>
-										<View style={[styles.searchView, { borderColor: this.state.fld5, borderWidth: 1, backgroundColor: Color.white }]}>
+										<View style={[styles.searchView, { borderColor: this.state.fld5, borderWidth: 1  }]}>
 											<TextInput returnKeyType="done"
 												onFocus={() => this.callOnFocus('5')}
 												onBlur={() => this.callOnBlur('5')}

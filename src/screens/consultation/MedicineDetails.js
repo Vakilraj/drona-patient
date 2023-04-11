@@ -370,7 +370,7 @@ class MedicineDetails extends React.Component {
 		let item = this.props.navigation.state.params.item;
 		return (
 			<SafeAreaView style={{ flex: 1, backgroundColor: Color.white, marginTop: 20, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} onStartShouldSetResponder={() => this.dismissDialog()}>
-				<KeyboardAvoidingView behavior={Platform.OS === "ios" ? "position" : null}>
+				<KeyboardAvoidingView behavior={Platform.OS === "ios" ? 'padding' : null}>
 					<ScrollView>
 						<View style={{ margin: responsiveWidth(5) }}>
 							<View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -446,13 +446,12 @@ class MedicineDetails extends React.Component {
 								items={this.state.whenToTakeArr}
 								containerStyle={{ borderRadius: responsiveWidth(2), height: responsiveHeight(6), marginTop: responsiveHeight(1.6) }}
 								style={{ backgroundColor: '#ffffff', color: Color.textGrey }}
-								textStyle={{ fontSize: CustomFont.font16 }}
-								itemStyle={{
+								textStyle={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16}}								itemStyle={{
 									justifyContent: 'flex-start'
 								}}
-								dropDownStyle={{ backgroundColor: '#ffffff', zIndex: 4 }}
+								dropDownStyle={{ backgroundColor: '#fafafa', zIndex: 4 }}
 								onChangeItem={item => {
-									medicineTimingFrequency = item.value;
+								medicineTimingFrequency = item.value;
 								}}
 								globalTextStyle={{ color: Color.fontColor, fontSize: CustomFont.font16 }}
 								placeholder="Empty Stomach"

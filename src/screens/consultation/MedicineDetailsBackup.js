@@ -395,8 +395,6 @@ class MedicineDetails extends React.Component {
 		}
 	}
 
-
-
 	render() {
 		//let { actions, signupDetails } = this.props;
 		let item = this.props.navigation.state.params.item;

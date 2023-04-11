@@ -613,9 +613,28 @@ class PrivacyPolicyDetails extends React.Component {
 									<Text style={CommonStyle.customFontStyle} >
 										This Information is securely stored on Our IT network for the period defined by the applicable statutory provisions or as per Our policy, as the case may be and deleted after the end of this period. The Company, has adopted reasonable security practices and procedures within the Company for the security and protection of Information, in line with the internationally accepted standards which includes, technical, operational and physical security control measures.
 									</Text>
+
+									
 								</View>
-
-
+								<View style={{ flexDirection: 'row', marginTop: responsiveHeight(2), marginLeft: responsiveWidth(8) }}>
+								<Text style={CommonStyle.customFontStyle}>11.2</Text>
+									<Text style={CommonStyle.customFontStyle}>
+                                        We work to protect the security of Your Information during transmission by
+                                        using Secure Sockets Layer (SSL) software, which encrypts Your Information , in
+                                        addition to maintaining security of Your Information as per the international
+                                        standards on "Information Technology Security Techniques”; “Information Security
+                                        Management System-Requirements".</Text>
+										
+									</View>
+									<View style={{ flexDirection: 'row', marginTop: responsiveHeight(2), marginLeft: responsiveWidth(8) }}>
+									<Text style={CommonStyle.customFontStyle}>11.3</Text>
+										<Text style={CommonStyle.customFontStyle}>
+                                        We also frequently get our website/application audited by ISO Certified
+                                        third party service providers to ensure application's transactions and the data
+                                        it outputs are secure (from any hacking attempts or otherwise), accurate and
+                                        valid on internationally recognized security frameworks such as OWASP and more”
+                                    	</Text>
+										</View>
 								<View style={{ flexDirection: 'row' }}>
 									<Text style={{
 										fontSize: CustomFont.font16,

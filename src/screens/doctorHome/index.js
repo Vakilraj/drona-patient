@@ -24,7 +24,7 @@ import { bindActionCreators } from 'redux';
 import Geocoder from 'react-native-geocoding';
 import GetLocation from 'react-native-get-location';
 import Trace from '../../service/Trace'
-let appVersion = Platform.OS == 'android' ? 'V_20230310' : 'V_20230310';
+let appVersion = Platform.OS == 'android' ? 'V_20230407' : 'V_20230407';
 let timeRange = '', age = '';
 let assistantAdded = '';
 let cityName = '';
@@ -142,7 +142,7 @@ class DoctorHome extends React.Component {
 			//"Version": "V_20220314",
 			//"IsUpdateMandatory": true
 		}
-		//actions.callLogin('V1/FuncForAdminToGetVersionHistoryDetails', 'post', params, 'token', 'appversion');
+		 actions.callLogin('V1/FuncForAdminToGetVersionHistoryDetails', 'post', params, 'token', 'appversion');
 		actions.callLogin('V1/FuncForWebAppToGetCurrentDateTime', 'post', params, 'token', 'getserverDateTime');
 
 	}

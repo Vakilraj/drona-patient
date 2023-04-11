@@ -81,10 +81,10 @@ export function callLogin(url, apiType, params, token, tagName = null) {
 
   // LocationEnabler    important thing--> it is comment for ios and open for Android 
   if (tagName === 'afterShareLink' || tagName === 'getserverDateTime') {
-    baseUrl = 'https://mnkdrona-apim.azure-api.net/WebApp/Dev/';
+    baseUrl = 'https://mnkdrona-apim.azure-api.net/WebApp/Live/';
   }
   else {
-    baseUrl = 'https://mnkdrona-apim.azure-api.net/DoctorApp/Dev/'  // Dev  Pilot Stag Live
+    baseUrl = 'https://mnkdrona-apim.azure-api.net/DoctorApp/Live/'  // Dev  Pilot Stag Live
   }
   
   if (apiType === "get") {
@@ -132,8 +132,8 @@ export function callLogin(url, apiType, params, token, tagName = null) {
       headers: headersValue,
       timeout: 180000,
     });
-    console.log("\n\n" + baseUrl + url + " request- " + JSON.stringify(params))
-    console.log("\n\n" + url + " headers- " + JSON.stringify(headersValue))
+    // console.log("\n\n" + baseUrl + url + " request- " + JSON.stringify(params))
+    // console.log("\n\n" + url + " headers- " + JSON.stringify(headersValue))
     
     return (dispatch) => {
       let str = 'GetCommunityInfo GetFilter viewpost SearchForSymptom SearchForSymptom SearchForFindings SearchForDiagnosis SearchForMedicine SearchForInvestigation SearchForInstructions SearchFamilyConditions SearchForConditions SearchForcurrentMedication SearchFoAllergies sharepostby AddSymptoms getserverDateTime ResentOtpForLogin GetActivationPackages tt GetWeekPasswordList GetWeekPass AddInvestigation AddInstruction ReasonOfVisitList getEditAssistanceDetailsOnBoarding'
@@ -162,7 +162,7 @@ export function callLogin(url, apiType, params, token, tagName = null) {
             dispatch(fetchProductsSuccess(modifyData));
           }
 
-          console.log("\n\n" + url + " response- " + JSON.stringify(modifyData))
+         // console.log("\n\n" + url + " response- " + JSON.stringify(modifyData))
       //     try {
       //       RNFS.appendFile(path, "\n\n" + url + " response- " + JSON.stringify(modifyData) , 'utf8')
       //         .then((success) => {

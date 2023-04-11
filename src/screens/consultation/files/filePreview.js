@@ -213,7 +213,7 @@ class FilePreview extends React.Component {
     setLogEvent("files", { "download_files": "click", UserGuid: signupDetails.UserGuid, })
     if (Platform.OS === 'ios') {
       if (fileType != '.pdf')
-        this.downloadImage()
+        this.getBase64()
       else
         this.downloadPdfFromUrl();
     }
@@ -228,7 +228,7 @@ class FilePreview extends React.Component {
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           if (fileType != '.pdf')
-            this.downloadImage()
+            this.getBase64()
           else
             this.downloadPdfFromUrl();
         } else {

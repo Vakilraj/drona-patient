@@ -38,7 +38,7 @@ import MadicalHistryTab from './IndexTabConsultation/MadicalHistryTab';
 import PastPrescriptionTab from './IndexTabConsultation/PastPrescriptionTab';
 import FilesTab from './files/index';
 
-let date = null, ifClickOnEdit = false, patientGuid = '', item = null;
+let date = null, ifClickOnEdit = false, patientGuid = '', item = null, forAssistantAccessData = [];
 class CN extends React.Component {
 	constructor(props) {
 		super(props);
@@ -48,7 +48,9 @@ class CN extends React.Component {
 			gender: '',
 			mobile: '',
 			imageSource: null,
-			responseDataIndexTab: null
+			responseDataIndexTab: null,
+			showFilesTab: false,
+			showMedicalTab: false
 		};
 
 	}
@@ -88,7 +90,20 @@ class CN extends React.Component {
 				this.setState({ isHideConsultNowBtn: true });
 			}
 		}
+		this.callAPIForAssistantAccess()
+
 	}
+
+	callAPIForAssistantAccess = () => {
+		let { actions, signupDetails } = this.props;
+		let params = {
+			"UserGuid": signupDetails.UserGuid,
+			"DoctorGuid": signupDetails.doctorGuid,
+			"ClinicGuid": signupDetails.clinicGuid,
+		}
+		actions.callLogin('V1/FuncForDrAppToGetListofPermission', 'post', params, signupDetails.accessToken, 'ForAssistantAccess');
+	}
+
 	setData = (data, isNotEdited) => {
 		this.setState({
 			age: isNotEdited ? data.age : this.ageCalculate(data.age),
@@ -253,6 +268,27 @@ class CN extends React.Component {
 					this.props.navigation.navigate('ConsultationTab', { vitalMasterStatus: null, from: 'consultation', item: itemObj, date: date, tabIndex: 0 });
 				}
 			}
+			else if (tagname === 'ForAssistantAccess') {
+
+				if (newProps.responseData) {
+					// let response  = newProps.responseData.data
+					if(newProps.responseData.data.userPermission)
+					forAssistantAccessData = newProps.responseData.data.userPermission;
+					for (let i = 0; i < forAssistantAccessData.length; i++) {
+						if (forAssistantAccessData[i].accessCode === 'PF' && forAssistantAccessData[i].isAuthorized) {
+							this.setState({ showFilesTab: true })
+
+						}
+						else if (forAssistantAccessData[i].accessCode === 'PMH' && forAssistantAccessData[i].isAuthorized) {
+							this.setState({ showMedicalTab: true })
+
+						}
+					}
+
+
+				}
+
+			}
 		}
 	}
 
@@ -340,17 +376,19 @@ class CN extends React.Component {
 
 						}}
 					>
-						<FilesTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Files'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} data={this.props.navigation.getParam("data", null)} />
+						{this.state.showFilesTab ? <FilesTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Files'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} data={this.props.navigation.getParam("data", null)} />
+							: null}
 						<VitalsTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Vitals'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} />
-						<MadicalHistryTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Medical History'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} />
+						{this.state.showMedicalTab ? <MadicalHistryTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Medical History'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} />
+							: null}
 						{/* <PastPrescriptionTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Past Prescriptions'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} /> */}
 					</ScrollableTabView> : null}
 				</View> : <View style={{ flex: 1, backgroundColor: Color.white, }}>
 					{this.state.responseDataIndexTab ? <ScrollableTabView
 
 						renderTabBar={() => (
-							<ScrollableTabBar 
-							
+							<ScrollableTabBar
+
 							/>
 						)}
 						tabBarTextStyle={{ fontSize: CustomFont.font14 }}
@@ -362,10 +400,10 @@ class CN extends React.Component {
 						onChangeTab={(res) => {
 						}}
 					>
-						<PastPrescriptionTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Prescriptions'} style={{ flex: 1}} nav={{ navigation: this.props.navigation }} item={item} />
+						<PastPrescriptionTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Prescriptions'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} />
 						<VitalsTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Vitals'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} />
 						<MadicalHistryTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Medical History'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} />
-						<FilesTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Files'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} data={this.props.navigation.getParam("data", null)} />						
+						<FilesTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Files'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} data={this.props.navigation.getParam("data", null)} />
 					</ScrollableTabView> : null}
 				</View>}
 

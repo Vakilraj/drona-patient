@@ -365,6 +365,7 @@ class MedicineDetails extends React.Component {
 			this.setState({ dosageSearchTxt: '', dosageDropdownArr: doasagesPatterArr });
 	}
 	DoseValidation = (text) => {
+		console.log(this.state.showStateDosage + '----------custom' + this.state.CustomInput)
 		if (text) {
 			if (Validator.isDoseValidate(text)) {
 				this.setState({ dosageSearchTxt: text })

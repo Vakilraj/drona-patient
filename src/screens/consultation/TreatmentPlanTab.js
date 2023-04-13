@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import {
 	ScrollView,
 	View, FlatList,
-	Text, TextInput, Image, TouchableOpacity, KeyboardAvoidingView, Clipboard, BackHandler
+	Text, TextInput, Image, TouchableOpacity, KeyboardAvoidingView, Alert, BackHandler
 } from 'react-native';
 import styles from './style';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
@@ -582,15 +582,15 @@ class medicalHistory extends React.Component {
 
 
 		let file = await RNHTMLtoPDF.convert(options)
-		//console.log('PDF created ========= > ' + JSON.stringify(file.filePath));
-		if (file) {
+		console.log('PDF created ========= > ' + JSON.stringify(file.filePath));
+		if (file != '') {
 			RNFetchBlob.fs
 				.readFile(file.filePath, 'base64')
 				.then((data) => {
 					//console.log('pdf for base64 ' + JSON.stringify(data))
 
 					const base64Data = 'data:application/pdf;base64,' + data
-					//Clipboard.setString(file.filePath +'  '+base64Data);
+
 					const shareOptions = {
 						title: 'Share Treament Summary',
 						// message: 'some message',
@@ -599,6 +599,7 @@ class medicalHistory extends React.Component {
 					};
 
 					if (data) {
+						
 						Share.open(shareOptions)
 							.then((res) => {
 								console.log("m,m,m,m,")

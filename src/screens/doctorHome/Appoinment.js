@@ -721,10 +721,10 @@ connection.start()
 
 						<View style={{ margin: responsiveHeight(2), justifyContent: 'space-between', flexDirection: 'row' }}>
 
-							<Text style={{ fontFamily: CustomFont.fontNameBold, color: Color.black, fontWeight: 'bold', fontSize: CustomFont.font18, marginLeft: responsiveWidth(3), marginTop: responsiveHeight(1.6), }}>Request Payment</Text>
-							<TouchableOpacity style={{ justifyContent: 'center', flexDirection: 'row', }} onPress={() => this.setState({ isPaymentModalVisible: false })}>
+							{/* <Text style={{ fontFamily: CustomFont.fontNameBold, color: Color.black, fontWeight: 'bold', fontSize: CustomFont.font18, marginLeft: responsiveWidth(3), marginTop: responsiveHeight(1.6), }}>Add</Text> */}
+							<TouchableOpacity style={{ position: 'absolute', right: 0, justifyContent: 'center', flexDirection: 'row', }} onPress={() => this.setState({ isPaymentModalVisible: false })}>
 
-								<Image style={[styles.bsIcon,{ height: responsiveHeight(4), width: responsiveWidth(4), marginRight: responsiveWidth(4), marginTop: responsiveHeight(.6), resizeMode: 'contain' }]} source={closeIcon}  />
+								<Image style={[styles.bsIcon,{ height: responsiveHeight(4), width: responsiveWidth(4), marginRight: responsiveWidth(4), marginTop: responsiveHeight(1.6), resizeMode: 'contain' }]} source={closeIcon}  />
 							</TouchableOpacity>
 						</View>
 
@@ -734,13 +734,67 @@ connection.start()
 							this.setState({ isPaymentModalVisible: false })
 							this.sendPaymentLink()
 						}}>
-							<Text style={{ marginLeft: 20, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, color: Color.primary ,textDecorationLine: 'underline'}}>Send Request Payment</Text>
+							{/* <Image source={AddAppoin} style={{ height: responsiveFontSize(5), width: responsiveFontSize(5), }} /> */}
+							<Text style={{ marginLeft: 20, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, color: Color.black }}>Request Payment</Text>
 						</TouchableOpacity>
 
 
 					</View>
 				</Modal>
 
+				{/* --------Modal for Calendar ------------- */}
+				{/* <Modal isVisible={this.state.isModalVisibleCalendar} onRequestClose={() => this.setState({ isModalVisibleCalendar: false })}>
+					<View style={{ backgroundColor: Color.white, borderRadius: 7, alignItems: 'center' }}>
+						<ScrollView>
+							<View style={{ flex: 1, flexDirection: 'column' }}>
+								<View style={{ width: '100%', backgroundColor: Color.primaryBlue, borderTopLeftRadius: 7, borderTopRightRadius: 7, }}>
+									<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font24, color: Color.fontColor, color: Color.white, marginTop: 15, marginBottom: 15, marginLeft: 15 }}>{this.state.showHeaderDate}</Text>
+								</View>
+								<View style={{ width: '100%', flexDirection: 'row', marginTop: 7, marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3) }}>
+									<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font12, color: Color.lightGrayTxt, flex: 1, marginLeft: responsiveWidth(3) }}>Sun</Text>
+									<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font12, color: Color.lightGrayTxt, flex: 1 }}>Mon</Text>
+									<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font12, color: Color.lightGrayTxt, flex: 1 }}>Tue</Text>
+									<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font12, color: Color.lightGrayTxt, flex: 1 }}>Wed</Text>
+									<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font12, color: Color.lightGrayTxt, flex: 1 }}>Thu</Text>
+									<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font12, color: Color.lightGrayTxt, flex: 1 }}>Fri</Text>
+									<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font12, color: Color.lightGrayTxt, flex: 1 }}>Sat</Text>
+								</View>
+								<Calendar
+									theme={{
+										monthTextColor: Color.fontSize,
+										arrowColor: '#165c96',
+										todayTextColor: '#33a8e2',
+										selectedDayTextColor: 'white',
+										selectedDayBackgroundColor: Color.liveBg,
+									}}
+									markedDates={{
+										[this.state.dateForfullCalendar]: { selected: true },
+									}}
+									onDayPress={day => {
+										//alert(day.dateString)
+										selectedDay = day.dateString
+										let showDate = Moment(selectedDay).format('DD MMM YYYY');
+										this.setState({ dateForfullCalendar: day.dateString, showHeaderDate: showDate })
+									}}
+									hideDayNames={true}
+								//minDate={new Date()}
+								/>
+								<View style={{ flexDirection: 'row', marginTop: responsiveHeight(5), marginBottom: responsiveHeight(3), justifyContent: 'flex-end', width: '100%' }}>
+									<TouchableOpacity style={{ alignItems: 'center', justifyContent: 'center', borderRadius: 4, borderColor: Color.grayBorder, borderWidth: 1, height: responsiveHeight(5.5), width: responsiveWidth(25) }} onPress={() => this.setState({ isModalVisibleCalendar: false })}>
+										<Text style={{ fontFamily: CustomFont.fontName, color: Color.fontColor, fontSize: CustomFont.font16, textAlign: 'center' }}>Cancel</Text>
+									</TouchableOpacity>
+
+									<TouchableOpacity style={{ alignItems: 'center', justifyContent: 'center', borderRadius: 4, height: responsiveHeight(5.8), width: responsiveWidth(25), backgroundColor: Color.primaryBlue, marginLeft: responsiveWidth(6), marginRight: 10 }} onPress={() => {
+										this.clickOnDone();
+									}}>
+										<Text style={{ fontFamily: CustomFont.fontName, color: Color.white, fontSize: CustomFont.font16, textAlign: 'center' }}>Done </Text>
+									</TouchableOpacity>
+								</View>
+							</View>
+						</ScrollView>
+
+					</View>
+				</Modal> */}
 				<Modal isVisible={this.state.isModalVisibleCalendar} >
 					<View style={{ backgroundColor: Color.white, borderRadius: 7, alignItems: 'center' }}>
 						<ScrollView>

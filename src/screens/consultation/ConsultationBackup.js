@@ -826,7 +826,12 @@ class Consultation extends React.Component {
 					this.setState({ addMedicinePopup: false })
 					Snackbar.show({ text: newProps.responseData.statusMessage, duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 					//  console.log('Response ' + JSON.stringify(response))
-					//
+					if(!response.medicineTypeGuid)
+					response.medicineTypeGuid=this.state.medicineTypeName;
+					// if(!response.medicineDosasesType)
+					// response.medicineDosasesType=[{
+					// 	doasestype: this.state.medicineTypeSearchTxt, medicineTypeGuid:this.state.medicineTypeName,medicineDoasesGuId:null
+					// }]
 					this.props.nav.navigation.navigate('MedicineDetails', { item: response, medTiming: medTiming, Refresh: this.RefreshData });
 				}
 
@@ -2204,7 +2209,6 @@ class Consultation extends React.Component {
 		this.setState({ medicineTypeName: item.value })
 		if (this.state.medicineSearchTxt)
 			this.setState({ isMedicineTypeSelected: true })
-
 		this.setState({ medicineTypeSearchTxt: item.label, showStateDosage: false })
 	}
 	callIsFucused2 = () => {

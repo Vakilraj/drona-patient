@@ -26,7 +26,7 @@ let doasagesPatterArr = [{ label: '1-0-0', value: '1-0-0', isSelect: true }, { l
 let clickFlag = 0, isEdit = false, prvLength = -1, InputTxtLengthDosage = 5, InputTxtLengthDuration = 5, InputTxtLengthUnit = 5;
 import Trace from '../../service/Trace'
 import _ from 'lodash';
-let medicineTimingFrequency = 'Empty Stomach';
+let medicineTimingFrequency = '';
 
 class MedicineDetails extends React.Component {
 	constructor(props) {
@@ -63,6 +63,7 @@ class MedicineDetails extends React.Component {
 		TimingTypeGuid = '';
 		dosagePattern = '';
 		isEdit = false;
+		medicineTimingFrequency = 'Empty Stomach';
 	}
 	async componentDidMount() {
 		clickFlag = 0;
@@ -74,7 +75,7 @@ class MedicineDetails extends React.Component {
 			}
 		});
 		let item = this.props.navigation.state.params.item;
-		console.log('item-------' + JSON.stringify(item))
+		console.log('item----111---' + JSON.stringify(item))
 		medicineTypeGuid = item.medicineTypeGuid;
 		medicineType = item.medicineType;
 
@@ -454,7 +455,7 @@ class MedicineDetails extends React.Component {
 								medicineTimingFrequency = item.value;
 								}}
 								globalTextStyle={{ color: Color.fontColor, fontSize: CustomFont.font16 }}
-								placeholder="Empty Stomach"
+								placeholder={medicineTimingFrequency}
 								placeholderStyle={{ color: Color.placeHolderColor, fontSize: CustomFont.font16 }}
 							/>
 							{/* ------- Duration------- */}

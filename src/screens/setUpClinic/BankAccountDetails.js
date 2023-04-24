@@ -323,7 +323,7 @@ class BankAccountDetails extends React.Component {
 										"NickName": nickName
 									}
 								};
-								actions.callLogin('V1/FuncForDrAppToAddUpdateBank', 'post', params, signupDetails.accessToken, 'saveupdateBankAccount');
+								actions.callLogin('V15/FuncForDrAppToAddUpdateBank', 'post', params, signupDetails.accessToken, 'saveupdateBankAccount');
 								setTimeout(()=>{
 									AddBankDetailsFlag =0;
 								},2000)

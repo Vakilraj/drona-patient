@@ -188,6 +188,7 @@ class Home extends React.PureComponent {
 							signupDetails.clinicGuid = clinicList[clinicIndex].clinicGuid;
 							signupDetails.clinicStatus = clinicList[clinicIndex].status;
 							signupDetails.clinicImageUrl = clinicList[clinicIndex].clinicImageUrl;
+							DRONA.setClinicGuid(clinicList[clinicIndex].clinicGuid);
 						} catch (e) { }
 
 					}

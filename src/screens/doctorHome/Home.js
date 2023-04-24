@@ -42,33 +42,32 @@ import { setupPushNotification } from "../../service/PushNotification"
 import { setLogEvent, setLogShare } from '../../service/Analytics';
 import CryptoJS from "react-native-crypto-js";
 import Trace from '../../service/Trace'
-let prevurl = '', localSavedClinicGuid = '';
+let prevurl = '', localSavedClinicGuid = '', headDropdownImageUrl= '',showPaymentComponent= true,analyticApiCallingFlag=0;
 
 
 class Home extends React.PureComponent {
 	constructor(props) {
 		super(props);
 		this.state = {
-			shareLinkUrl: '',
-			doctorName: '',
+			//doctorName: '',
 			badgeShowStaus: false,
-			showPaymentComponent: true,
-
 			isModalVisible: false,
 			accountPopup: false,
 
-			drfullName: '',
+			//drfullName: '',
 			todaysPatient: '0',
 			todaysEarning: '0',
 			newPatient: '0',
 			liveQuee: '0',
-			drImgUrl: null,
+			//drImgUrl: null,
 			isRenew: false,
 			noOfDaysRenew: 0,
-			clinicImageUrl: '',
 			paymentCardDonotShowAgain: false,
 		};
 		navFlag = 0;
+		headDropdownImageUrl= '';
+		showPaymentComponent= true;
+		analyticApiCallingFlag=0;
 	}
 
 	componentWillMount() {
@@ -79,21 +78,13 @@ class Home extends React.PureComponent {
 			else
 				navigationUrl = null;
 			prevurl = url;
-			//alert(navigationUrl);
 		});
-		//
 	}
-	componentWillUnmount() {
-		//alert("Unmount")
-	}
-
 	_handleNotificationOpen = (notification) => {
 		try {
 			DRONA.getThat().props.navigation.navigate("NotificationDetails", { item: notification.data })
 		} catch (error) {
-
 		}
-
 	}
 
 	validateIndianRupees = (x) => {
@@ -115,8 +106,6 @@ class Home extends React.PureComponent {
 		return res;
 	}
 	async componentDidMount() {
-		//console.log('-------userGuid-----'+CryptoJS.AES.decrypt(await AsyncStorage.getItem('userGuid'),'MNKU').toString(CryptoJS.enc.Utf8))
-		//this.refs.loadingRef.show();
 		Keyboard.dismiss(0);
 		let { actions, signupDetails } = this.props;
 		let accessToken = signupDetails.accessToken ? signupDetails.accessToken : CryptoJS.AES.decrypt(await AsyncStorage.getItem('accessToken'), 'MNKU').toString(CryptoJS.enc.Utf8);
@@ -138,7 +127,9 @@ class Home extends React.PureComponent {
 			"Version": "",
 			"Data": { FcmToken: fcmToken }
 		}
-		actions.callLogin('V1/FuncForDrAppToGetHomeScreenComponents_V3', 'post', params, accessToken, 'homeComponentApi');
+		analyticApiCallingFlag=0;
+		//V1/FuncForDrAppToGetHomeScreenComponents_V3
+		actions.callLogin('V15/FuncForDrAppToGetHomeScreenComponents', 'post', params, accessToken, 'homeComponentApi');
 
 		this.pushNotification = setupPushNotification(this._handleNotificationOpen);
 
@@ -149,7 +140,7 @@ class Home extends React.PureComponent {
 	}
 
 	refreshHome = async () => {
-		 let { actions, signupDetails } = this.props;
+		let { actions, signupDetails } = this.props;
 		if (signupDetails.UserGuid && signupDetails.fcmToken) {
 			localSavedClinicGuid = signupDetails.clinicGuid ? signupDetails.clinicGuid : await AsyncStorage.getItem('clinicGuid');
 			let params = {
@@ -157,7 +148,8 @@ class Home extends React.PureComponent {
 				"Version": "",
 				"Data": { FcmToken: signupDetails.fcmToken }
 			}
-			actions.callLogin('V1/FuncForDrAppToGetHomeScreenComponents_V3', 'post', params, signupDetails.accessToken, 'homeComponentApi');
+			analyticApiCallingFlag=0;
+			actions.callLogin('V15/FuncForDrAppToGetHomeScreenComponents', 'post', params, signupDetails.accessToken, 'homeComponentApi');
 		}
 	}
 
@@ -169,89 +161,88 @@ class Home extends React.PureComponent {
 				if (newProps.responseData.statusMessage === 'Success') {
 					let data = newProps.responseData.data;
 					let { actions, signupDetails } = this.props;
-					signupDetails.doctorGuid = data.doctorInfo.doctorGuid;
-					signupDetails.doctorType = data.doctorInfo.doctorSpeciality;
 
 					let roleCode = data && data.userInfo && data.userInfo.roleCode ? data.userInfo.roleCode : '10';
 					signupDetails.roleCode = roleCode;
-					//let roleCode = '70';
-					//DRONA.setClinicList(data.clinicDetailsList);
-						let clinicList = data.clinicDetailsList;
-						if (clinicList && clinicList.length > 0) {
-							let clinicIndex = 0;
-							try {
-					DRONA.setClinicList([clinicList[0]]);  //single clinic
+					//let roleCode = '10' dr. And 70 for assistant ;
+					//for multiple clinic
+					DRONA.setClinicList(data.clinicDetailsList);
+					let clinicIndex = 0;
+					let doctorIndex = 0;
 
-								// For Multiclinic point previous selected clinic
-								// for (let i = 0; i < clinicList.length; i++) {
-								// 	if (localSavedClinicGuid == clinicList[i].clinicGuid) {
-								// 		clinicIndex = i;
-								// 		DRONA.setSelectedIndexClinic(clinicIndex)
-								// 		break;
-								// 	}
-								// }
-								signupDetails.clinicName = clinicList[clinicIndex].clinicName;
-								signupDetails.clinicGuid = clinicList[clinicIndex].clinicGuid;
-								signupDetails.clinicStatus = clinicList[clinicIndex].status;
-								signupDetails.clinicImageUrl = clinicList[clinicIndex].clinicImageUrl;
-							} catch (e) { }
-							let params = {
-								"UserGuid": data.userInfo.userGuid,
-								"DoctorGuid": signupDetails.doctorGuid, "ClinicGuid": signupDetails.clinicGuid,
-								"Data": {
-									"DoctorGuid": signupDetails.doctorGuid, "ClinicGuid": signupDetails.clinicGuid
+					let clinicList = data.clinicDetailsList;
+					if (clinicList && clinicList.length > 0) {
+						try {
+							// DRONA.setClinicList([clinicList[0]]);  //single clinic
+
+							// For Multiclinic point previous selected clinic
+							//if (roleCode == 10)
+								for (let i = 0; i < clinicList.length; i++) {
+									if (localSavedClinicGuid == clinicList[i].clinicGuid) {
+										clinicIndex = i;
+										break;
+									}
 								}
-							}
-							actions.callLogin('V1/FuncForDrAppToGetHomeScreenAnalytics', 'post', params, signupDetails.accessToken, 'HomeScreenAnalytics');
-							setTimeout(() => {
-								this.setState({ clinicImageUrl: clinicList[clinicIndex].clinicImageUrl })
-							}, 1000)
+								DRONA.setSelectedIndexClinic(clinicIndex)
+							signupDetails.clinicName = clinicList[clinicIndex].clinicName;
+							signupDetails.clinicGuid = clinicList[clinicIndex].clinicGuid;
+							signupDetails.clinicStatus = clinicList[clinicIndex].status;
+							signupDetails.clinicImageUrl = clinicList[clinicIndex].clinicImageUrl;
+						} catch (e) { }
 
-						}
+					}
+					//set doctor
+					let doctorList = data.doctorInfo;
+					if (doctorList && doctorList.length > 0) {
+						try {
+							// if(roleCode==70)
+							// for (let i = 0; i < doctorList.length; i++) {
+							// 	if (localSavedClinicGuid == doctorList[i].doctorGuid) {
+							// 		doctorIndex = i;
+							// 		DRONA.setSelectedIndexClinic(clinicIndex)
+							// 		break;
+							// 	}
+							// }
 
-					let drName = data.doctorInfo.doctorName;
+							signupDetails.doctorGuid = doctorList[doctorIndex].doctorGuid;
+							signupDetails.mobile = doctorList[doctorIndex].docMobileNumber;
+							signupDetails.drSpeciality = doctorList[doctorIndex].doctorSpeciality;
+							signupDetails.profileImgUrl = doctorList[doctorIndex].profileImgUrl;
+							signupDetails.iseSignatureAvailable = doctorList[doctorIndex].showEsignature;
+							//signupDetails.drProfileImgUrlinAssistantLogin = doctorList[doctorIndex].profileImgUrl;
+						} catch (e) { }
+
+					}
+					let drFullName = doctorList[doctorIndex].doctorName;
 					let fname = '', mname = '', lname = '';
-					if (drName)
-						if (drName.includes(" ")) {
-							let str = drName.split(" ");
+					if (drFullName)
+						if (drFullName.includes(" ")) {
+							let str = drFullName.split(" ");
 							fname = str[0];
 							mname = str[1];
 							lname = str[2];
 						}
-					this.setState({
-						shareLinkUrl: data.shareUrl && data.shareUrl.url ? data.shareUrl.url : '',
-						badgeShowStaus: data.notificationReadCount > 0 ? true : false
-					});
-
-					signupDetails.shareLinkUrl = data.shareUrl && data.shareUrl.url ? data.shareUrl.url : '';
-					this.setState({ drfullName: data.doctorInfo.doctorName });
-					signupDetails.iseSignatureAvailable = data.showEsignature;
-
 					signupDetails.fname = fname;
 					signupDetails.lname = lname;
-					signupDetails.fullName = drName;
+					signupDetails.doctorFullName = drFullName;
 					signupDetails.UserGuid = data.userInfo.userGuid;
-					signupDetails.mobile = data.doctorInfo.docMobileNumber;
-					signupDetails.drSpeciality = data.doctorInfo.doctorSpeciality;
+					signupDetails.userName = data.userInfo.userName;
 
 					signupDetails.accessToken = newProps.responseData.accessToken;
 					signupDetails.fcmToken = await AsyncStorage.getItem('fcmToken');
-					this.setState({ paymentCardDonotShowAgain: data.paymentCardDonotShowAgain })
 					try {
 						await AsyncStorage.setItem('userGuid', CryptoJS.AES.encrypt(data.userInfo.userGuid, 'MNKU').toString());
-						await AsyncStorage.setItem('profileImgUrl', roleCode == 10 ? data.doctorInfo.profileImgUrl : null);
+						await AsyncStorage.setItem('profileImgUrl', signupDetails.profileImgUrl);
 						await AsyncStorage.setItem('accessToken', CryptoJS.AES.encrypt(newProps.responseData.accessToken, 'MNKU').toString());
 						await AsyncStorage.setItem('clinicGuid', signupDetails.clinicGuid);
-						await AsyncStorage.setItem('roleCode', roleCode+'');
+						await AsyncStorage.setItem('roleCode', roleCode + '');
 						await AsyncStorage.setItem('doctorGuid', signupDetails.doctorGuid);
-						signupDetails.profileImgUrl = roleCode == 10 && data.doctorInfo.profileImgUrl != 'null' ? data.doctorInfo.profileImgUrl : null; //
-
-
+						//signupDetails.profileImgUrl = roleCode == 10 && data.doctorInfo.profileImgUrl != 'null' ? data.doctorInfo.profileImgUrl : null; //
 					} catch (error) {
 						//console.log(error)
 					}
-					if (data.doctorInfo.profileImgUrl && data.doctorInfo.profileImgUrl != 'null')
-						this.setState({ drImgUrl: { uri: data.doctorInfo.profileImgUrl } }) //
+					// if (data.doctorInfo.profileImgUrl && data.doctorInfo.profileImgUrl != 'null')
+					// 	this.setState({ drImgUrl: { uri: data.doctorInfo.profileImgUrl } }) //
 
 					try {
 						if (roleCode == 70) {
@@ -281,9 +272,8 @@ class Home extends React.PureComponent {
 								}
 							}
 							signupDetails.isAssistantUser = true;
-							signupDetails.assistantName = data.userInfo.userName;
 							signupDetails.assistantMobile = data.userInfo.mobileNo ? data.userInfo.mobileNo : CryptoJS.AES.decrypt(await AsyncStorage.getItem('loginId'), 'MNKU').toString(CryptoJS.enc.Utf8);
-							signupDetails.drProfileImgUrlinAssistantLogin = data.doctorInfo.profileImgUrl;
+
 							signupDetails.globalTabIndex = 0;
 							this.props.ClickOnMeter(0);
 							try {
@@ -294,29 +284,47 @@ class Home extends React.PureComponent {
 							} catch (error) {
 
 							}
-							if (signupDetails.isAllowClinicDetailsAssistant)
-								this.setState({ showPaymentComponent: data.showBankDetailComponent, })
+							// if (signupDetails.isAllowClinicDetailsAssistant)
+							// 	this.setState({ showPaymentComponent: data.showBankDetailComponent, })
+
+							let urlkey=doctorList[doctorIndex].urlkey;
+							let urlname=doctorList[doctorIndex].urlname;
+							let shareUrl = data.shareUrl && data.shareUrl.url ? data.shareUrl.url : '';
+							signupDetails.shareLinkUrl = shareUrl.replace("urlkey", urlkey).replace("urlname",urlname);
+							headDropdownImageUrl= doctorList[doctorIndex].profileImgUrl;
 						} else {
-							signupDetails.drProfileImgUrlinAssistantLogin = data.doctorInfo.profileImgUrl;
 							signupDetails.globalTabIndex = 2;
 
 							signupDetails.isAssistantUser = false;
 							this.props.ClickOnMeter(2);
-							this.setState({ showPaymentComponent: data.showBankDetailComponent })
+							showPaymentComponent= clinicList[clinicIndex].showBankDetailComponent;
+
+							let urlkey=clinicList[clinicIndex].urlkey;
+							let urlname=clinicList[clinicIndex].urlname;
+							let shareUrl = data.shareUrl && data.shareUrl.url ? data.shareUrl.url : '';
+							signupDetails.shareLinkUrl = shareUrl.replace("urlkey", urlkey).replace("urlname",urlname);
+							headDropdownImageUrl= clinicList[clinicIndex].clinicImageUrl;
+							this.setState({ paymentCardDonotShowAgain: clinicList[clinicIndex].paymentCardDonotShowAgain })
 						}
 
 					} catch (e) { }
-
 					actions.setSignupDetails(signupDetails);
-
-					//this.onSelect();
-
+					if(analyticApiCallingFlag==0){
+						let params = {
+							"UserGuid": signupDetails.UserGuid,
+							"DoctorGuid": signupDetails.doctorGuid, "ClinicGuid": signupDetails.clinicGuid,
+							"Data": {
+								"DoctorGuid": signupDetails.doctorGuid, "ClinicGuid": signupDetails.clinicGuid
+							}
+						}
+						actions.callLogin('V1/FuncForDrAppToGetHomeScreenAnalytics', 'post', params, signupDetails.accessToken, 'HomeScreenAnalytics');	
+						this.props.ClickOnMeter(9);
+						analyticApiCallingFlag=1;
+					}
+					
 					if (navigationUrl && navFlag == 0)
 						this.navigateInKilledApp(roleCode);
-
-
-
-						DRONA.setIsReloadApi(false)
+					DRONA.setIsReloadApi(false);
 				} else {
 					let { actions, signupDetails } = this.props;
 					signupDetails.accessToken = CryptoJS.AES.decrypt(await AsyncStorage.getItem('accessToken'), 'MNKU').toString(CryptoJS.enc.Utf8);
@@ -346,7 +354,6 @@ class Home extends React.PureComponent {
 			} else if (tagname == 'PaymentCardDisplayStatus') {
 				if (newProps.responseData.statusCode == '0') {
 					this.setState({ paymentCardDonotShowAgain: true })
-
 				}
 			}
 		}
@@ -398,7 +405,7 @@ class Home extends React.PureComponent {
 	callShare = () => {
 		let { actions, signupDetails } = this.props;
 		let urlKel = '', urlname = ''
-		let urlK = this.state.shareLinkUrl;
+		let urlK = signupDetails.shareLinkUrl;
 		if (urlK.includes('/')) {
 			let strArr = urlK.split('/');
 			urlKel = strArr[strArr.length - 3];
@@ -493,10 +500,10 @@ class Home extends React.PureComponent {
 		return (
 			<View style={Platform.OS == 'android' ? styles.containerAndroid : styles.container}>
 				{/* <Loader ref="loadingRef" /> */}
-				<NavigationEvents onDidFocus={() =>{
-					if(DRONA.getIsReloadApi())
-					this.refreshHome()
-				} } />
+				<NavigationEvents onDidFocus={() => {
+					if (DRONA.getIsReloadApi())
+						this.refreshHome()
+				}} />
 
 				<View style={{ flexDirection: 'row', backgroundColor: Color.white, height: responsiveHeight(7) }}>
 					<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -509,9 +516,9 @@ class Home extends React.PureComponent {
 						this.props.nav.navigation.navigate('ClinicList', { onSelect: this.onSelect })
 					}}>
 						<View style={{ height: responsiveFontSize(3), width: responsiveFontSize(3), borderRadius: responsiveFontSize(1.5), backgroundColor: '#47C1BF', borderColor: Color.white, borderWidth: 1, justifyContent: 'center', alignItems: 'center', marginLeft: 10 }}>
-							{this.state.clinicImageUrl && this.state.clinicImageUrl != '' ?
+							{ headDropdownImageUrl ?
 								<Image
-									source={{ uri: this.state.clinicImageUrl }}
+									source={{ uri: headDropdownImageUrl }}
 									style={{ height: responsiveFontSize(3), width: responsiveFontSize(3), borderRadius: responsiveFontSize(1.5) }}
 								/>
 								: <Text style={{ fontSize: CustomFont.font10, color: Color.white, textTransform: 'uppercase' }}>{this.makeShortName(signupDetails.clinicName)}</Text>
@@ -572,24 +579,24 @@ class Home extends React.PureComponent {
 							<TouchableOpacity onPress={() => {
 								let { signupDetails } = this.props;
 								let timeRange = Trace.getTimeRange();
-								Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + "Msite_Link_Share_popup", signupDetails.firebaseLocation);
-								Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Msite_Link_Share_popup", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+								Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + "Msite_Link_Share_popup", signupDetails.firebaseLocation);
+								Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Msite_Link_Share_popup", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
 
 								this.setState({ isModalVisible: true })
 							}}
 								style={[styles.subdivision, { marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), marginTop: responsiveWidth(2), marginBottom: responsiveWidth(0), paddingTop: responsiveWidth(2), paddingBottom: responsiveWidth(2) }]} >
 								<View style={{ flexDirection: 'row', flex: 1, marginLeft: 12 }}>
 									<View style={styles.profileRoundImg}>
-										{this.state.drImgUrl && this.state.drImgUrl.uri ?
+										{signupDetails.profileImgUrl ?
 											<Image
-												source={this.state.drImgUrl}
+												source={{ uri: signupDetails.profileImgUrl }}
 												style={{ height: responsiveFontSize(5), width: responsiveFontSize(5), borderRadius: responsiveFontSize(2.5) }}
 											/>
-											: <Text style={{ fontSize: CustomFont.font14, color: Color.white }}>{this.makeShortName(this.removeSpace(this.state.drfullName))}</Text>}
+											: <Text style={{ fontSize: CustomFont.font14, color: Color.white }}>{this.makeShortName(this.removeSpace(signupDetails.doctorFullName))}</Text>}
 									</View>
 
 									<View style={{ marginLeft: responsiveWidth(2.5) }}>
-										<Text style={{ textTransform: 'capitalize', fontSize: CustomFont.font14, fontWeight: 'bold', color: Color.fontColor }}>Dr. {this.removeSpace(this.state.drfullName)} </Text>
+										<Text style={{ textTransform: 'capitalize', fontSize: CustomFont.font14, fontWeight: 'bold', color: Color.fontColor }}>Dr. {this.removeSpace(signupDetails.doctorFullName)} </Text>
 										<Text style={{ fontSize: CustomFont.font12, fontWeight: CustomFont.fontWeight400, color: Color.textGrey }}>{signupDetails.drSpeciality}</Text>
 										<View style={{ flex: 1, flexDirection: 'row', }}>
 											<Image
@@ -603,7 +610,7 @@ class Home extends React.PureComponent {
 							</TouchableOpacity>
 
 
-							{!signupDetails.isAssistantUser && !this.state.showPaymentComponent && !this.state.paymentCardDonotShowAgain ?
+							{!signupDetails.isAssistantUser && !showPaymentComponent && !this.state.paymentCardDonotShowAgain ?
 								<View style={{ flexDirection: 'row', backgroundColor: Color.white, marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), marginTop: responsiveWidth(2), marginBottom: responsiveWidth(0), borderRadius: 6 }}>
 									<View style={{ flex: 1 }}>
 										<Image source={home_payment} style={{ height: responsiveFontSize(5), width: responsiveFontSize(5), resizeMode: 'contain', marginTop: responsiveHeight(2), marginLeft: 10 }} />
@@ -783,9 +790,7 @@ class Home extends React.PureComponent {
 								You can now consult me from the convenience of your home through the DrOnA App. To book an appointment, click here:
 							</Text>
 
-							<Text style={{ marginTop: responsiveHeight(2), color: Color.primaryBlue }}>
-								{this.state.shareLinkUrl}
-							</Text>
+							<Text style={{ marginTop: responsiveHeight(2), color: Color.primaryBlue }}>{signupDetails.shareLinkUrl}</Text>
 
 							<Text style={{ marginTop: responsiveHeight(2), fontFamily: CustomFont.fontName, color: Color.darkText, fontSize: CustomFont.font12 }}>
 								Dr. {signupDetails.fname + ' ' + signupDetails.lname}
@@ -798,8 +803,8 @@ class Home extends React.PureComponent {
 									Trace.stopTrace();
 									setLogEvent("home", { "share_eclinic": "click", UserGuid: signupDetails.UserGuid })
 									let timeRange = Trace.getTimeRange();
-									Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + "Msite_Link_Share", signupDetails.firebaseLocation);
-									Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Msite_Link_Share", { "Msite_Link_Share": "click", 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+									Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + "Msite_Link_Share", signupDetails.firebaseLocation);
+									Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Msite_Link_Share", { "Msite_Link_Share": "click", 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
 									this.callShare();
 									this.setState({ isModalVisible: false });
 								}}>

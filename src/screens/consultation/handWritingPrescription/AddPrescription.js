@@ -336,7 +336,7 @@ class AddPrescription extends React.Component {
         this.deleteImage(item, index)
         // Alert.alert(
         //     "Delete Message",
-        //     "Are you sure to delete?",
+        //     "Are you sure want to delete?",
         //     [
         //         {
         //             text: "Cancel",

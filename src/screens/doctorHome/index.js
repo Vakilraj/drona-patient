@@ -55,13 +55,6 @@ class DoctorHome extends React.Component {
 
 	async componentDidMount() {
 		//this.getCurrentLocation();
-		let { actions, signupDetails } = this.props;
-		let accessToken = signupDetails.accessToken ? signupDetails.accessToken : CryptoJS.AES.decrypt(await AsyncStorage.getItem('accessToken'),'MNKU').toString(CryptoJS.enc.Utf8);
-		let params = {
-			"UserGuid": signupDetails.UserGuid,
-			"Data":{}
-		}
-		actions.callLogin('V11/FuncForDrAppToGetDoctorFireBase', 'post', params, accessToken, 'Kpidata');
 		this.callAppVersionCheckAPI();
 		Keyboard.dismiss(0);
 		await AsyncStorage.setItem('profile_complete', 'profile_complete');
@@ -106,30 +99,12 @@ class DoctorHome extends React.Component {
 							
 						}
 						
-						// CALL FIREBASE KPI API
-						let { actions, signupDetails } = this.props;
-						let accessToken = signupDetails.accessToken ? signupDetails.accessToken : CryptoJS.AES.decrypt(AsyncStorage.getItem('accessToken'), 'MNKU').toString(CryptoJS.enc.Utf8);
-						let params = {
-							"UserGuid": signupDetails.UserGuid,
-							"Data": {}
-						}
-						actions.callLogin('V11/FuncForDrAppToGetDoctorFireBase', 'post', params, accessToken, 'Kpidata');
-
 					})
 					.catch(error => console.warn(error));
 				//***** */
 			})
 			.catch(error => {
 				Snackbar.show({ text: 'Please enable your location settings ', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-				// CALL FIREBASE KPI API
-				let { actions, signupDetails } = this.props;
-				let accessToken = signupDetails.accessToken ? signupDetails.accessToken : CryptoJS.AES.decrypt(AsyncStorage.getItem('accessToken'), 'MNKU').toString(CryptoJS.enc.Utf8);
-				let params = {
-					"UserGuid": signupDetails.UserGuid,
-					"Data": {}
-				}
-				actions.callLogin('V11/FuncForDrAppToGetDoctorFireBase', 'post', params, accessToken, 'Kpidata');
-
 			})
 	}
 	callAppVersionCheckAPI = () => {
@@ -138,13 +113,9 @@ class DoctorHome extends React.Component {
 			"Data": {
 				"AppType": Platform.OS == 'ios' ? "DrAppIOS" : "DrAppAndroid",
 			}
-
-			//"Version": "V_20220314",
-			//"IsUpdateMandatory": true
 		}
 		//  actions.callLogin('V1/FuncForAdminToGetVersionHistoryDetails', 'post', params, 'token', 'appversion');
 		actions.callLogin('V1/FuncForWebAppToGetCurrentDateTime', 'post', params, 'token', 'getserverDateTime');
-
 	}
 
 	async UNSAFE_componentWillReceiveProps(newProps) {
@@ -182,42 +153,29 @@ class DoctorHome extends React.Component {
 			else if (tagname === 'Kpidata') {
 				let { actions, signupDetails } = this.props;
 				try {
-
 					let roleCode = newProps.responseData.data.basicInfo.roleCode;
 					let assistantStatus;
+					signupDetails.firebasePhoneNumber = drInfo.phoneNumber;
 					if (roleCode == '70') {
-						let drInfo = newProps.responseData.data.basicInfo;
-						let finalAge = Trace.getAge(drInfo.dob)
-						//let assistantStatus = newProps.responseData.data.basicInfo.assistantList;
-						signupDetails.firebasePhoneNumber = drInfo.phoneNumber;
 						signupDetails.firebaseDOB = 'NoAssistantAge';
-						signupDetails.firebaseSpeciality = signupDetails.drSpeciality ? signupDetails.drSpeciality: 'NoAssistantSpeciality';
-
-						//signupDetails.firebaseDOB = finalAge;
-						//signupDetails.firebaseSpeciality = drInfo.selectedSpeciality ? drInfo.selectedSpeciality : '';
 						signupDetails.firebaseUserType = 'Ass_';
 						signupDetails.firebaseLocation = cityName;
 						actions.setSignupDetails(signupDetails);
 					}
 					else {
 						let drInfo = newProps.responseData.data.basicInfo;
-						let drSpec = newProps.responseData.data.basicInfo.specialityList[0];
-
 						let finalAge = Trace.getAge(drInfo.dob)
 						assistantStatus = newProps.responseData.data.basicInfo.assistantList;
-						signupDetails.firebasePhoneNumber = drInfo.phoneNumber;
 						signupDetails.firebaseDOB = finalAge;
-						//signupDetails.firebaseLocation = drInfo.location;
-						signupDetails.firebaseSpeciality = drSpec.specialityName;
 						signupDetails.firebaseUserType = 'Dr_';
 						signupDetails.firebaseLocation = cityName;
 						actions.setSignupDetails(signupDetails);
 					}
 					timeRange = Trace.getTimeRange();
-					Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'App_Launch', signupDetails.firebaseLocation);
-					Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "App_Launch", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+					Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'App_Launch', signupDetails.firebaseLocation);
+					Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "App_Launch", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
 					
-					Trace.setLogEventWithTrace(signupDetails.firebasePhoneNumber, { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+					Trace.setLogEventWithTrace(signupDetails.firebasePhoneNumber, { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
 					// Getting App state
 					this.appStateSubscription = AppState.addEventListener(
 						"change",
@@ -226,30 +184,24 @@ class DoctorHome extends React.Component {
 								this.state.appState.match(/inactive|background/) &&
 								nextAppState === "active"
 							) {
-								//this.timeGroup();
-								console.log("App has come to the foreground!--home--1");
-								Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'App_Launch', signupDetails.firebaseLocation);
-								Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "App_Launch", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality, })
+								Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'App_Launch', signupDetails.firebaseLocation);
+								Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "App_Launch", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality, })
 								//setLogEvent("app_launch_event");
 							}
-							console.log('state checked....' + nextAppState)
 							this.setState({ appState: nextAppState });
 
 						}
 					);
 					if (assistantStatus && assistantStatus.length > 0) {
 						assistantAdded = 'AssistantAdded'
-						// alert('assistant added');
-						Trace.startTraceAssistant(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, 'Dr_Assistant_added_status', assistantAdded);
+						Trace.startTraceAssistant(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, 'Dr_Assistant_added_status', assistantAdded);
 					}
 					else {
 						assistantAdded = 'AssistantNotAdded'
-						// alert('assistant not added');
-						Trace.startTraceAssistant(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, 'Dr_Assistant_added_status', assistantAdded);
+						Trace.startTraceAssistant(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, 'Dr_Assistant_added_status', assistantAdded);
 					}
 					
 				} catch (error) {
-
 				}
 
 			}
@@ -268,10 +220,22 @@ class DoctorHome extends React.Component {
 		this.setState({ selectedIndex: index });
 	}
 	updateTab = (index) => {
-		this.setState({ selectedIndex: index, footerRefresh: false });
-		setTimeout(() => {
-			this.setState({ footerRefresh: true });
-		}, 200)
+		if(index==9){
+		let { actions, signupDetails } = this.props;
+		let params = {
+			"UserGuid": signupDetails.UserGuid,
+				"DoctorGuid": signupDetails.doctorGuid,
+				"ClinicGuid": signupDetails.clinicGuid,
+			"Data":{}
+		}
+		actions.callLogin('V11/FuncForDrAppToGetDoctorFireBase', 'post', params, signupDetails.accessToken, 'Kpidata');
+		}else{
+			this.setState({ selectedIndex: index, footerRefresh: false });
+			setTimeout(() => {
+				this.setState({ footerRefresh: true });
+			}, 200)
+		}
+		
 	}
 	handleNavigation = (event) => {
 		try {

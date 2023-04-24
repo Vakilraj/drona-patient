@@ -35,8 +35,8 @@ class PastEncounters extends React.Component {
     componentDidMount() {
         let { signupDetails } = this.props;
 		let timeRange = Trace.getTimeRange();
-		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality,signupDetails.firebaseUserType +'Past_Encounter_list', signupDetails.firebaseLocation );
-		Trace.setLogEventWithTrace( signupDetails.firebaseUserType + "Past_Encounter_list", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality,signupDetails.firebaseUserType +'Past_Encounter_list', signupDetails.firebaseLocation );
+		Trace.setLogEventWithTrace( signupDetails.firebaseUserType + "Past_Encounter_list", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => this.props.navigation.goBack())
         item = this.props.navigation.state.params.item;
         this.getPastEncounter();

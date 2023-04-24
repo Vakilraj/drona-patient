@@ -27,10 +27,16 @@ let clickFlag = 0, isEdit = false, prvLength = -1, InputTxtLengthDosage = 5, Inp
 import Trace from '../../service/Trace'
 import _ from 'lodash';
 let medicineTimingFrequency = 'Empty Stomach';
-
+let medicineDosasesType;
+let fromDaysData = [{ value: 'days' }, { value: 'weeks' }, { value: 'months' }, { value: 'years' }]
 class MedicineDetails extends React.Component {
 	constructor(props) {
 		super(props);
+        if(Array.isArray(props.navigation.state.params.item)){
+			medicineDosasesType = props.navigation.state.params.item[0].medicineDosasesType
+		} else {
+			medicineDosasesType = props.navigation.state.params.item.medicineDosasesType
+		}
 		this.state = {
 			noteData: '',
 			showStateDosage: false,
@@ -39,6 +45,8 @@ class MedicineDetails extends React.Component {
 			InpborderColor2: Color.inputdefaultBorder,
 			InpborderColorDuration: Color.inputdefaultBorder,
 			InpborderColorUnit: Color.inputdefaultBorder,
+			InpborderColorFrom: Color.inputdefaultBorder,
+			InpborderColorTo: Color.inputdefaultBorder,
 			CustomInput: false,
 			whenToTakeArr: [{ label: 'Empty Stomach', value: 'Empty Stomach' }, { label: 'Before Food', value: 'Before Food' }, { label: 'After Food', value: 'After Food' }, { label: 'No Preference', value: 'No Preference' }],
 			showDurationDropDown: false,
@@ -46,7 +54,13 @@ class MedicineDetails extends React.Component {
 			dutaionTxt: '',
 			unitTxt: '',
 			DurationDropdownArr: [],
-			UnitDropdownArr: props.navigation.state.params.item.medicineDosasesType,
+			UnitDropdownArr: medicineDosasesType,
+			taperedData: [],
+			selectedIndex: 0,
+			fromDaysTxt: '',
+			showFromDayTxtDropDown: false,
+			fromDaysDataArr: fromDaysData,
+			showToDayTxtDropDown: false
 
 
 
@@ -74,7 +88,14 @@ class MedicineDetails extends React.Component {
 			}
 		});
 		let item = this.props.navigation.state.params.item;
-		console.log('item-------' + JSON.stringify(item))
+		if (Array.isArray(item)) {
+			this.setState({ taperedData: item });
+		}
+		else {
+			let tempArr = [];
+			tempArr.push(item);
+			this.setState({ taperedData: tempArr })
+		}
 		medicineTypeGuid = item.medicineTypeGuid;
 		medicineType = item.medicineType;
 
@@ -185,6 +206,57 @@ class MedicineDetails extends React.Component {
 		}, 1000)
 	}
 
+	getDurationAndUnit = (item) => {
+		Dosages = item.dosages ? item.dosages : 1;
+		DurationType = item.durationType ? item.durationType : 'days';
+		if (item.durationValue)
+			DurationTypeValue = item.durationValue;
+		if (item.medicineTimingFrequency)
+			medicineTimingFrequency = item.medicineTimingFrequency;
+
+		//this.setState({ noteData: item.note ? item.note : '' })
+
+		if (item.dosagePattern) {
+			dosagePattern = item.dosagePattern;
+			InputTxtLengthDosage = dosagePattern.length;
+			if (dosagePattern && dosagePattern.indexOf('.')) {
+				this.setState({ CustomInput: true })
+			}
+			//this.setState({ dosageSearchTxt: dosagePattern })
+		}
+		let durationRefileedTxt = DurationTypeValue + ' ' + DurationType;
+		InputTxtLengthDuration = durationRefileedTxt.length;
+
+		let unitRefileedTxt = Dosages + ' ' + doasestype;
+		InputTxtLengthUnit = unitRefileedTxt.length;
+
+		//this.setState({ dutaionTxt: durationRefileedTxt, unitTxt: unitRefileedTxt })
+		return unitRefileedTxt;
+	}
+
+	getDoseValue = (item) => {
+		Dosages = item.dosages ? item.dosages : 1;
+		if (this.state.selectedIndex)
+			if (item.dosagePattern) {
+				dosagePattern = item.dosagePattern;
+				InputTxtLengthDosage = dosagePattern.length;
+				if (dosagePattern && dosagePattern.indexOf('.')) {
+					this.setState({ CustomInput: true })
+				}
+				this.setState({ dosageSearchTxt: dosagePattern })
+			}
+	}
+
+	getDurationValue = (item) => {
+		// let durationRefileedTxt = DurationTypeValue + ' ' + DurationType;
+		// InputTxtLengthDuration = durationRefileedTxt.length;
+
+		// let unitRefileedTxt = Dosages + ' ' + doasestype;
+		// InputTxtLengthUnit = unitRefileedTxt.length;
+
+		// this.setState({ dutaionTxt: durationRefileedTxt, unitTxt: unitRefileedTxt })
+	}
+
 	saveData = () => {
 		clickFlag = 1;
 		let { signupDetails } = this.props;
@@ -192,6 +264,13 @@ class MedicineDetails extends React.Component {
 		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Medicine_Add', signupDetails.firebaseLocation)
 		Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Medicine_Add", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 		let item = this.props.navigation.state.params.item;
+		let saveData = this.state.taperedData;
+		let savevalue = {}
+		saveData.forEach((_item, index) => {
+			saveData[index].appointmentGuid = signupDetails.appoinmentGuid;
+			saveData[index].medicineName = saveData[0].medicineName + saveData[0].strength;
+			saveData[index].medicineTimingShift = null;
+		})
 		let data = {
 			appointmentGuid: signupDetails.appoinmentGuid,
 			medicineGuid: item.medicineGuid,
@@ -212,18 +291,18 @@ class MedicineDetails extends React.Component {
 			patientAppointmentMedicineGuId: item.patientAppointmentMedicineGuId,
 			medicineDosasesType: [{ medicineDoasesGuId: MedicineDoasesGuId, doasestype: doasestype }] //"medicineTypeGuid":medicineTypeGuid
 		}
-		console.log('-----data---' + JSON.stringify(data));
 		isEdit = true;
 		const { navigation } = this.props;
 		navigation.goBack();
-		navigation.state.params.Refresh({ isEdit: isEdit, data: data });
+		console.log('===== saveData =====', JSON.stringify(saveData));
+		navigation.state.params.Refresh({ isEdit: isEdit, data: saveData });
 		//actions.callLogin('V1/FuncForDrAppToAddUpdateMedicine', 'post', params, signupDetails.accessToken, 'saveMedicine');
 		setLogEvent("patient_consultation", { "save_medicine": "click", UserGuid: signupDetails.UserGuid })
 
 	}
 
-	callIsFucused2 = () => {
-		this.setState({ InpborderColor2: Color.primary });
+	callIsFucused2 = (index) => {
+		this.setState({ InpborderColor2: Color.primary, selectedIndex: index });
 		if (!this.state.CustomInput)
 			this.setState({ showStateDosage: true });
 	}
@@ -234,21 +313,34 @@ class MedicineDetails extends React.Component {
 	dismissDialog = () => {
 		this.setState({ showStateDosage: false });
 	}
-	callIsFucusedDuration = () => {
-		this.setState({ InpborderColorDuration: Color.primary })
+	callIsFucusedDuration = (index) => {
+		this.setState({ InpborderColorDuration: Color.primary, selectedIndex: index })
 	}
 	callIsBlurDuration = () => {
 		this.setState({ InpborderColorDuration: Color.inputdefaultBorder, });
 	}
 
-	callIsFucusedUnit = () => {
-		this.setState({ InpborderColorUnit: Color.primary })
+	callIsFucusedUnit = (index) => {
+		this.setState({ InpborderColorUnit: Color.primary, selectedIndex: index })
 	}
 	callIsBlurUnit = () => {
 		this.setState({ InpborderColorUnit: Color.inputdefaultBorder, });
 	}
+	callIsBlurFrom = () => {
+		this.setState({ InpborderColorFrom: Color.inputdefaultBorder, });
+	}
+	callIsFucusedFrom = (index) => {
+		this.setState({ InpborderColorFrom: Color.primary, selectedIndex: index })
+	}
+	callIsBlurTo = () => {
+		this.setState({ InpborderColorTo: Color.inputdefaultBorder, });
+	}
+	callIsFucusedTo = (index) => {
+		this.setState({ InpborderColorTo: Color.primary, selectedIndex: index })
+	}
 
-	SearchFilterFunctionDosage = (text) => {
+	SearchFilterFunctionDosage = (text, index) => {
+		this.setState({ selectedIndex: index })
 		if (text && text.length > 0) {
 			if (text.indexOf('.') > -1) {
 				Snackbar.show({ text: 'Please select custom dosage from list ', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
@@ -292,18 +384,21 @@ class MedicineDetails extends React.Component {
 			this.setState({ dosageSearchTxt: '', dosageDropdownArr: doasagesPatterArr });
 	}
 	DoseValidation = (text) => {
-		if (text) {
-			if (Validator.isDoseValidate(text)) {
-				this.setState({ dosageSearchTxt: text })
-				dosagePattern = text;
+		if (this.state.selectedIndex)
+			if (text) {
+				if (Validator.isDoseValidate(text)) {
+					this.setState({ dosageSearchTxt: text })
+					dosagePattern = text;
+				}
+			} else {
+				this.setState({ dosageSearchTxt: '' });
 			}
-		} else {
-			this.setState({ dosageSearchTxt: '' });
-		}
 	}
-	clickOnState = (item) => {
+	clickOnState = (item, index) => {
+		const tempData = this.state.taperedData
 		if (item.value === 'Custom dosage') {
 			dosagePattern = null;
+			tempData[index].dosageValue = '';
 			this.setState({ dosageSearchTxt: '', showStateDosage: false, CustomInput: true });
 			try {
 				setTimeout(() => {
@@ -317,14 +412,16 @@ class MedicineDetails extends React.Component {
 			dosagePattern = item.value;
 			//if(dosagePattern && dosagePattern.length>4)
 			InputTxtLengthDosage = dosagePattern.length;
+			tempData[index].dosageValue = item.label
 			this.setState({ dosageSearchTxt: item.label, showStateDosage: false, CustomInput: false })
 		}
 	}
 
-	handleDurationData = (text) => {
+	handleDurationData = (text, index) => {
 		let duationTypeArr = [{ label: 'day' }, { label: 'week' }, { label: 'month' }, { label: 'year' },];
+		this.setState({ selectedIndex: index })
 		if (text && Validator.isMobileValidate(text)) {
-			for (i = 0; i < duationTypeArr.length; i++) {
+			for (let i = 0; i < duationTypeArr.length; i++) {
 				if (text == 1)
 					duationTypeArr[i].label = text + ' ' + duationTypeArr[i].label;
 				else
@@ -335,19 +432,22 @@ class MedicineDetails extends React.Component {
 		this.setState({ dutaionTxt: text });
 	}
 
-	clickOnDuration = (item) => {
-		if (item.label) {
-			let str = item.label.split(' ');
-			DurationType = str[1];
-			DurationTypeValue = str[0];
-			InputTxtLengthDuration = item.label.length;
-		}
+	clickOnDuration = (item, index) => {
+		let tempData = this.state.taperedData;
+		if (this.state.selectedIndex == index)
+			if (item.label) {
+				let str = item.label.split(' ');
+				DurationType = str[1];
+				DurationTypeValue = str[0];
+				InputTxtLengthDuration = item.label.length;
+			}
 
-
+		tempData[index].durationValue = item.label;
 		this.setState({ dutaionTxt: item.label, showDurationDropDown: false })
 	}
 
-	handleUnitData = (text) => {
+	handleUnitData = (text, index) => {
+		this.setState({ selectedIndex: index })
 		if (text && Validator.isMobileValidate(text)) {
 			Dosages = text;
 			this.setState({ unitTxt: text, showUnitDropDown: true });
@@ -356,15 +456,275 @@ class MedicineDetails extends React.Component {
 
 	}
 
-	clickOnUnit = (item) => {
+	clickOnUnit = (item, index) => {
+		let tempData = this.state.taperedData;
 		doasestype = item.doasestype;
 		medicineType = item.doasestype;
 		medicineTypeGuid = item.medicineTypeGuid;
 		MedicineDoasesGuId = item.medicineDoasesGuId;
 		let str = this.state.unitTxt + ' ' + doasestype;
 		InputTxtLengthUnit = str.length;
+		tempData[index].unitTextValue = str
 		this.setState({ unitTxt: str, showUnitDropDown: false })
 	}
+
+	clickOnDosege = (item, index) => {
+		this.setState({ dosageSearchTxt: '', CustomInput: !this.state.CustomInput, showStateDosage: true, selectedIndex: index })
+	}
+
+	handleFromDaysData = (item, index) => {
+		let temp = [{ value: 'days' }, { value: 'weeks' }, { value: 'months' }, { value: 'years' }]
+		if (item && Validator.isMobileValidate(item)) {
+			temp.forEach((ele) => {
+				ele.value = item + ' ' + `${ele.value}`
+			})
+			this.setState({ fromDaysTxt: item, showFromDayTxtDropDown: true, selectedIndex: index, fromDaysDataArr: temp })
+		}
+
+	}
+
+	clickOnFromDays = (item, index) => {
+		let tempData = this.state.taperedData;
+		tempData[index].fromdaysValue = item.value
+		let temp = [{ value: 'days' }, { value: 'weeks' }, { value: 'months' }, { value: 'years' }]
+		this.setState({ fromDaysTxt: item.value, showFromDayTxtDropDown: false, fromDaysDataArr: temp })
+	}
+	handleToDaysData = (item, index) => {
+		let temp = [{ value: 'days' }, { value: 'weeks' }, { value: 'months' }, { value: 'years' }]
+		if (item && Validator.isMobileValidate(item)) {
+			temp.forEach((ele) => {
+				ele.value = item + ' ' + `${ele.value}`
+			})
+			this.setState({ toDaysTxt: item, showToDayTxtDropDown: true, selectedIndex: index, fromDaysDataArr: temp })
+		}
+
+	}
+
+	clickOnToDays = (item, index) => {
+		const tempData = this.state.taperedData;
+		tempData[index].toDaysValue = item.value
+		let temp = [{ value: 'days' }, { value: 'weeks' }, { value: 'months' }, { value: 'years' }]
+		this.setState({ toDaysTxt: item.value, showToDayTxtDropDown: false, fromDaysDataArr: temp })
+	}
+
+	renderTaperedItem = ({ item, index }) => {
+		let medicineName = this.state.taperedData;
+		return (
+			<View>
+				<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flex: 1, borderTopWidth: index !== 0 ? 2 : null, borderColor: index !== 0 ? '#D2D7F3' : null }}>
+					<View style={{ justifyContent: 'flex-start', marginTop: responsiveHeight(2), flex: 3.5 }}>
+						<Text style={{ color: Color.black, fontSize: CustomFont.font18, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName }}>{medicineName[0].medicineName ? medicineName[0].medicineName.replace("Add new", '') : ''} {medicineName[0].strength ? medicineName[0].strength : ''}{this.state.taperedData.length > 1 ? "Dose " + `${index + 1}` : null}</Text>
+						<Text style={{ fontStyle: 'italic', color: Color.datecolor, marginTop: responsiveHeight(1), fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight400, }}>{medicineName[0].medicineDesc}</Text>
+					</View>
+					{
+						this.state.taperedData.length > 1 && index !== 0 ? (
+							<TouchableOpacity
+								style={{ flex: 1 }}
+								onPress={() => {
+									let tempArr = this.state.taperedData;
+									tempArr.splice(index, 1);
+									this.setState({ taperedData: tempArr });
+								}}>
+								<Text
+									style={{
+										fontSize: CustomFont.font14,
+										fontWeight: CustomFont.fontWeight600,
+										color: Color.primaryBlue,
+										marginBottom: responsiveHeight(4),
+										marginRight: responsiveWidth(2),
+										marginTop: responsiveHeight(2)
+									}}
+								>Remove</Text>
+							</TouchableOpacity>
+						) : null
+					}
+				</View>
+				{/* ------- Unit------- */}
+				<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>Units</Text>
+				<TextInput onBlur={this.callIsBlurUnit} onFocus={() => this.callIsFucusedUnit(index)} keyboardType={'phone-pad'}
+					style={[styles.createInputStyle, { borderColor: this.state.selectedIndex === index ? this.state.InpborderColorUnit : Color.inputdefaultBorder }]} placeholder={'Enter Unit'}
+					placeholderTextColor={Color.placeHolderColor}
+					defaultValue={item?.unitTextValue ? item?.unitTextValue : ''}
+					// value={item?.unitTextValue }
+					// maxLength={InputTxtLengthUnit}
+					onChangeText={(text) => this.handleUnitData(text, index)}
+					ref='search' returnKeyType='done' />
+				{this.state.unitTxt && this.state.showUnitDropDown && this.state.selectedIndex == index ?
+					<View style={{
+						borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,
+						borderBottomColor: Color.createInputBorder, borderTopColor: Color.white, marginTop: responsiveHeight(-.8)
+					}}>
+						<FlatList style={{ backgroundColor: '#fafafa' }}
+							data={this.state.UnitDropdownArr}
+							renderItem={({ item, _index }) => (
+								<TouchableOpacity style={{ zIndex: 999, height: responsiveHeight(7), justifyContent: 'flex-start', }} onPress={() => this.clickOnUnit(item, index)}>
+									<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }} >{this.state.unitTxt} {this.state.unitTxt == 1 ? item.doasestype : item.doasestype}</Text>
+								</TouchableOpacity>
+							)}
+							keyExtractor={(item, index) => index.toString()}
+						/>
+					</View> : null}
+
+				{/* ------- Dosage------- */}
+
+				<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>Dosage </Text>
+				<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+					<TextInput onBlur={this.callIsBlur2} onFocus={() => this.callIsFucused2(index)} keyboardType={'phone-pad'}
+						style={[styles.createInputStyle, { flex: 1, borderColor: this.state.selectedIndex === index ? this.state.InpborderColor2 : Color.inputdefaultBorder }]}
+						placeholder="Enter dosages" placeholderTextColor={Color.placeHolderColor}
+						defaultValue={item?.dosageValue ? item?.dosageValue : ''}
+						onChangeText={(dosageSearchTxt) => { this.state.CustomInput ? this.DoseValidation(dosageSearchTxt, index) : this.SearchFilterFunctionDosage(dosageSearchTxt, index); }}
+						maxLength={this.state.CustomInput ? 14 : InputTxtLengthDosage}
+						ref='search' returnKeyType='done' />
+					{this.state.CustomInput ? <TouchableOpacity style={{ height: responsiveHeight(6), width: responsiveWidth(15), justifyContent: 'center', alignItems: 'center', marginLeft: 10, borderWidth: 1, borderColor: this.state.InpborderColor2, marginTop: responsiveHeight(1.8), borderRadius: 6 }}
+						onPress={() => this.clickOnDosege(item, index)}>
+						<Image source={downarrow} style={{ height: responsiveFontSize(2.5), width: responsiveFontSize(2.5), resizeMode: 'contain' }} />
+					</TouchableOpacity> : null}
+
+				</View>
+
+				<View style={{ flex: 1 }}>
+					{this.state.selectedIndex === index && this.state.showStateDosage && this.state.dosageDropdownArr && this.state.dosageDropdownArr.length > 0 ?
+						<View style={{
+							borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,
+							borderBottomColor: Color.createInputBorder, borderTopColor: Color.white, marginTop: responsiveHeight(-.8)
+						}}><FlatList style={{ backgroundColor: '#fafafa' }}
+							data={this.state.dosageDropdownArr}
+							renderItem={({ item, _index }) => (
+								<TouchableOpacity style={{ height: responsiveHeight(7), justifyContent: 'flex-start' }}
+									onPress={() => this.clickOnState(item, index)}>
+									<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }}>{item.value}</Text>
+								</TouchableOpacity>
+							)}
+							keyExtractor={(item, index) => index.toString()}
+							/>
+						</View> : null}
+				</View>
+				{/* ------- When to Take------- */}
+				<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>When To Take</Text>
+				<DropDownPicker zIndex={10}
+					items={this.state.whenToTakeArr}
+					containerStyle={{ borderRadius: responsiveWidth(2), height: responsiveHeight(6), marginTop: responsiveHeight(1.6) }}
+					style={{ backgroundColor: '#ffffff', color: Color.textGrey }}
+					textStyle={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16 }} itemStyle={{
+						justifyContent: 'flex-start'
+					}}
+					dropDownStyle={{ backgroundColor: '#fafafa', zIndex: 4 }}
+					onChangeItem={item => {
+						medicineTimingFrequency = item.value;
+					}}
+					globalTextStyle={{ color: Color.fontColor, fontSize: CustomFont.font16 }}
+					placeholder="Empty Stomach"
+					placeholderStyle={{ color: Color.placeHolderColor, fontSize: CustomFont.font16 }}
+				/>
+				{/* ------- Duration------- */}
+				<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>Duration</Text>
+				<TextInput onBlur={this.callIsBlurDuration} onFocus={() => this.callIsFucusedDuration(index)} keyboardType={'phone-pad'}
+					style={[styles.createInputStyle, { borderColor: this.state.selectedIndex === index ? this.state.InpborderColorDuration : Color.inputdefaultBorder }]} placeholder={'Enter duration'} placeholderTextColor={Color.placeHolderColor}
+					defaultValue={item?.durationValue}
+					maxLength={InputTxtLengthDuration}
+					onChangeText={(text) => this.handleDurationData(text, index)}
+					ref='search' returnKeyType='done' />
+
+				{this.state.selectedIndex == index && this.state.dutaionTxt && this.state.showDurationDropDown ?
+					<View style={{
+						borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,
+						borderBottomColor: Color.createInputBorder, borderTopColor: Color.white, marginTop: responsiveHeight(-.8)
+					}}>
+						<FlatList style={{ backgroundColor: '#fafafa' }}
+							data={this.state.DurationDropdownArr}
+							renderItem={({ item, _index }) => (
+								<TouchableOpacity style={{ zIndex: 999, height: responsiveHeight(7), justifyContent: 'flex-start', }} onPress={() => this.clickOnDuration(item, index)}>
+									<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }} >{item.label}</Text>
+								</TouchableOpacity>
+							)}
+							keyExtractor={(item, index) => index.toString()}
+						/>
+					</View> : null}
+				{
+					this.state.taperedData.length > 1 ?
+						<View style={{ flexDirection: 'row', flex: 1 }}>
+							<View style={{ flex: 1, }}>
+								<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>Start From</Text>
+								<TextInput
+									onBlur={this.callIsBlurFrom}
+									onFocus={() => this.callIsFucusedFrom(index)}
+									keyboardType={'phone-pad'}
+									style={[styles.createInputStyle, { borderColor: this.state.selectedIndex === index ? this.state.InpborderColorFrom : Color.inputdefaultBorder, marginRight: responsiveWidth(2) }]}
+									placeholder={'From Days'}
+									placeholderTextColor={Color.placeHolderColor}
+									defaultValue={item?.fromdaysValue}
+									onChangeText={(text) => this.handleFromDaysData(text, index)}
+									ref='search' returnKeyType='done' />
+							</View>
+
+							<View style={{ flex: 1, }}>
+								<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>To</Text>
+								<TextInput
+									onBlur={this.callIsBlurTo}
+									onFocus={() => this.callIsFucusedTo(index)}
+									keyboardType={'phone-pad'}
+									style={[styles.createInputStyle, { borderColor: this.state.selectedIndex === index ? this.state.InpborderColorTo : Color.inputdefaultBorder, marginRight: responsiveWidth(2) }]}
+									placeholder={'To Days'}
+									placeholderTextColor={Color.placeHolderColor}
+									defaultValue={item?.toDaysValue}
+									onChangeText={(text) => this.handleToDaysData(text, index)}
+									ref='search' returnKeyType='done' />
+							</View>
+						</View> : null
+
+				}
+				<View style={{ flexDirection: 'row', flex: 1 }}>
+					{this.state.fromDaysTxt && this.state.showFromDayTxtDropDown && this.state.selectedIndex == index ?
+						<View style={{
+							borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,
+							borderBottomColor: Color.createInputBorder, borderTopColor: Color.white, marginTop: responsiveHeight(-.8), marginRight: responsiveWidth(2), flex: 1
+						}}><FlatList style={{ backgroundColor: '#fafafa' }}
+							data={this.state.fromDaysDataArr}
+							renderItem={({ item, _index }) => (
+								<TouchableOpacity style={{ zIndex: 999, height: responsiveHeight(7), justifyContent: 'flex-start', }} onPress={() => this.clickOnFromDays(item, index)}>
+									<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }} >{item.value}</Text>
+								</TouchableOpacity>
+							)}
+							keyExtractor={(item, index) => index.toString()}
+							/>
+						</View> : <View style={{ flex: 1,marginRight: responsiveWidth(2)}}></View>}
+					{this.state.toDaysTxt && this.state.showToDayTxtDropDown && this.state.selectedIndex == index ?
+						<View style={{
+							borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,
+							borderBottomColor: Color.createInputBorder, borderTopColor: Color.white, marginTop: responsiveHeight(-.8), flex: 1, marginRight: responsiveWidth(2)
+						}}><FlatList style={{ backgroundColor: '#fafafa' }}
+							data={this.state.fromDaysDataArr}
+							renderItem={({ item, _index }) => (
+								<TouchableOpacity style={{ zIndex: 999, height: responsiveHeight(7), justifyContent: 'flex-start', }} onPress={() => this.clickOnToDays(item, index)}>
+									<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }} >{item.value}</Text>
+								</TouchableOpacity>
+							)}
+							keyExtractor={(item, index) => index.toString()}
+							/>
+						</View> : <View style={{ flex: 1, marginRight: responsiveWidth(2) }}></View>}
+				</View>
+
+				{/* ------------------- NOTE  ---------------*/}
+
+				<Text style={{ marginTop: responsiveHeight(3), color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName }}>Note</Text>
+				<TextInput returnKeyType="done" style={{ marginBottom: responsiveHeight(3), borderWidth: 1, borderColor: Color.borderColor, padding: 10, height: responsiveHeight(12), fontSize: CustomFont.font14, borderRadius: 5, textAlignVertical: 'top', color: Color.fontColor, opacity: .8, marginTop: 10 }}
+					placeholder="Add comments"
+					placeholderTextColor={Color.placeHolderColor}
+					multiline={true}
+					value={item?.noteValue ? item?.noteData : ''}
+					onChangeText={noteData => {
+						const tempData = this.state.taperedData
+						this.setState({ selectedIndex: index })
+						this.setState({ noteData });
+						tempData[index].noteValue = noteData;
+						let { signupDetails } = this.props;
+						setLogEvent("medicine", { "add_note": "click", UserGuid: signupDetails.UserGuid })
+					}} maxLength={100} blurOnSubmit />
+			</View>
+		)
+	}
+
 
 	render() {
 		let item = this.props.navigation.state.params.item;
@@ -387,108 +747,27 @@ class MedicineDetails extends React.Component {
 								</TouchableOpacity>
 
 							</View>
-
-							<View style={{ justifyContent: 'flex-start', marginTop: responsiveHeight(2) }}>
-								<Text style={{ color: Color.black, fontSize: CustomFont.font18, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName }}>{item.medicineName ? item.medicineName.replace("Add new", '') : ''} {item.strength ? item.strength : ''}</Text>
-								<Text style={{ fontStyle: 'italic', color: Color.datecolor, marginTop: responsiveHeight(1), fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight400, }}>{item.medicineDesc}</Text>
-							</View>
-							{/* ------- Unit------- */}
-							<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>Units</Text>
-							<TextInput onBlur={this.callIsBlurUnit} onFocus={this.callIsFucusedUnit} keyboardType={'phone-pad'} style={[styles.createInputStyle, { borderColor: this.state.InpborderColorUnit }]} placeholder={'Enter Unit'} placeholderTextColor={Color.placeHolderColor} value={this.state.unitTxt} maxLength={InputTxtLengthUnit}
-								onChangeText={(text) => this.handleUnitData(text)} ref='search' returnKeyType='done' />
-
-							{this.state.unitTxt && this.state.showUnitDropDown ?
-								<View style={{
-									borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,
-									borderBottomColor: Color.createInputBorder, borderTopColor: Color.white, marginTop: responsiveHeight(-.8)
-								}}><FlatList style={{ backgroundColor: '#fafafa' }}
-									data={this.state.UnitDropdownArr}
-									renderItem={({ item, index }) => (
-										<TouchableOpacity style={{ zIndex: 999, height: responsiveHeight(7), justifyContent: 'flex-start', }} onPress={() => this.clickOnUnit(item)}>
-											<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }} >{this.state.unitTxt} {this.state.unitTxt == 1 ? item.doasestype : item.doasestype}</Text>
-										</TouchableOpacity>
-									)}
-									keyExtractor={(item, index) => index.toString()}
-									/>
-								</View> : null}
-
-							{/* ------- Dosage------- */}
-
-							<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>Dosage </Text>
-							<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-								<TextInput onBlur={this.callIsBlur2} onFocus={this.callIsFucused2} keyboardType={'phone-pad'} style={[styles.createInputStyle, { flex: 1, borderColor: this.state.InpborderColor2 }]} placeholder="Enter dosages" placeholderTextColor={Color.placeHolderColor} value={this.state.dosageSearchTxt} onChangeText={(dosageSearchTxt) => { return this.state.CustomInput ? this.DoseValidation(dosageSearchTxt) : this.SearchFilterFunctionDosage(dosageSearchTxt); }} maxLength={this.state.CustomInput ? 14 : InputTxtLengthDosage} ref='search' returnKeyType='done' />
-								{this.state.CustomInput ? <TouchableOpacity style={{ height: responsiveHeight(6), width: responsiveWidth(15), justifyContent: 'center', alignItems: 'center', marginLeft: 10, borderWidth: 1, borderColor: this.state.InpborderColor2, marginTop: responsiveHeight(1.8), borderRadius: 6 }} onPress={() => this.setState({ dosageSearchTxt: '', CustomInput: !this.state.CustomInput, showStateDosage: true })}>
-									<Image source={downarrow} style={{ height: responsiveFontSize(2.5), width: responsiveFontSize(2.5), resizeMode: 'contain' }} />
-								</TouchableOpacity> : null}
-
-							</View>
-
-							<View style={{ flex: 1 }}>
-								{this.state.showStateDosage && this.state.dosageDropdownArr && this.state.dosageDropdownArr.length > 0 ?
-									<View style={{
-										borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,
-										borderBottomColor: Color.createInputBorder, borderTopColor: Color.white, marginTop: responsiveHeight(-.8)
-									}}><FlatList style={{ backgroundColor: '#fafafa' }}
-										data={this.state.dosageDropdownArr}
-										renderItem={({ item, index }) => (
-											<TouchableOpacity style={{ height: responsiveHeight(7), justifyContent: 'flex-start' }}
-												onPress={() => this.clickOnState(item)}>
-												<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }}>{item.value}</Text>
-											</TouchableOpacity>
-										)}
-										keyExtractor={(item, index) => index.toString()}
-										/>
-									</View> : null}
-							</View>
-							{/* ------- When to Take------- */}
-							<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>When To Take</Text>
-							<DropDownPicker zIndex={10}
-								items={this.state.whenToTakeArr}
-								containerStyle={{ borderRadius: responsiveWidth(2), height: responsiveHeight(6), marginTop: responsiveHeight(1.6) }}
-								style={{ backgroundColor: '#ffffff', color: Color.textGrey }}
-								textStyle={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16}}								itemStyle={{
-									justifyContent: 'flex-start'
-								}}
-								dropDownStyle={{ backgroundColor: '#fafafa', zIndex: 4 }}
-								onChangeItem={item => {
-								medicineTimingFrequency = item.value;
-								}}
-								globalTextStyle={{ color: Color.fontColor, fontSize: CustomFont.font16 }}
-								placeholder="Empty Stomach"
-								placeholderStyle={{ color: Color.placeHolderColor, fontSize: CustomFont.font16 }}
+							<FlatList
+								data={this.state.taperedData}
+								renderItem={(item, index) => this.renderTaperedItem(item, index)}
+								extraData={this.state}
 							/>
-							{/* ------- Duration------- */}
-							<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>Duration</Text>
-							<TextInput onBlur={this.callIsBlurDuration} onFocus={this.callIsFucusedDuration} keyboardType={'phone-pad'} style={[styles.createInputStyle, { borderColor: this.state.InpborderColorDuration }]} placeholder={'Enter duration'} placeholderTextColor={Color.placeHolderColor} value={this.state.dutaionTxt} maxLength={InputTxtLengthDuration}
-								onChangeText={(text) => this.handleDurationData(text)} ref='search' returnKeyType='done' />
-
-							{this.state.dutaionTxt && this.state.showDurationDropDown ?
-								<View style={{
-									borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,
-									borderBottomColor: Color.createInputBorder, borderTopColor: Color.white, marginTop: responsiveHeight(-.8)
-								}}><FlatList style={{ backgroundColor: '#fafafa' }}
-									data={this.state.DurationDropdownArr}
-									renderItem={({ item, index }) => (
-										<TouchableOpacity style={{ zIndex: 999, height: responsiveHeight(7), justifyContent: 'flex-start', }} onPress={() => this.clickOnDuration(item)}>
-											<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }} >{item.label}</Text>
-										</TouchableOpacity>
-									)}
-									keyExtractor={(item, index) => index.toString()}
-									/>
-								</View> : null}
-
-							<Text style={{ marginTop: responsiveHeight(3), color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName }}>Note</Text>
-							<TextInput returnKeyType="done" style={{ marginBottom: responsiveHeight(3), borderWidth: 1, borderColor: Color.borderColor, padding: 10, height: responsiveHeight(12), fontSize: CustomFont.font14, borderRadius: 5, textAlignVertical: 'top', color: Color.fontColor, opacity: .8, marginTop: 10 }}
-								placeholder="Add comments"
-								placeholderTextColor={Color.placeHolderColor}
-								multiline={true} value={this.state.noteData}
-								onChangeText={noteData => {
-									this.setState({ noteData });
-									let { signupDetails } = this.props;
-									setLogEvent("medicine", { "add_note": "click", UserGuid: signupDetails.UserGuid })
-								}} maxLength={100} blurOnSubmit />
-
-
+							<TouchableOpacity
+								onPress={() => {
+									let tempArr = this.state.taperedData;
+									let tempObj = {};//tempArr[0];
+									tempArr.push(tempObj);
+									this.setState({ taperedData: tempArr });
+								}}>
+								<Text
+									style={{
+										fontSize: CustomFont.font14,
+										fontWeight: CustomFont.fontWeight600,
+										color: Color.primaryBlue,
+										marginBottom: responsiveHeight(4)
+									}}
+								>+ Add Tapered Dose</Text>
+							</TouchableOpacity>
 
 							<TouchableOpacity style={{ alignItems: 'center', marginBottom: responsiveHeight(2.5), justifyContent: 'center', borderRadius: 5, height: responsiveHeight(7), width: '100%', backgroundColor: Color.primary }} onPress={() => {
 								if (clickFlag == 0)

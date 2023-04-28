@@ -29,7 +29,7 @@ import { bindActionCreators } from 'redux';
 import Snackbar from 'react-native-snackbar';
 let fullArray = [], fullArrayGlobal = [], selectedItem = null, timeslot = null, isEdit = false;
 let item = null, selectFamilyMemberObj = null,selfObj = null;
-let tempDob = '';
+let tempDob = '', patientFamilyMemberData=null;
 class AddFamily extends React.Component {
 
 
@@ -60,7 +60,7 @@ class AddFamily extends React.Component {
 			{
 				Snackbar.show({ text: 'Please enter patient\'s Age to continue', duration: Snackbar.LENGTH_LONG, backgroundColor: Color.primary });
 
-				this.props.navigation.navigate('AddNewPatients', { item: item, from: 'editfamily', isGetData: true, Refresh: this.Refresh, onEditPatient: this.onEditPatient });
+				this.props.navigation.navigate('AddNewPatients', { item: item, from: 'editfamily', isGetData: true, Refresh: this.Refresh, onEditPatient: this.onEditPatient,patientFamilyMemberData: null });
 			}
 			else
 			{
@@ -98,6 +98,7 @@ class AddFamily extends React.Component {
 					let data = newProps.responseData.data;
 					let tempArr = data.patientDetailsList && data.patientDetailsList.fmailyMimberList ? data.patientDetailsList.fmailyMimberList : [];
 					// alert(JSON.stringify(item));
+					patientFamilyMemberData = data;
 					if (tempArr && tempArr.length > 0) {
 						try {
 							for (let i = 0; i < tempArr.length; i++) {
@@ -180,7 +181,7 @@ class AddFamily extends React.Component {
 				"PatientGuid": item.patientGuid 
 			}
 		}
-		actions.callLogin('V11/FuncForDrAppToGetPatientDetailsById', 'post', params, signupDetails.accessToken, 'getFamilyMember');
+		actions.callLogin('V16/FuncForDrAppToGetPatientDetailsById', 'post', params, signupDetails.accessToken, 'getFamilyMember');
 	}
 
 	ContinueToConfirmAppointment = () => {
@@ -208,7 +209,7 @@ class AddFamily extends React.Component {
 
 	}
 	addFamilyClk = () => {
-		this.props.navigation.navigate('AddNewPatients', { item: item, from: 'addfamily', isGetData: true, Refresh: this.Refresh, onEditPatient: this.onEditPatient });
+		this.props.navigation.navigate('AddNewPatients', { item: item, from: 'addfamily', isGetData: true, Refresh: this.Refresh, onEditPatient: this.onEditPatient,patientFamilyMemberData: patientFamilyMemberData });
 	}
 	onEditPatient = (data) => {
 		// need for navigation. Dont delete this method
@@ -238,7 +239,7 @@ class AddFamily extends React.Component {
 		this.setState({ familyMemberArr: tempArr, isFamilyMemberSelected: true })
 	}
 	editFamilyMember = (item) => {
-		this.props.navigation.navigate('AddNewPatients', { item: item, from: 'editfamily', isGetData: true, Refresh: this.Refresh, onEditPatient: this.onEditPatient });
+		this.props.navigation.navigate('AddNewPatients', { item: item, from: 'editfamily', isGetData: true, Refresh: this.Refresh, onEditPatient: this.onEditPatient,patientFamilyMemberData: null });
 	}
 	renderList = ({ item, index }) => (
 		<TouchableOpacity style={{

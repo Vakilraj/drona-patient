@@ -626,9 +626,8 @@ class NewBill extends React.Component {
                     `
                     temp.push(htmlCode)
                 }
-                return temp
             }
-
+            return temp
         }
         else {
             if (value) {

@@ -132,11 +132,11 @@ export function callLogin(url, apiType, params, token, tagName = null) {
       headers: headersValue,
       timeout: 180000,
     });
-    // console.log("\n\n" + baseUrl + url + " request- " + JSON.stringify(params))
-    // console.log("\n\n" + url + " headers- " + JSON.stringify(headersValue))
+    console.log("\n\n" + baseUrl + url + " request- " + JSON.stringify(params))
+    console.log("\n\n" + url + " headers- " + JSON.stringify(headersValue))
     
     return (dispatch) => {
-      let str = 'GetCommunityInfo GetFilter viewpost SearchForSymptom SearchForSymptom SearchForFindings SearchForDiagnosis SearchForMedicine SearchForInvestigation SearchForInstructions SearchFamilyConditions SearchForConditions SearchForcurrentMedication SearchFoAllergies sharepostby AddSymptoms getserverDateTime ResentOtpForLogin GetActivationPackages tt GetWeekPasswordList GetWeekPass AddInvestigation AddInstruction ReasonOfVisitList getEditAssistanceDetailsOnBoarding'
+      let str = 'GetCommunityInfo GetFilter viewpost SearchForSymptom SearchForSymptom SearchForFindings SearchForDiagnosis SearchForMedicine SearchForInvestigation SearchForInstructions SearchFamilyConditions SearchForConditions SearchForcurrentMedication SearchFoAllergies sharepostby AddSymptoms getserverDateTime ResentOtpForLogin GetActivationPackages tt GetWeekPasswordList GetWeekPass AddInvestigation AddInstruction ReasonOfVisitList getEditAssistanceDetailsOnBoarding SearchForProcedure Kpidata HomeScreenAnalytics'
       if (str.includes(tagName)) {
         dispatch(removeLoader());
       } else {
@@ -162,7 +162,7 @@ export function callLogin(url, apiType, params, token, tagName = null) {
             dispatch(fetchProductsSuccess(modifyData));
           }
 
-         // console.log("\n\n" + url + " response- " + JSON.stringify(modifyData))
+          console.log("\n\n" + url + " response- " + JSON.stringify(modifyData))
       //     try {
       //       RNFS.appendFile(path, "\n\n" + url + " response- " + JSON.stringify(modifyData) , 'utf8')
       //         .then((success) => {

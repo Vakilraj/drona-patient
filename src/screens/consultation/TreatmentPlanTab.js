@@ -33,7 +33,6 @@ import WhatsAppIcon from '../../../assets/whatsapp.png';
 import Snackbar from 'react-native-snackbar';
 import Validator from '../../components/Validator';
 import ThreeDotsModal from './ThreeDotsModal';
-import PreviewRxButton from './PreviewRxButton';
 import { setLogEvent } from '../../service/Analytics';
 import { Separator } from 'native-base';
 import Trace from '../../service/Trace'

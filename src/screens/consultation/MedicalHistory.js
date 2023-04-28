@@ -27,7 +27,6 @@ import cross_select from '../../../assets/cross_pink.png';
 import cross_pink from '../../../assets/cross_pink.png';
 
 import ThreeDotsModal from './ThreeDotsModal';
-import PreviewRxButton from './PreviewRxButton';
 import { setLogEvent } from '../../service/Analytics';
 import Trace from '../../service/Trace'
 let timeRange = '';
@@ -961,9 +960,7 @@ class medicalHistory extends React.Component {
 							}} style={{ height: responsiveHeight(6), width: responsiveWidth(78), justifyContent: 'center', alignItems: 'center', marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), backgroundColor: Color.primary, borderRadius: 5, marginTop: 7, marginBottom: 7 }}>
 								<Text style={{ color: Color.white, fontSize: CustomFont.font16 }}>Save</Text>
 							</TouchableOpacity>
-
-							//<PreviewRxButton nav={{ navigation: this.props.nav.navigation }} showCall={this.props.showCall} />
-						}
+							}
 
 
 					</View>

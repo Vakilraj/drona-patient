@@ -21,7 +21,7 @@ import DeviceInfo from 'react-native-device-info';
 let drawerArray = [
   {
     name: 'Edit Clinic',
-    route: 'ChooseClinicBeforeEdit',//ChooseClinicBeforeEdit SetUpClinic
+    route: 'SetUpClinic',//ChooseClinicBeforeEdit SetUpClinic
     icon: require('../../../assets/Edit_Clinic_blue.png'),
   },
   {

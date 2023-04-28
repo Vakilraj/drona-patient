@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    Image, SafeAreaView, ScrollView, Text, Platform,
+    Image, SafeAreaView, ScrollView, Text, Platform,Alert,PermissionsAndroid,
     TouchableOpacity, View, TextInput
 } from 'react-native';
 import RNFS from 'react-native-fs';
@@ -30,7 +30,15 @@ import Trace from '../../service/Trace'
 import { setLogEvent } from '../../service/Analytics';
 import Snackbar from 'react-native-snackbar';
 import Validator from '../../components/Validator';
-let timeRange = '', PrescriptionGuId=null;
+let timeRange = '', PrescriptionGuId=null, filePath='';
+
+import _ from 'lodash';
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import Moment from 'moment';
+import Language from '../../utils/Language.js';
+import AsyncStorage from '@react-native-community/async-storage';
+let consultTypeValue = '',isRetry=false,pdfData=null,clickBtnType='' ;
+let symptomHead = '', findingHead = '', diagionsisHead = '', notes = '', timingAndDur = '', medicine = '', investigationAdvise = '', instructionHead = '', followUpHeadGlobal = '', noteStr = '',procedureHead = '';
 class BillingComplete extends React.Component {
 
     constructor(props) {
@@ -48,16 +56,21 @@ class BillingComplete extends React.Component {
             checked: false,
             billingDetailsState: [],
             patientDetailsState: [],
-            CompleteModal: false,
-            modelMessage: "Appointment Completed",
-            filePath: '',
-            successPdfGeneration: false,
             showHomeBtn: false,
+			languageArr: [
+				{ value: 'en', index: 0, label: 'English', isTempSelected: false },
+				{ value: 'be', index: 1, label: 'Bengali', isTempSelected: false },
+				{ value: 'hi', index: 2, label: 'Hindi', isTempSelected: false },
+				{ value: 'ma', index: 3, label: 'Marathi', isTempSelected: false },
+				{ value: 'ta', index: 4, label: 'Tamil', isTempSelected: false },
+				{ value: 'te', index: 5, label: 'Telegu', isTempSelected: false },
+				{ value: 'gu', index: 6, label: 'Gujarati', isTempSelected: false },
+			],
         };
     }
 
     componentDidMount() {
-
+        isRetry=false;
         let { signupDetails } = this.props;
         timeRange = Trace.getTimeRange();
         Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Prescription_Complete', signupDetails.firebaseLocation)
@@ -65,23 +78,506 @@ class BillingComplete extends React.Component {
         base64ImageArr = [];
         this.getConsulatationBillingPreviewData();
         this.getPrivateNote();
-        let filePath = this.props.navigation.state.params.filePath;
-        this.setState({
-            filePath: filePath
-        })
-
         prevScreenName = this.props.navigation.state.params.prevScreenName;
+        filePath = this.props.navigation.state.params.filePath;
+        //console.log(prevScreenName +' ------++-------  '+filePath);
+        consultTypeValue=signupDetails.consultType;
         if (prevScreenName == 'handwrittenadd') {
-            // 
             this.makeBase64ImageArray(this.props.navigation.state.params.imgArr)
-        }
-        //alert(prevScreenName)
-        //normalPrescription // 
-
-        if (prevScreenName == 'handwrittenedit') {
+        }else if (prevScreenName == 'handwrittenedit') {
             this.makeBase64ImageArrayEditCase(this.props.navigation.state.params.imgArr)
         }
     }
+    createPDF = async (prescriptionDataFullArray) => {
+		var time = new Date().getTime();
+		time = Moment(time).format('h:mm:ss a')
+		var date = new Date().getDate();
+		date = date < 10 ? '0' + date : '' + date
+		var month = new Date().getMonth() + 1;
+		month = month < 10 ? '0' + month : '' + month
+		var year = new Date().getFullYear();
+
+		let clinicInfo = prescriptionDataFullArray.clinicInfo != null ? prescriptionDataFullArray.clinicInfo : []
+		let doctorInfo = prescriptionDataFullArray.doctorInfo != null ? prescriptionDataFullArray.doctorInfo : []
+		let patientInfo = prescriptionDataFullArray.patientInfo != null ? prescriptionDataFullArray.patientInfo : []
+		let symptomList = prescriptionDataFullArray.symptomList != null ? prescriptionDataFullArray.symptomList : []
+		let findingList = prescriptionDataFullArray.findingList != null ? prescriptionDataFullArray.findingList : []
+		let medicineList = prescriptionDataFullArray.medicineList != null ? prescriptionDataFullArray.medicineList : []
+		let prescriptionNote = prescriptionDataFullArray.prescriptionNote != null ? prescriptionDataFullArray.prescriptionNote : []
+		let instructionsList = prescriptionDataFullArray.instructionsList != null ? prescriptionDataFullArray.instructionsList : []
+		let investigationList = prescriptionDataFullArray.investigationList != null ? prescriptionDataFullArray.investigationList : []
+		let diagnosisList = prescriptionDataFullArray.diagnosisList != null ? prescriptionDataFullArray.diagnosisList : [];
+		let procedureList = prescriptionDataFullArray.procedureList != null ? prescriptionDataFullArray.procedureList : []
+		let followUpItem = prescriptionDataFullArray.followUp
+		let registrationNumber = doctorInfo ? doctorInfo.registrationNumber : ''
+		let eSign = prescriptionDataFullArray != null ? prescriptionDataFullArray.esignature : null;
+		let prescriptionHeading = Language.language.pres;
+		symptomHead = Language.language.symptoms;
+		findingHead = Language.language.findings;
+		investigationAdvise = Language.language.advisedinvestigation;
+		instructionHead = Language.language.instructions;
+		diagionsisHead = Language.language.diagnosis;
+		followUpHeadGlobal = Language.language.followup;
+		procedureHead = Language.language.procedures;
+		notes = Language.language.notes;
+		medicine = Language.language.medicine;
+		timingAndDur = Language.language.timingandduration;
+		noteStr = Language.language.note;
+
+		const htmlCode = `
+		<style>
+	table, th, td {
+	  
+	  border-collapse: collapse;
+	}
+	th, td {
+	  padding: 5px;
+	  text-align: left;
+	}
+	</style>
+	     
+		<h1>`+ prescriptionHeading + `</h1>
+		<table style="width:100%">
+		<tr>
+				<td width="20%">
+					 <img width="100" height="100" src=`+ clinicInfo.clinicImageUrl + ` />		  
+				</td>
+				<td width="50%" style="vertical-align:top; ">			
+					  <h2>`+ this.showOriginalValueView(clinicInfo.clinicName) + `</h2>
+					  <p>`+ this.showOriginalValueView(clinicInfo.clinicAddress) + `</p>
+					  `+ this.clinicInfoNo(clinicInfo.clinicNumber) + `
+				</td>
+				<td width="30%" style="vertical-align:top;">
+						<h2>Dr. `+ this.showOriginalValueView(doctorInfo.firstName) + ` ` + this.showOriginalValueView(doctorInfo.lastName) + `</h2>
+						`+ this.doctorSpeciality(doctorInfo) + `
+						`+ this.doctorEducationView(doctorInfo) + `
+						<p>Reg no. : ` + registrationNumber + `</p>
+				</td>
+		</tr>
+	   </table>
+	
+		 <hr style="height:3px"/>
+	
+		<table style="width:100%">
+		<tr>
+		  <td width="70%" ><b>Name:</b> `+ this.showOriginalValueView(patientInfo.firstName) + ` ` + this.showOriginalValueView(patientInfo.lastName) + `</td>		  
+		  <td width="30%" ><b>Date:</b> `+ date + `-` + month + `-` + year + `</td>
+		</tr>
+
+		<tr>
+			<td><b>Sex/Age:</b> `+ this.showOriginalValueView(patientInfo.gender) + `, ` + this.showOriginalValueView(patientInfo.age) + `</td>
+			<td><b>Mobile:</b> `+ this.showOriginalValueView(patientInfo.contactNumber) + `</td>
+		</tr>
+
+		<tr>
+			<td><b>Consult ID:</b> `+ this.showOriginalValueView(patientInfo.patientCode) + `</td>
+			<td><b>Consult Type:</b> `+ consultTypeValue + `</td>
+	    </tr>
+
+	  </table>
+	
+		 <hr style="height:3px"/>
+	
+		
+		  `+ this.showSymptomList(symptomList) + `
+		  `+ this.showfindingViewList(findingList) + `
+		  `+ this.showdiagnosisViewList(diagnosisList) + `
+		  `+ this.showmedicineListViewList(medicineList) + `
+		  `+ this.showinvestigationsViewList(investigationList) + `
+		  `+ this.showinstructionViewList(instructionsList) + `
+		  `+ this.showProcedureList(procedureList) + `
+		  `+ this.showprescriptionNoteViewList(prescriptionNote) + `
+		  `+ this.showfollowUpViewList(followUpItem) + `
+		  
+		
+	
+	  <table style="width:100%;margin-bottom:0px">
+	  <tr>  
+	  <td width="80%"/>
+	  <td width="20%">
+		<img width="150" height="40" src=`+ eSign + ` />
+	  </td>
+	  </tr>
+	  </table>
+
+	  <table style="width:100%;margin-top:0px">
+	  <tr>  
+	  <td width="80%"/>
+	  <td width="20%">
+	  Dr. `+ this.showOriginalValueView(doctorInfo.firstName) + ` ` + this.showOriginalValueView(doctorInfo.lastName) + ` 
+	  </td>
+	  </tr>
+	  </table>
+	</table>
+
+		
+	 
+		  `
+		let options = {
+			html: htmlCode,
+
+			fileNamey: 'test',
+			directory: 'Documents',
+
+		};
+
+		let file = await RNHTMLtoPDF.convert(options)
+        filePath=file.filePath;
+        if(isRetry && filePath)
+        this.completeConsultation(clickBtnType);
+        //console.log('---file path--'+filePath)
+    }
+    followUpView = (followUpItem) => {
+		let followUpDate = ''
+		if (followUpItem) {
+			let followupFormatDate = followUpItem.followUpDate.split("T")[0];
+			if (followupFormatDate)
+				followUpDate = Moment(followupFormatDate).format('DD-MM-YYYY');
+		}
+		return `
+		<span">`+ followUpDate + `</span>
+		 `
+	}
+	referToView = (referTo) => {
+		let referToHead = Language.language.referto;
+		let noteStr = Language.language.note;
+		<div style="width:60%">{noteStr}</div>
+		let temp = []
+		if (referTo) {
+			const htmlCode = `
+			<th style="width:60%">`+ referToHead + ` </br>` + referTo + `</th> 
+			 `
+			temp.push(htmlCode)
+		} else {
+			const htmlCode = `
+			<th style="width:60%">`+ referToHead + ` </br></th>
+			 `
+			temp.push(htmlCode)
+		}
+		return temp
+	}
+
+	doctorSpeciality = (doctorInfo) => {
+		let htmlCode = `
+		<p>`+ doctorInfo.doctorSpeciality[0].specialtyName + ` </p>`;
+		return htmlCode;
+	}
+
+	clinicInfoNo = (clinicNoInfo) => {
+		let temp = []
+
+		if (clinicNoInfo > 0) {
+			let htmlCode = `<p>Clinic Ph. No: ` + clinicNoInfo + `</p>`
+			temp.push(htmlCode)
+			return htmlCode;
+		}
+		else {
+			let htmlCode = ` &nbsp `
+			temp.push(htmlCode)
+			return htmlCode;
+		}
+	}
+
+	doctorEducationView = (doctorInfo) => {
+
+		let temp = []
+		if (doctorInfo.doctorEducation != null && doctorInfo.doctorEducation.length > 0) {
+
+			for (var i = 0; i < doctorInfo.doctorEducation.length; i++) {
+				let tmpStr = ''
+				if (doctorInfo.doctorEducation[i].degree) {
+					tmpStr = ' ' + doctorInfo.doctorEducation[i].degree;
+				}
+				if (doctorInfo.doctorEducation[i].fieldofStudy) {
+					tmpStr += ', ' + doctorInfo.doctorEducation[i].fieldofStudy;
+				}
+				if (doctorInfo.doctorEducation[i].location) {
+					tmpStr += ', ' + doctorInfo.doctorEducation[i].location;
+				}
+				temp.push(tmpStr)
+
+			}
+		}
+		return temp;
+	}
+
+	prescriptionNoteView = (prescriptionNoteName) => {
+
+		let temp = []
+
+		if (prescriptionNoteName) {
+			prescriptionNoteName = prescriptionNoteName.replace(/\n/g, "</br>")
+			const htmlCode = `<span">` + prescriptionNoteName + `</span>`
+			temp.push(htmlCode)
+		} else {
+			const htmlCode = `
+			<td></td>
+			`
+			temp.push(htmlCode)
+		}
+		return temp
+
+	}
+	showOriginalValueView = (value) => {
+		let temp = []
+
+		if (value) {
+			const htmlCode =
+				`` + value + ``
+			temp.push(htmlCode)
+		} else {
+			const htmlCode = `
+			&nbsp 
+			`
+			temp.push(htmlCode)
+		}
+		return temp
+	}
+	showSymptomList = (symptomList) => {
+		if (symptomList && symptomList.length > 0) {
+			let temp = []
+			for (var i = 0; i < symptomList.length; i++) {
+				let tempStr = '';
+            if (symptomList[i].severityName)
+                tempStr = symptomList[i].severityName;
+            if (symptomList[i].since)
+                tempStr += tempStr ? ', ' + symptomList[i].since:symptomList[i].since;
+            if (symptomList[i].notes)
+                tempStr += tempStr ? ', ' + symptomList[i].notes:symptomList[i].notes;
+            if (tempStr)
+                tempStr = '(' + tempStr + ')';
+
+				const htmlCode = (symptomList[i].symptomName) + ' ' + tempStr;
+					temp.push(htmlCode)
+			}
+			const htmlCode = `
+			<table style="width:100%;margin-top: 5px" >
+				<tr>
+					<th style="width:15%;">`+ symptomHead + ` :</th>
+					<td>`+ temp.join(", ") + `</td>
+				</tr>
+			</table>
+			`
+			return htmlCode
+		}
+		else {
+			return ''
+		}
+
+	}
+
+	showfindingViewList = (findingList) => {
+		if (findingList && findingList.length > 0) {
+			let temp = []
+			for (var i = 0; i < findingList.length; i++) {
+				let tempStr = '';
+            if (findingList[i].severityName)
+                tempStr = findingList[i].severityName;
+            if (findingList[i].since)
+                tempStr += tempStr ? ', ' + findingList[i].since :findingList[i].since;
+            if (findingList[i].notes)
+                tempStr += tempStr ? ', ' + findingList[i].notes:findingList[i].notes;
+            if (tempStr)
+                tempStr = '(' + tempStr + ')'
+					const htmlCode = (findingList[i].findingName) + ' ' + tempStr;
+					temp.push(htmlCode)
+			}
+			const htmlCode = `
+			<table style="width:100%;margin-top: 5px" >
+	  <tr>
+		<th style="width:15%;">`+ findingHead + ` :</th>
+	   <td>`+ temp.join(", ") + `</td>  
+	  </tr> 
+	</table> 
+			`
+			return htmlCode
+		}
+		else {
+			return ''
+		}
+
+	}
+
+	showdiagnosisViewList = (diagnosisList) => {
+		if (diagnosisList && diagnosisList.length > 0) {
+			let temp = []
+			for (var i = 0; i < diagnosisList.length; i++) {
+					let tempStr = '';
+            if (diagnosisList[i].diagnosisStatus)
+                tempStr = diagnosisList[i].diagnosisStatus;
+            if (diagnosisList[i].since)
+                tempStr += tempStr ? ', ' + diagnosisList[i].since :diagnosisList[i].since;
+            if (diagnosisList[i].notes)
+                tempStr += tempStr ? ', ' + diagnosisList[i].notes :diagnosisList[i].notes;
+            if (tempStr)
+                tempStr = '(' + tempStr + ')'
+					const htmlCode = (diagnosisList[i].diagnosisName) + ' ' + tempStr;
+					temp.push(htmlCode)
+			}
+
+			const htmlCode = `
+			<table style="width:100%;margin-top: 5px" >
+		<tr>
+		  <th style="width:15%;">`+ diagionsisHead + ` :</th>
+		 <td>`+ temp.join(", ") + `</td>  
+		</tr> 
+	  </table>
+			`
+			return htmlCode
+		}
+		else {
+			return ''
+		}
+
+	}
+
+	showmedicineListViewList = (medicineList) => {
+		if (medicineList && medicineList.length > 0) {
+			let temp = []
+			for (var i = 0; i < medicineList.length; i++) {
+
+				const htmlCode = `
+				 <tr>
+				 <td style="width:35%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;"><b>`+ medicineList[i].medicineName + ` ` + medicineList[i].strength + `</b></br>` + `(<i>` + medicineList[i].medicineDesc + `</i>)` +`</td>
+					<td style="width:40%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;"> `+ (medicineList[i].dosagePattern) + (!medicineList[i].medicineTimingFrequency || medicineList[i].medicineTimingFrequency == 'No Preference' ? '' : ' (' + medicineList[i].medicineTimingFrequency + ')') + ` </br> ` + 'dose: ' + medicineList[i].dosages + `, ` + medicineList[i].durationValue + ` ` + medicineList[i].durationType + ` </td>
+					<td style="width:25%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;">`+ medicineList[i].note + `</td>
+				  </tr>
+				 `
+				temp.push(htmlCode)
+			}
+
+			const htmlCode = `
+			<table style="width:100%;margin-top: 20px" >  
+		<tr style="display: table-row; vertical-align: inherit;border-color: inherit; ">
+			<th width="35%" style="background-color: #14091529;color: #000;text-align: left;font-size: 12px;font-weight: 700;
+		  border-left: 1px solid #f1f1f1; padding: 8px;line-height: 1.42857143;" rowspan="2">`+ medicine + ` :</th>
+			<th width="40%" style="background-color: #14091529;color: #000;text-align: letf;font-size: 12px;font-weight: 700;
+		  border-left: 1px solid #f1f1f1; padding: 8px;line-height: 1.42857143;" rowspan="2">`+ timingAndDur + `</th>
+			<th width="25%" style="background-color: #14091529;color: #000;text-align: left;font-size: 12px;font-weight: 700;
+		  border-left: 1px solid #f1f1f1; padding: 8px;line-height: 1.42857143;" rowspan="2">`+ notes + `</th>      
+		</tr>
+	   </tr>
+
+	   <tr>
+	   `+ temp + `
+	    </tr>
+	  </table>
+			`
+			return htmlCode
+		}
+		else {
+			return ''
+		}
+
+	}
+
+	showinvestigationsViewList = (investigationList) => {
+		if (investigationList && investigationList.length > 0) {
+			let temp = []
+			for (var i = 0; i < investigationList.length; i++) {
+					const htmlCode = investigationList[i].investigationName + ' ' + (investigationList[i].notes ? '('+investigationList[i].notes +')': '');
+				
+					temp.push(htmlCode)
+			}
+			const htmlCode = `
+			<table style="width:100%;margin-top: 5px" >
+			<tr>
+			  <th style="width:15%;vertical-align:text-top">`+ investigationAdvise + `:</th>
+			 <td style="vertical-align:text-top">`+ temp.join(", ") + `</td>  
+			</tr> 
+		  </table>
+			`
+			return htmlCode
+		}
+		else {
+			return ''
+		}
+
+	}
+
+	showinstructionViewList = (instructionsList) => {
+		if (instructionsList && instructionsList.length > 0) {
+			let temp = []
+			for (var i = 0; i < instructionsList.length; i++) {
+
+				// if (i == 0) {
+					const htmlCode = instructionsList[i].instructionsName ;
+					temp.push(htmlCode)
+			}
+
+			const htmlCode = `
+			<table style="width:100%;margin-top: 5px" >
+			<tr>
+			  <th style="width:15%;vertical-align:top">`+ instructionHead + ` :</th>
+			 <td style="vertical-align:text">`+ temp.join(", ") + `</td>  
+			</tr> 
+		  </table>
+			`
+			return htmlCode
+		}
+		else {
+			return ''
+		}
+
+	}
+
+	showProcedureList = (procedureList) => {
+		if (procedureList && procedureList.length > 0) {
+			let temp = []
+			for (var i = 0; i < procedureList.length; i++) {
+					const htmlCode = procedureList[i].procedureName
+					temp.push(htmlCode)
+			}
+			const htmlCode = `
+			<table style="width:100%;margin-top: 5px" >
+				<tr>
+					<th style="width:15%;">`+ procedureHead + ` :</th>
+					<td>`+ temp.join(", ") + `</td>
+				</tr>
+			</table>
+			`
+			return htmlCode
+		}
+		else {
+			return ''
+		}
+
+	}
+
+	showfollowUpViewList = (followUpItem) => {
+		if (followUpItem) {
+			const htmlCode = `
+			<table style="width:100%;margin-top: 5px" >
+	  <tr>
+		<th style="width:15%;vertical-align:top">`+ followUpHeadGlobal + ` :</th>
+	   <td style="vertical-align:text">`+ this.followUpView(followUpItem) + `</td>  
+	  </tr> 
+	</table>
+			`
+			return htmlCode
+		}
+		else {
+			return ''
+		}
+
+	}
+	showprescriptionNoteViewList = (prescriptionNote) => {
+		if (prescriptionNote.prescriptionNoteName && prescriptionNote.prescriptionNoteName.length > 0) {
+			const htmlCode = `
+			<table style="width:100%;margin-top: 5px" >
+		<tr>
+		  <th style="width:15%;vertical-align:text-top">`+ noteStr + ` :</th>
+		 <td style="vertical-align:text-top">`+ this.prescriptionNoteView(prescriptionNote.prescriptionNoteName) + `</td>  
+		</tr> 
+	  </table>
+			`
+			return htmlCode
+		}
+		else {
+			return ''
+		}
+
+	}
     componentWillUnmount() {
         Trace.stopTrace()
     }
@@ -190,12 +686,34 @@ class BillingComplete extends React.Component {
         setApiHandle(this.handleApi, newProps)
 
     }
-    handleApi = (response, tag) => {
+    checkPermission=async (data)=>{
+        if (Platform.OS === 'android') {
+            const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE);
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                this.createPDF(data);
+            } else {
+                pdfData=data;
+                Alert.alert('Permission Denied!', 'You need to give storage permission to generate pdf');
+            }
+        } else {
+            this.createPDF(data);
+        }
+    }
+    handleApi =async (response, tag) => {
         if (tag === 'getConsulatationBillingPreviewData') {
             let billingDetailsFullArray = response.billingDetails;
             let patientDetailsFullArray = response.prescriptionData.patientInfo;
             this.setState({ billingDetailsState: billingDetailsFullArray });
             this.setState({ patientDetailsState: patientDetailsFullArray });
+            if (prevScreenName == 'normalPrescription') {
+                try {
+					let tempIndex = await AsyncStorage.getItem('lanIndex');
+					Language.language.setLanguage(this.state.languageArr[tempIndex].value)
+				} catch (error) {
+
+				}
+              this.checkPermission(response.prescriptionData);
+            }
 
         } else if (tag === 'completeConsultationWithNoti') {
             let { signupDetails } = this.props;
@@ -218,9 +736,6 @@ class BillingComplete extends React.Component {
             setTimeout(()=>{
                 Snackbar.show({ text: 'Appointment Completed successfully', duration: Snackbar.LENGTH_LONG, backgroundColor: Color.primary });
             },500)
-           
-
-            //this.setState({ CompleteModal: true, modelMessage: 'Appointment Completed' });
         } else if (tag === 'completeConsultationWithOutNoti') {
             if (response) {
             PrescriptionGuId = response.prescriptionGuId;
@@ -314,133 +829,74 @@ class BillingComplete extends React.Component {
     completeConsultation = (type) => {
         let { actions, signupDetails } = this.props;
         setLogEvent("Appointment_Complete", { "Complete": "click", UserGuid: signupDetails.UserGuid })
-        RNFS.readFile(this.state.filePath, "base64").then(result => {
-            let params = {
-                "DoctorGuid": signupDetails.doctorGuid,
-                "ClinicGuid": signupDetails.clinicGuid,
-                "UserGuid": signupDetails.UserGuid,
-                "Version": "",
-                "Data": {
-                    "AppointmentGuid": signupDetails.appoinmentGuid,
-                    "DoctorPrivateNote": this.state.notesData,
-                    "DoctorPatientClinicGuid": DoctorPatientClinicGuid,
-                    "PrescriptionGuId": PrescriptionGuId,
-                    "Attachment": {
-                        "FileGuid": null,
-                        "OrgFileName": "TestPDF.pdf",
-                        "OrgFileExt": ".pdf",
-                        "SysFileName": null,
-                        "SysFileExt": null,
-                        "FileBytes": result,
-                        "RefType": null,
-                        "RefId": null,
-                        "SysFilePath": null,
-                        "DelMark": 0,
-                        "UploadedOnCloud": 0
+        if(Platform.OS=='android' && !filePath && prevScreenName == 'normalPrescription'){
+            Alert.alert(
+                "Required Permission",
+                "You need to give storage permission to generate pdf. \n Please try again",
+                [{
+                    text: "Cancel",
+                    onPress: () =>{
+                        this.props.navigation.goBack();
                     },
-
-                    "HandwrittenListOfAttachment": base64ImageArr
+                    style: "cancel"
+                },
+                    {
+                        text: 'Ok',
+                        onPress: () => {
+                            isRetry=true;
+                            clickBtnType=type ;
+                            this.checkPermission(pdfData)
+                        },
+                    },
+                ],
+                { cancelable: false },
+            );
+        }else{
+            RNFS.readFile(filePath, "base64").then(result => {
+                let params = {
+                    "DoctorGuid": signupDetails.doctorGuid,
+                    "ClinicGuid": signupDetails.clinicGuid,
+                    "UserGuid": signupDetails.UserGuid,
+                    "Version": "",
+                    "Data": {
+                        "AppointmentGuid": signupDetails.appoinmentGuid,
+                        "DoctorPrivateNote": this.state.notesData,
+                        "DoctorPatientClinicGuid": DoctorPatientClinicGuid,
+                        "PrescriptionGuId": PrescriptionGuId,
+                        "Attachment": {
+                            "FileGuid": null,
+                            "OrgFileName": "TestPDF.pdf",
+                            "OrgFileExt": ".pdf",
+                            "SysFileName": null,
+                            "SysFileExt": null,
+                            "FileBytes": result,
+                            "RefType": null,
+                            "RefId": null,
+                            "SysFilePath": null,
+                            "DelMark": 0,
+                            "UploadedOnCloud": 0
+                        },
+    
+                        "HandwrittenListOfAttachment": base64ImageArr
+                    }
                 }
-            }
-            //actions.callLogin('V11/FuncForDrAppToCompleteConsultation_V4', 'post', params, signupDetails.accessToken, 'completeConsultation');
-            if(type=='withNotification')
-            actions.callLogin('V13/FuncForDrAppToCompleteConsultWithNotification', 'post', params, signupDetails.accessToken, 'completeConsultationWithNoti');
-            else
-            actions.callLogin('V12/FuncForDrAppToCompleteConsultWithoutNotification', 'post', params, signupDetails.accessToken, 'completeConsultationWithOutNoti');
-        })
-        //}
+                //actions.callLogin('V11/FuncForDrAppToCompleteConsultation_V4', 'post', params, signupDetails.accessToken, 'completeConsultation');
+                if(type=='withNotification')
+                actions.callLogin('V16/FuncForDrAppToCompleteConsultWithNotification', 'post', params, signupDetails.accessToken, 'completeConsultationWithNoti');
+                else
+                actions.callLogin('V16/FuncForDrAppToCompleteConsultWithoutNotification', 'post', params, signupDetails.accessToken, 'completeConsultationWithOutNoti');
+            })
+        }
     }
     downloadPdf = async () => {
         if (Platform.OS == 'android') {
-            RNFetchBlob.android.actionViewIntent(this.state.filePath, 'application/pdf');
+            RNFetchBlob.android.actionViewIntent(filePath, 'application/pdf');
         }
         else {
-            RNFetchBlob.ios.previewDocument(this.state.filePath);
+            RNFetchBlob.ios.previewDocument(filePath);
         }
-        // setTimeout(() => {
-        //     this.setState({
-        //         successPdfGeneration: true
-        //     })
-        // }, 500)
-        // if(Platform.OS == 'ios'){
-        //     this.actualDownload();
-        // }else{
-        //     try {
-        //         const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE);
-        //         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        //             this.actualDownload();
-        //         } else {
-        //             Alert.alert('Permission Denied!', 'You need to give storage permission to download the file');
-        //         }
-        //     } catch (err) {
-        //         console.warn(err);
-        //     }
-        // }
-
     }
 
-    actualDownload1 = () => {
-        //  var RandomNumber = Math.floor(Math.random() * 100) + 1 ;
-        const { dirs } = RNFetchBlob.fs;
-        let fileName = "bill" + (new Date()).getTime() + '.pdf'
-        RNFetchBlob.config({
-            fileCache: true,
-            addAndroidDownloads: {
-                useDownloadManager: true,
-                notification: true,
-                mediaScannable: true,
-                //  title: RandomNumber.toString() + `test.pdf`,
-                title: fileName,
-                path: `${dirs.DownloadDir}/` + fileName,
-            },
-        }).fetch('GET', this.state.filePath, {})
-            .then((res) => {
-                alert('File successfully downloaded')
-            })
-            .catch((e) => {
-            });
-    }
-    actualDownload = () => {
-        const { dirs } = RNFetchBlob.fs;
-        const dirToSave = Platform.OS == 'ios' ? dirs.DocumentDir : dirs.DownloadDir
-        let fileName = "pastEncounter" + (new Date()).getTime() + '.pdf'
-        const configfb = {
-            fileCache: true,
-            useDownloadManager: true,
-            notification: true,
-            mediaScannable: true,
-            title: 'test',
-            path: `${dirToSave}/` + fileName,
-        }
-        const configOptions = Platform.select({
-            ios: {
-                fileCache: configfb.fileCache,
-                title: configfb.title,
-                path: configfb.path,
-                appendExt: 'pdf',
-            },
-            android: configfb,
-        });
-
-        //console.log('The file saved to 23233', configfb, dirs);
-
-        RNFetchBlob.config(configOptions)
-            .fetch('GET', this.state.filePath, {})
-            .then((res) => {
-                if (Platform.OS === "ios") {
-                    RNFetchBlob.ios.openDocument(res.data);
-                    // RNFetchBlob.fs.writeFile(configfb.path, res.data, 'base64');
-                    // RNFetchBlob.ios.previewDocument(configfb.path);
-                }
-                //setisdownloaded(false)
-                if (Platform.OS == 'android') {
-                    Snackbar.show({ text: 'File downloaded successfully', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-                }
-                //console.log('The file saved to ', res);
-            })
-            .catch((e) => {
-            });
-    }
     async printRemotePDF() {
         let { signupDetails } = this.props;
 
@@ -452,7 +908,7 @@ class BillingComplete extends React.Component {
         Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Print_Rx", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality, })
 
         base64ImageArr = [];
-        await RNPrint.print({ filePath: this.state.filePath })
+        await RNPrint.print({ filePath: filePath })
     }
     nameFormat = (name, isDoctor) => {
         let shortName = '';
@@ -520,7 +976,7 @@ class BillingComplete extends React.Component {
                         <View style={{ marginBottom: 5 }} >
                             <View style={{ backgroundColor: Color.white, marginTop: responsiveHeight(1.6), marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), borderRadius: 10, marginBottom: responsiveHeight(0) }}>
                                 <TouchableOpacity style={{ flexDirection: 'row', margin: responsiveWidth(5), alignItems: 'center', justifyContent: 'space-between' }} onPress={() => {
-                                    this.props.navigation.navigate('PreviewRx', { PreviewPdfPath: this.state.filePath, from: prevScreenName })
+                                    this.props.navigation.navigate('PreviewRx', { PreviewPdfPath: filePath, from: prevScreenName })
                                 }}>
                                     <Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font14, color: Color.fontColor, fontWeight: CustomFont.fontWeight700 }}>Prescription</Text>
                                     <Image style={{ height: 30, width: 30, tintColor: Color.primary, resizeMode: 'contain' }} source={arrow_right} />
@@ -598,43 +1054,7 @@ class BillingComplete extends React.Component {
 
                     </View>
 
-                    <Modal isVisible={this.state.CompleteModal}
-                        onRequestClose={() => this.setState({ CompleteModal: false })}>
-                        <View style={[styles.modelViewMessage2]}>
-                            <Image source={OK} style={{ height: 65, width: 65, marginTop: 30 }} />
-                            <Text style={{ marginTop: 20, textAlign: 'center', color: Color.darkText, fontSize: CustomFont.font16, fontFamily: CustomFont.fontName }}>
-                                {this.state.modelMessage}
-                            </Text>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    Trace.stopTrace()
-                                    this.setState({ CompleteModal: false });
-                                    DRONA.setShowAppoinmentCompleteMsg(1);
-                                    this.props.navigation.navigate('DoctorHome');
-                                }}
-                                style={{ borderRadius: 5, justifyContent: 'center', alignItems: 'center', backgroundColor: Color.primary, margin: 20, paddingTop: 8, paddingBottom: 8, paddingStart: 27, paddingEnd: 27 }}>
-                                <Text style={{ color: Color.white, fontSize: CustomFont.font16, fontFamily: CustomFont.fontName }}>Ok</Text>
-                            </TouchableOpacity>
-
-                        </View>
-                    </Modal>
-                    <Modal isVisible={this.state.successPdfGeneration}
-                        onRequestClose={() => this.setState({ successPdfGeneration: false })}>
-                        <View style={[styles.modelViewMessage2]}>
-                            <Image source={TickIcon} style={{ height: 65, width: 65, marginTop: 30 }} />
-                            <Text style={{ marginTop: 20, textAlign: 'center', color: Color.darkText, fontSize: CustomFont.font22, fontFamily: CustomFont.fontName }}>
-                                File successfully downloaded
-                            </Text>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    this.setState({ successPdfGeneration: false });
-                                }}
-                                style={{ borderRadius: 5, justifyContent: 'center', alignItems: 'center', backgroundColor: Color.primary, margin: 20, paddingTop: 8, paddingBottom: 8, paddingStart: 27, paddingEnd: 27 }}>
-                                <Text style={{ color: Color.white, fontSize: CustomFont.font16, fontFamily: CustomFont.fontName }}>Ok</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </Modal>
-
+                   
                 </View>
             </SafeAreaView>
         );

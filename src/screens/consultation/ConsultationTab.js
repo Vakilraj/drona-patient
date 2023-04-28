@@ -24,7 +24,7 @@ import ScrollableTabView, { DefaultTabBar, ScrollableTabBar } from 'react-native
 
 import Draggable from 'react-native-draggable';
 import _ from 'lodash';
-import Consultation from './ConsultationBackup'
+import Consultation from './Consultation'
 import MedicalHistory from './MedicalHistory'
 import TreatmentPlanTab from './TreatmentPlanTab'
 import BillingBlankTab from './billing/billingBlankTab'

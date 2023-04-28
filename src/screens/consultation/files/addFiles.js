@@ -74,8 +74,8 @@ class AddFiles extends React.Component {
     componentDidMount() {
         let { signupDetails } = this.props;
         timeRange = Trace.getTimeRange();
-        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Add_File', signupDetails.firebaseLocation)
-        Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Add_File", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Add_File', signupDetails.firebaseLocation)
+        Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Add_File", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 
 
         let today = new Date();
@@ -592,7 +592,7 @@ class AddFiles extends React.Component {
     removeImage = (item, index) => {
         Alert.alert(
             "Delete Message",
-            "Are you sure want to delete?",
+            "Are you sure to delete?",
             [
                 {
                     text: "Cancel",

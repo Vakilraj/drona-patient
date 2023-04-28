@@ -265,8 +265,8 @@ class MedicineDetails extends React.Component {
 		// } else {
 		let { signupDetails } = this.props;
 		let timeRange = Trace.getTimeRange();
-		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Medicine_Add', signupDetails.firebaseLocation)
-		Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Medicine_Add", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Medicine_Add', signupDetails.firebaseLocation)
+		Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Medicine_Add", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 		let item = this.props.navigation.state.params.item;
 		let data = {
 			appointmentGuid: signupDetails.appoinmentGuid,
@@ -365,6 +365,7 @@ class MedicineDetails extends React.Component {
 			this.setState({ dosageSearchTxt: '', dosageDropdownArr: doasagesPatterArr });
 	}
 	DoseValidation = (text) => {
+		console.log(this.state.showStateDosage + '----------custom' + this.state.CustomInput)
 		if (text) {
 			if (Validator.isDoseValidate(text)) {
 				this.setState({ dosageSearchTxt: text })

@@ -55,8 +55,8 @@ class FileList extends React.Component {
         let { signupDetails } = this.props;
 
         timeRange = Trace.getTimeRange();
-        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'File_List', signupDetails.firebaseLocation)
-        Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "File_List", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'File_List', signupDetails.firebaseLocation)
+        Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "File_List", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
         setTimeout(() => {
             this.callFileListAPI();
         }, 300)
@@ -337,7 +337,7 @@ class FileList extends React.Component {
         this.hide();
         Alert.alert(
             "Delete Message",
-            "Are you sure want to delete?",
+            "Are you sure to delete?",
             [
                 {
                     text: "Cancel",

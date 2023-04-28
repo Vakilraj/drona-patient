@@ -60,8 +60,8 @@ class BillingComplete extends React.Component {
 
         let { signupDetails } = this.props;
         timeRange = Trace.getTimeRange();
-        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Prescription_Complete', signupDetails.firebaseLocation)
-        Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Prescription_Complete", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Prescription_Complete', signupDetails.firebaseLocation)
+        Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Prescription_Complete", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
         base64ImageArr = [];
         this.getConsulatationBillingPreviewData();
         this.getPrivateNote();
@@ -201,12 +201,12 @@ class BillingComplete extends React.Component {
             let { signupDetails } = this.props;
             if (prevScreenName == 'normalPrescription') {
                 timeRange = Trace.getTimeRange();
-                Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + "E_Prescription_Created", signupDetails.firebaseLocation)
-                Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "E_Prescription_Created", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality, 'prescription_type': 'E_Prescription' })
+                Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + "E_Prescription_Created", signupDetails.firebaseLocation)
+                Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "E_Prescription_Created", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality, 'prescription_type': 'E_Prescription' })
             } else if (prevScreenName == 'handwrittenadd') {
                 timeRange = Trace.getTimeRange();
-                Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'HandWritten_Prescription_Created', signupDetails.firebaseLocation)
-                Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "HandWritten_Prescription_Created", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality, 'prescription_type': 'HandWritten_Prescription' })
+                Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'HandWritten_Prescription_Created', signupDetails.firebaseLocation)
+                Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "HandWritten_Prescription_Created", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality, 'prescription_type': 'HandWritten_Prescription' })
             }
             if (response) {
                 PrescriptionGuId = response.prescriptionGuId;
@@ -446,10 +446,10 @@ class BillingComplete extends React.Component {
 
         setLogEvent("Print_RX", { "Print": "click", UserGuid: signupDetails.UserGuid })
         timeRange = Trace.getTimeRange();
-        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Print_Rx', signupDetails.firebaseLocation)
-        Trace.startTracePrintoutSetup(timeRange, signupDetails.firebasePhoneNumber, 'No', signupDetails.drSpeciality, signupDetails.firebaseUserType + 'PrescriptionTemplate_Printout', signupDetails.firebaseLocation)
+        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Print_Rx', signupDetails.firebaseLocation)
+        Trace.startTracePrintoutSetup(timeRange, signupDetails.firebasePhoneNumber, 'No', signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'PrescriptionTemplate_Printout', signupDetails.firebaseLocation)
 
-        Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Print_Rx", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality, })
+        Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Print_Rx", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality, })
 
         base64ImageArr = [];
         await RNPrint.print({ filePath: this.state.filePath })

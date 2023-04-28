@@ -134,13 +134,15 @@ class ClinicSetupIndex extends React.Component {
 		let params = {
 			"RoleCode": signupDetails.roleCode,
 			"UserGuid": signupDetails.UserGuid,
-			"ClinicGuid":DRONA.getClinicGuid(),//DRONA.getClinicGuid() signupDetails.clinicGuid
+			"ClinicGuid":signupDetails.clinicGuid,//DRONA.getClinicGuid()
 			"DoctorGuid": signupDetails.doctorGuid,
 			"Version": "",
 			"Data": null
 		}
 		actions.callLogin('V1/FuncForDrAppToSetupClinicDetails_V2', 'post', params, signupDetails.accessToken, 'clinicDetailsHome');
 	}
+
+
 
 	render() {
 		let { signupDetails } = this.props;

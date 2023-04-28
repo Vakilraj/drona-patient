@@ -22,7 +22,6 @@ import CommonStyle from '../../components/CommonStyle.js';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import cross_txt from '../../../assets/cross_txt.png';
 
-import Moment from 'moment';
 import app_icon from '../../../assets/app_icon.png';
 import home_bg from '../../../assets/home_bg.png';
 import RNExitApp from 'react-native-exit-app';
@@ -30,7 +29,6 @@ import Modal from 'react-native-modal';
 //import AsyncStorage from '@react-native-community/async-storage';
 import AsyncStorage from 'react-native-encrypted-storage';
 import CryptoJS from "react-native-crypto-js";
-let profile_complete=''
 class GetStarted extends React.Component {
 	constructor(props) {
 		super(props);
@@ -47,13 +45,14 @@ class GetStarted extends React.Component {
 
 	}
 	async componentDidMount() {
-		let { actions, signupDetails } = this.props;
-		actions.callLogin( 'Kolkata', 'get', 'params', null, 'getIstTime');
-
-		profile_complete = await AsyncStorage.getItem('profile_complete');
+		
+		const profile_complete = await AsyncStorage.getItem('profile_complete');
+		//alert(profile_complete)
 		if (profile_complete === 'profile_complete') {
 			const userGuid = await AsyncStorage.getItem('userGuid');
 			const accessToken = await AsyncStorage.getItem('accessToken');
+			//console.log('--------'+userGuid)
+			let { actions, signupDetails } = this.props;
 			let userIdAfterDecrypt='';
 			let accessTokenAfterDecrept='';
 			try {
@@ -68,7 +67,7 @@ class GetStarted extends React.Component {
 			signupDetails.doctorGuid =await AsyncStorage.getItem('doctorGuid');
 			signupDetails.roleCode = await AsyncStorage.getItem('roleCode');
 			actions.setSignupDetails(signupDetails);
-			//this.props.navigation.navigate('DoctorHome');
+			this.props.navigation.navigate('DoctorHome');
 			this.setState({ showSplash: false })
 		} else {
 			this.setState({ showSplash: false })
@@ -178,20 +177,6 @@ class GetStarted extends React.Component {
 					} else {
 						this.props.navigation.navigate('LoginWithOtp');  //'Login'
 					}
-				}
-			}else if(tagname=='getIstTime'){
-				let data=newProps.responseData;
-				if(data){
-					let time24HrsFormat = Moment(data.datetime).format("HH");
-					if(time24HrsFormat >6){
-						DRONA.setIsServiceVailable(true);
-					}else{
-						DRONA.setIsServiceVailable(false);
-					}
-					//console.log(data.datetime+'---------'+time24HrsFormat);
-				}
-				if (profile_complete === 'profile_complete') {
-					this.props.navigation.navigate('DoctorHome');
 				}
 
 

@@ -50,10 +50,13 @@ class EditCard extends React.Component {
     componentDidMount() {
         cardLanguageGuid = this.props.navigation.state.params.cardLanguageGuid;
         let eCardGuid = this.props.navigation.state.params.eCardsGuid;
+        // console.log('cardLanguageGuid--------'+JSON.stringify(cardLanguageGuid));
+        // console.log('eCardLanguageGuid--------'+JSON.stringify(eCardLanguageGuid));
+
         let { actions, signupDetails } = this.props;
         this.setState({ dName: 'Dr. ' + signupDetails.fname + ' ' + signupDetails.lname });
         this.setState({ imageSource: { uri: signupDetails.profileImgUrl } });
-        this.setState({ drImageinAssistantEdit: { uri: signupDetails.profileImgUrl } });
+        this.setState({ drImageinAssistantEdit: { uri: signupDetails.drProfileImgUrlinAssistantLogin } });
 
         let params = {
             "RoleCode": signupDetails.roleCode,

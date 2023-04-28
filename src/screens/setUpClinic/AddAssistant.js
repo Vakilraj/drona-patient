@@ -2,7 +2,7 @@ import CheckBox from '@react-native-community/checkbox';
 import React from 'react';
 import {
     Dimensions, FlatList, Image, SafeAreaView,
-    ScrollView, StatusBar, Text, TextInput, TouchableOpacity, View, BackHandler
+    ScrollView, StatusBar, Text, TextInput, TouchableOpacity, View,BackHandler
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
@@ -44,9 +44,9 @@ class AddAssistant extends React.Component {
             assistanceGuid: '',
             genderList: [],
             genderGuid: '',
-            emailAlert: '',
+            emailAlert:'',
             FnameValidationError: false,
-            LnameValidationError: false,
+            LnameValidationError: false
         };
     }
 
@@ -55,7 +55,7 @@ class AddAssistant extends React.Component {
         var isEdit = this.props.navigation.state.params.isEdit
         var assistanceGuid = this.props.navigation.state.params.assistanceGuid
         var assistanceUserGuid = this.props.navigation.state.params.assistanceUserGuid
-        //alert(assistanceUserGuid)
+//alert(assistanceUserGuid)
         this.setState({
             isEdit: isEdit,
             assistanceGuid: assistanceGuid,
@@ -66,7 +66,7 @@ class AddAssistant extends React.Component {
         let { actions, signupDetails } = this.props;
         let params = {
             "DoctorGuid": signupDetails.doctorGuid,
-            "ClinicGuid": DRONA.getClinicGuid(),
+            "ClinicGuid": signupDetails.clinicGuid,
             "UserGuid": signupDetails.UserGuid,
             "Data": {
                 "AssistanceGuid": isEdit ? assistanceGuid : null,
@@ -76,7 +76,7 @@ class AddAssistant extends React.Component {
         actions.callLogin('V1/FuncForDrAppToGetEditAssistanceDetails', 'post', params, signupDetails.accessToken, 'getEditAssistanceDetails');
 
         this.backHandler = BackHandler.addEventListener('hardwareBackPress',
-            () => this.props.navigation.goBack())
+		 () => this.props.navigation.goBack())
     }
 
     async UNSAFE_componentWillReceiveProps(newProps) {
@@ -107,7 +107,7 @@ class AddAssistant extends React.Component {
                 setTimeout(() => {
                     Snackbar.show({ text: newProps.responseData.statusMessage, duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
                 }, 500)
-                if (!this.state.isEdit) setLogEvent("add_assistant")
+                if(!this.state.isEdit) setLogEvent("add_assistant")
             } else if (tagname === 'deleteAssistanceDetails') {
                 this.setState({
                     deleteModal: false
@@ -119,41 +119,13 @@ class AddAssistant extends React.Component {
                 setTimeout(() => {
                     Snackbar.show({ text: newProps.responseData.statusMessage, duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
                 }, 500)
-            } else if (tagname === 'searchAssistant') {
-                if (newProps.responseData.statusCode == 0) {
-                    let data = newProps.responseData.data;
-                    if (data) {
-                        this.setState({
-                            firstName: data.assistanceFirstName,
-                            lastName: data.assistanceLastName,
-                            emailId: data.email,
-                            assistanceUserGuid: data.assistanceUserGuid,
-                            assistanceGuid: data.assistanceGuid,
-                            genderGuid: data.genderGuid,
-                        })
-                    }else{
-                        this.setState({
-                            firstName: '',
-                            lastName: '',
-                            emailId: '',
-                            assistanceUserGuid: '',
-                            assistanceGuid: '',
-                            genderGuid: '',
-                        })
-                    }
-                }else{
-                    setTimeout(()=>{
-                        Snackbar.show({ text: newProps.responseData.statusMessage, duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-                    },1000)
-                }
-
             }
         }
     }
 
     renderAllowAccessItem = (item, index) => {
         return (
-            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20, padding: 2 }} onPress={() => {
+            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20, padding: 2  }} onPress={() => {
                 let newValue = this.state.allowAccessArr[index].isAuthorized
                 this.state.allowAccessArr[index].isAuthorized = newValue == '0' ? '1' : '0';
                 this.setState({ allowAccessArr: this.state.allowAccessArr })
@@ -201,7 +173,7 @@ class AddAssistant extends React.Component {
         else {
             let { actions, signupDetails } = this.props;
             let params = {
-                "ClinicGuid": DRONA.getClinicGuid(),
+                "ClinicGuid": signupDetails.clinicGuid,
                 "DoctorGuid": signupDetails.doctorGuid,
                 "UserGuid": signupDetails.UserGuid,
                 "Data": {
@@ -211,13 +183,13 @@ class AddAssistant extends React.Component {
                     "email": this.state.emailId,
                     "PhoneNo": this.state.mobileNumber,
                     "GenderGuid": this.state.genderGuid,
-                    "AssistanceUserGuid": this.state.assistanceUserGuid ,
-                    "AssistanceGuid": this.state.assistanceGuid ,
+                    "AssistanceUserGuid": this.state.isEdit ? this.state.assistanceUserGuid : null,
+                    "AssistanceGuid": this.state.isEdit ? this.state.assistanceGuid : null,
                 }
             }
             //console.log("finalReq - ",JSON.stringify(params));
-            actions.callLogin('V15/FuncForDrAppToAddUpdateAssistanceDetails', 'post', params, signupDetails.accessToken, 'addUpdateAssistanceDetails');
-            setLogEvent("add_staff", { "save_update": 'click', "UserGuid": signupDetails.UserGuid̦ })
+            actions.callLogin('V1/FuncForDrAppToAddUpdateAssistanceDetails', 'post', params, signupDetails.accessToken, 'addUpdateAssistanceDetails');
+            setLogEvent("add_staff", { "save_update":'click', "UserGuid": signupDetails.UserGuid̦ })
         }
     }
 
@@ -226,7 +198,7 @@ class AddAssistant extends React.Component {
         let { actions, signupDetails } = this.props;
         let params = {
             "DoctorGuid": signupDetails.doctorGuid,
-            "ClinicGuid": DRONA.getClinicGuid(),
+            "ClinicGuid": signupDetails.clinicGuid,
             "UserGuid": signupDetails.UserGuid,
             "Data": {
                 "AssistanceGuid": this.state.assistanceGuid,
@@ -234,7 +206,7 @@ class AddAssistant extends React.Component {
             }
         }
         actions.callLogin('V1/FuncForDrAppToDeleteAssistanceDetails', 'post', params, signupDetails.accessToken, 'deleteAssistanceDetails');
-        setLogEvent("add_staff", { "delete_staff": 'click', "UserGuid": signupDetails.UserGuid̦ })
+        setLogEvent("add_staff", {"delete_staff":'click', "UserGuid": signupDetails.UserGuid̦ })
     }
 
     clickGender = (gender) => {
@@ -247,72 +219,53 @@ class AddAssistant extends React.Component {
         }
     }
 
-    fNameValidation = (item) => {
-        if (Validator.isNameValidateAss(item)) {
-            this.setState({ FnameValidationError: false, firstName: item })
-            // alert('matched' + item)
-        }
-        else if (item == '') {
-            this.setState({ FnameValidationError: false, firstName: item })
-        }
-        else {
-            this.setState({ FnameValidationError: true, firstName: item })
-            // alert('not matched' + item)
-        }
-    }
-
-    lNameValidation = (item) => {
-        if (Validator.isNameValidateAss(item)) {
-            this.setState({ LnameValidationError: false, lastName: item })
-            // alert('matched' + item)
-        }
-        else if (item == '') {
-            this.setState({ LnameValidationError: false, lastName: item })
-        }
-        else {
-            this.setState({ LnameValidationError: true, lastName: item })
-            // alert('not matched' + item)
+    fNameValidation = (item) =>{
+    if(Validator.isNameValidateAss(item))
+      {
+        this.setState({FnameValidationError : false, firstName: item})
+        // alert('matched' + item)
+      }
+      else if(item == ''){
+        this.setState({FnameValidationError : false, firstName: item})
+      }
+    else{
+        this.setState({FnameValidationError : true, firstName: item})
+        // alert('not matched' + item)
         }
     }
 
-    renderItem = (item, index) => {
-        return (
-            <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: responsiveHeight(6), borderColor: this.state.genderGuid === item.genderGuid ? Color.liveBg : Color.createInputBorder, borderWidth: 1.5, borderRadius: 4, backgroundColor: this.state.genderGuid === item.genderGuid ? Color.genderSelection : Color.white, marginEnd: 5, }}
-                onPress={() =>
-                    this.setState({
-                        genderGuid: item.genderGuid
-                    })
-                }>
-                <Text style={{ color: this.state.isMale ? Color.optiontext : Color.optiontext, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight500 }}>{item.genderName}</Text>
-            </TouchableOpacity>
-        )
-    }
-    renderSeparatorTag = () => {
-        return <View style={{ marginLeft: 1 }} />;
-    };
-    searchAssistantWithMobile = (mobileNumber) => {
-        if (mobileNumber) {
-            if (Validator.isMobileValidate(mobileNumber)) {
-                this.setState({ mobileNumber: mobileNumber });
-                if (mobileNumber.length == 10) {
-                    let { actions, signupDetails } = this.props;
-                    let params = {
-                        "DoctorGuid": signupDetails.doctorGuid,
-                        "ClinicGuid": DRONA.getClinicGuid(),
-                        "UserGuid": signupDetails.UserGuid,
-                        "Data": {
-                            "PhoneNo": mobileNumber
-                        }
-                    }
-                    actions.callLogin('V15/FuncForDrAppToSearchAssistanceDetails', 'post', params, signupDetails.accessToken, 'searchAssistant');
-                }
+    lNameValidation = (item) =>{
+        if(Validator.isNameValidateAss(item))
+          {
+            this.setState({LnameValidationError : false, lastName: item})
+            // alert('matched' + item)
+          }
+          else if(item == ''){
+            this.setState({LnameValidationError : false, lastName: item})
+          }
+        else{
+            this.setState({LnameValidationError : true, lastName: item})
+            // alert('not matched' + item)
             }
-        } else
-            this.setState({ mobileNumber });
-    }
-
+        }
 
     render() {
+
+        const renderItem = (item, index) => {
+            return (
+                <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: responsiveHeight(6), borderColor: this.state.genderGuid === item.genderGuid ? Color.liveBg : Color.createInputBorder, borderWidth: 1.5, borderRadius: 4, backgroundColor: this.state.genderGuid === item.genderGuid ? Color.genderSelection : Color.white, marginEnd: 5, }}
+                    onPress={() =>
+                        this.setState({
+                            genderGuid: item.genderGuid
+                        })
+                    }>
+                    <Text style={{ color: this.state.isMale ? Color.optiontext : Color.optiontext, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight500 }}>{item.genderName}</Text>
+                </TouchableOpacity>
+            )
+        }
+        const renderSeparatorTag = () => {
+            return <View style={{ marginLeft: 1 }} />;
+        };
         return (
             <SafeAreaView style={CommonStyle.container}>
                 <StatusBar backgroundColor='#2D1D4BCC' barStyle="dark-content" />
@@ -329,49 +282,35 @@ class AddAssistant extends React.Component {
                     </View>
                     <ScrollView>
                         <View style={{ flex: 1, margin: 20, marginTop: 0 }}>
-                            <Text style={styles.tiTitle}>Mobile Number</Text>
-                            <View>
-                                <TextInput returnKeyType="done" style={[styles.modelTextInput1, { borderColor: this.state.fld3 }]}
-                                    placeholder="Enter Mobile Number"
-                                    keyboardType={'number-pad'}
-                                    maxLength={10}
-                                    value={this.state.mobileNumber}
-                                    onChangeText={mobileNumber => this.searchAssistantWithMobile(mobileNumber)}
-                                    placeholderTextColor={Color.placeHolderColor}
-                                    onBlur={() => this.setState({ fld3: Color.newBorder })} onFocus={() => this.setState({ keyboardAvoiding: responsiveHeight(-50), fld3: Color.primary })} editable={!this.state.isEdit} />
-                            </View>
-
                             <Text style={{ ...styles.tiTitle, marginTop: 10 }}>First Name </Text>
                             <View>
-                                <TextInput returnKeyType="done" style={[styles.modelTextInput1, { borderColor: this.state.fld1, }]}
+                                <TextInput returnKeyType="done" style={[styles.modelTextInput1, { borderColor: this.state.fld1,}]}
                                     placeholder="Enter First Name"
                                     value={this.state.firstName}
-                                    onChangeText={(text) => {
-                                        return this.fNameValidation(text)
-                                    }}
+                                    onChangeText={(text) => { 
+                                        return this.fNameValidation(text) }}
                                     // onChangeText={text => {
                                     //     this.setState({ firstName: text });
                                     // }}
                                     placeholderTextColor={Color.placeHolderColor}
                                     onBlur={() => this.setState({ fld1: Color.newBorder })} onFocus={() => this.setState({ keyboardAvoiding: responsiveHeight(-50), fld1: Color.primary })} />
-                                {this.state.FnameValidationError ? <Text style={{ color: 'red', marginTop: 10 }}>Please enter letter only</Text> : null}
+{this.state.FnameValidationError ? <Text style={{color:'red', marginTop:10}}>Please enter letter only</Text> : null}
                             </View>
 
 
                             <Text style={styles.tiTitle}>Last Name </Text>
                             <View>
-                                <TextInput returnKeyType="done" style={[styles.modelTextInput1, { borderColor: this.state.fld2, }]}
+                                <TextInput returnKeyType="done" style={[styles.modelTextInput1, { borderColor: this.state.fld2,}]}
                                     placeholder="Enter Last Name"
                                     value={this.state.lastName}
-                                    onChangeText={(text) => {
-                                        return this.lNameValidation(text)
-                                    }}
+                                    onChangeText={(text) => { 
+                                        return this.lNameValidation(text) }}
                                     // onChangeText={text => {
                                     //     this.setState({ lastName: text });
                                     // }}
                                     placeholderTextColor={Color.placeHolderColor}
                                     onBlur={() => this.setState({ fld2: Color.newBorder })} onFocus={() => this.setState({ keyboardAvoiding: responsiveHeight(-50), fld2: Color.primary })} />
-                                {this.state.LnameValidationError ? <Text style={{ color: 'red', marginTop: 10 }}>Please enter letter only</Text> : null}
+{this.state.LnameValidationError ? <Text style={{color:'red', marginTop:10}}>Please enter letter only</Text> : null}
                             </View>
 
                             {this.state.genderList && this.state.genderList.length > 0 ?
@@ -381,11 +320,29 @@ class AddAssistant extends React.Component {
                                         <FlatList
                                             data={this.state.genderList}
                                             numColumns={3}
-                                            renderItem={({ item, index }) => this.renderItem(item, index)}
-                                            ItemSeparatorComponent={this.renderSeparatorTag} />
+                                            renderItem={({ item, index }) => renderItem(item, index)}
+                                            ItemSeparatorComponent={renderSeparatorTag} />
                                     </View>
                                 </View> : null}
 
+                            <Text style={styles.tiTitle}>Mobile Number</Text>
+                            <View>
+                                <TextInput returnKeyType="done" style={[styles.modelTextInput1, { borderColor: this.state.fld3 }]}
+                                    placeholder="Enter Mobile Number"
+                                    keyboardType={'number-pad'}
+                                    maxLength={10}
+                                    value={this.state.mobileNumber}
+                                    onChangeText={mobileNumber => {
+                                        if (mobileNumber) {
+                                            if (Validator.isMobileValidate(mobileNumber)) {
+                                                this.setState({ mobileNumber: mobileNumber.trim()});
+                                            }
+                                        } else
+                                            this.setState({ mobileNumber });
+                                    }}
+                                    placeholderTextColor={Color.placeHolderColor}
+                                    onBlur={() => this.setState({ fld3: Color.newBorder })} onFocus={() => this.setState({ keyboardAvoiding: responsiveHeight(-50), fld3: Color.primary })} editable={!this.state.isEdit} />
+                            </View>
 
                             <Text style={styles.tiTitle}>Email ID</Text>
                             <View>
@@ -397,7 +354,7 @@ class AddAssistant extends React.Component {
                                     //     this.setState({ emailId: text.trim() });
                                     // }}
                                     onChangeText={emailId => {
-
+											
                                         if (emailId) {
                                             if (Validator.isEmailValid(emailId.trim())) {
                                                 this.setState({ emailAlert: '' });
@@ -405,16 +362,16 @@ class AddAssistant extends React.Component {
                                             else {
                                                 this.setState({ emailAlert: 'Please enter valid email id' });
                                             }
-                                            this.setState({ emailId: emailId.trim() })
-                                        } else {
-                                            this.setState({ emailId })
+                                            this.setState({ emailId:emailId.trim()})
+                                        }else{
+                                            this.setState({ emailId})
                                             this.setState({ emailAlert: 'Please enter email id' });
                                         }
                                     }
                                     }
                                     placeholderTextColor={Color.placeHolderColor}
                                     onBlur={() => this.setState({ fld4: Color.newBorder })} onFocus={() => this.setState({ keyboardAvoiding: responsiveHeight(-50), fld4: Color.primary })} />
-                                {this.state.emailAlert ? <Text style={{ marginLeft: 5, fontSize: CustomFont.font12, color: Color.red }}>{this.state.emailAlert}</Text> : null}
+                                    {this.state.emailAlert ? <Text style={{ marginLeft: 5, fontSize: CustomFont.font12, color: Color.red }}>{this.state.emailAlert}</Text> : null}
                             </View>
                             {this.state.actionArr.length > 0 ?
                                 <View style={{ borderRadius: 10, backgroundColor: Color.profileBg, marginTop: responsiveHeight(3), paddingBottom: responsiveHeight(2) }}>
@@ -454,8 +411,8 @@ class AddAssistant extends React.Component {
                             <View style={{ flexDirection: 'row', backgroundColor: Color.white, borderTopLeftRadius: 10, borderTopRightRadius: 10, marginTop: 10, paddingLeft: 5, paddingRight: 5 }}>
                                 <TouchableOpacity
                                     onPress={() => {
-                                        let { signupDetails } = this.props;
-                                        setLogEvent("add_staff", { "cancel": 'click', "UserGuid": signupDetails.UserGuid̦ })
+                                        let {signupDetails} = this.props;
+                                        setLogEvent("add_staff", {"cancel":'click', "UserGuid": signupDetails.UserGuid̦ })
                                         this.state.isEdit ? this.setState({ deleteModal: true }) : this.props.navigation.goBack()
                                     }}
                                     style={{ margin: 5, marginLeft: 0, borderRadius: 5, justifyContent: 'center', alignItems: 'center', backgroundColor: this.state.isEdit ? '#FBEDED' : Color.lightPurple, flex: 1, height: responsiveHeight(5) }}>
@@ -463,10 +420,11 @@ class AddAssistant extends React.Component {
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     onPress={() => {
-                                        if (this.state.LnameValidationError || this.state.FnameValidationError) {
+                                        if(this.state.LnameValidationError || this.state.FnameValidationError)
+                                        {
                                             console.log('ddd');
                                         }
-                                        else {
+                                        else{
                                             this.onAdd()
                                         }
                                     }}

@@ -217,7 +217,7 @@ class AddNewPatients extends React.Component {
 		try {
 
 			let item = this.props.navigation.state.params.item ? this.props.navigation.state.params.item : '';
-			//console.log('--------item--+  ' + JSON.stringify(item))
+			console.log('--------item--+  ' + JSON.stringify(item))
 			from = this.props.navigation.state.params.from ? this.props.navigation.state.params.from : '';
 			isGetData = this.props.navigation.state.params.isGetData ? this.props.navigation.state.params.isGetData : false;
 
@@ -293,27 +293,19 @@ class AddNewPatients extends React.Component {
 		//this.getRelationShip()
 		//this.callTagApi()
 	}
+
 	callGetData = () => {
-		if (this.props.navigation.state.params.patientFamilyMemberData && this.props.navigation.state.params.from === 'addfamily') {
-			let data = this.props.navigation.state.params.patientFamilyMemberData
-			dataAll = data
-				if (data.patientDetailsList) {
-					this.setState({ parentName: data.patientDetailsList.firstName + ' ' + data.patientDetailsList.lastName, mobile: data.patientDetailsList.phoneNumber })
-				}
-		} else {
-			let item = this.props.navigation.state.params.item ? this.props.navigation.state.params.item : '';
+		let item = this.props.navigation.state.params.item ? this.props.navigation.state.params.item : '';
 
-			let { actions, signupDetails } = this.props;
-			let params = {
-				"RoleCode": signupDetails.roleCode,
-				"UserGuid": signupDetails.UserGuid,
-				"DoctorGuid": signupDetails.doctorGuid,
-				"ClinicGuid": signupDetails.clinicGuid,
-				"Data": { "PatientGuid": item.patientGuid }
-			}
-			actions.callLogin('V16/FuncForDrAppToGetPatientDetailsById', 'post', params, signupDetails.accessToken, 'getData');
+		let { actions, signupDetails } = this.props;
+		let params = {
+			"RoleCode": signupDetails.roleCode,
+			"UserGuid": signupDetails.UserGuid,
+			"DoctorGuid": signupDetails.doctorGuid,
+			"ClinicGuid": signupDetails.clinicGuid,
+			"Data": { "PatientGuid": item.patientGuid }
 		}
-
+		actions.callLogin('V11/FuncForDrAppToGetPatientDetailsById', 'post', params, signupDetails.accessToken, 'getData');
 	}
 	openCamera = () => {
 		ImagePicker.openCamera({
@@ -591,6 +583,8 @@ class AddNewPatients extends React.Component {
 					if (data.patientDetailsList) {
 						this.setState({ parentName: data.patientDetailsList.firstName + ' ' + data.patientDetailsList.lastName, mobile: data.patientDetailsList.phoneNumber })
 					}
+
+
 				} else {
 					let age = 0;
 					if (item.dob) {

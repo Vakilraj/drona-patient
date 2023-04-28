@@ -74,8 +74,8 @@ class BankAccountDetails extends React.Component {
 	componentDidMount() {
 		let { signupDetails } = this.props;
 		timeRange = Trace.getTimeRange();
-		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Assistant_And_Bank_Details_Info', signupDetails.firebaseLocation)
-		Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Assistant_And_Bank_Details_Info", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Assistant_And_Bank_Details_Info', signupDetails.firebaseLocation)
+		Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Assistant_And_Bank_Details_Info", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
 		if (this.props.resData)
 			this.setValueFromResponse(this.props.resData)
 	}
@@ -225,7 +225,7 @@ class BankAccountDetails extends React.Component {
 									"RoleCode": signupDetails.roleCode,
 									"UserGuid": signupDetails.UserGuid,
 									"DoctorGuid": signupDetails.doctorGuid,
-									"ClinicGuid": signupDetails.clinicGuid,//DRONA.getClinicGuid()
+									"ClinicGuid": DRONA.getClinicGuid(),//DRONA.getClinicGuid() signupDetails.clinicGuid
 									"Data": { "upiGuId": upiGuId, "UpiName": upiNameOnModal }
 								};
 								actions.callLogin('V1/FuncForDrAppToAddUpdateUpiDetails', 'post', params, signupDetails.accessToken, 'saveupdateUpi');
@@ -307,7 +307,7 @@ class BankAccountDetails extends React.Component {
 								let params = {
 									"RoleCode": signupDetails.roleCode,
 									"UserGuid": signupDetails.UserGuid,
-									"ClinicGuid": signupDetails.clinicGuid,//DRONA.getClinicGuid()
+									"ClinicGuid": DRONA.getClinicGuid(),//DRONA.getClinicGuid() signupDetails.clinicGuid
 									"DoctorGuid": signupDetails.doctorGuid,
 									"version": "null",
 									"Data": {
@@ -323,7 +323,7 @@ class BankAccountDetails extends React.Component {
 										"NickName": nickName
 									}
 								};
-								actions.callLogin('V1/FuncForDrAppToAddUpdateBank', 'post', params, signupDetails.accessToken, 'saveupdateBankAccount');
+								actions.callLogin('V15/FuncForDrAppToAddUpdateBank', 'post', params, signupDetails.accessToken, 'saveupdateBankAccount');
 								setTimeout(()=>{
 									AddBankDetailsFlag =0;
 								},2000)
@@ -580,8 +580,8 @@ class BankAccountDetails extends React.Component {
 								{this.state.upiGuId && !signupDetails.isAssistantUser ? <TouchableOpacity onPress={() => {
 									let { signupDetails } = this.props;
 									timeRange = Trace.getTimeRange();
-									Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Add_Upi_Popup', signupDetails.firebaseLocation)
-									Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Add_Upi_Popup", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+									Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Add_Upi_Popup', signupDetails.firebaseLocation)
+									Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Add_Upi_Popup", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
 									this.setState({ isModalVisibleUpi: true, upiNameOnModal: this.state.upiName })
 								}}>
 									<Image source={EditBlue} style={{ height: responsiveFontSize(2), width: responsiveFontSize(2), resizeMode: 'contain', marginLeft: 10, marginBottom: 10 }} />
@@ -595,8 +595,8 @@ class BankAccountDetails extends React.Component {
 									<TouchableOpacity style={{ alignItems: 'center', justifyContent: 'center', borderRadius: 5, height: responsiveHeight(6), backgroundColor: Color.primary, marginTop: responsiveHeight(1), marginLeft: responsiveWidth(14), marginBottom: 20, width: responsiveWidth(45) }} onPress={() => {
 										let { signupDetails } = this.props;
 									timeRange = Trace.getTimeRange();
-									Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Add_Upi_Popup',  signupDetails.firebaseLocation)
-									Trace.setLogEventWithTrace( signupDetails.firebaseUserType + "Add_Upi_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+									Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Add_Upi_Popup',  signupDetails.firebaseLocation)
+									Trace.setLogEventWithTrace( signupDetails.firebaseUserType + "Add_Upi_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
 										this.setState({ isModalVisibleUpi: true, showProgressOnBtn: false });
 									}}>
 										<Text style={{ fontFamily: CustomFont.fontName, color: Color.white, fontSize: CustomFont.font12, textAlign: 'center' }}>Add Upi</Text>
@@ -615,7 +615,7 @@ class BankAccountDetails extends React.Component {
 								{!signupDetails.isAssistantUser ?
 									<TouchableOpacity style={{ flexDirection: 'row', padding: 10, alignItems: 'center' }} onPress={() => {
 										isAssistantAddUpdateFlag = 'Add';
-										this.props.nav.navigation.navigate("AddAssistant", { isEdit: false, isUpdate: this.isUpdate })
+										this.props.nav.navigation.navigate("AddAssistant", { isEdit: false, assistanceUserGuid: null, assistanceGuid: null,isUpdate: this.isUpdate })
 									}}>
 										<Image source={plusNew} style={{ height: responsiveFontSize(1.3), width: responsiveFontSize(1.3), resizeMode: 'contain' }} />
 										<Text style={{ fontFamily: CustomFont.fontName, color: Color.primary, fontSize: CustomFont.font14, textAlign: 'center', fontWeight: CustomFont.fontWeight700, marginLeft: responsiveFontSize(.7) }}>Add</Text>
@@ -634,7 +634,7 @@ class BankAccountDetails extends React.Component {
 										<TouchableOpacity style={{ alignItems: 'center', justifyContent: 'center', borderRadius: 5, height: responsiveHeight(6), backgroundColor: Color.primary, marginTop: responsiveHeight(2), marginLeft: responsiveWidth(14), marginBottom: 20, width: responsiveWidth(45) }}
 											onPress={() => {
 												isAssistantAddUpdateFlag = 'Add';
-												this.props.nav.navigation.navigate("AddAssistant", { isEdit: false, isUpdate: this.isUpdate })
+												this.props.nav.navigation.navigate("AddAssistant", { isEdit: false,assistanceUserGuid: null, assistanceGuid: null, isUpdate: this.isUpdate })
 											}}>
 											<Text style={{ fontFamily: CustomFont.fontName, color: Color.white, fontSize: CustomFont.font12, textAlign: 'center' }}>Add Assistant</Text>
 										</TouchableOpacity> : null}

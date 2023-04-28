@@ -58,8 +58,8 @@ class confirmAppointment extends React.Component {
 
         let { actions, signupDetails } = this.props;
         let timeRange = Trace.getTimeRange();
-        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +"Confirm_Appointment_Page_Time",  signupDetails.firebaseLocation);
-        Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Confirm_Appointment_Page_Time", {'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +"Confirm_Appointment_Page_Time",  signupDetails.firebaseLocation);
+        Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Confirm_Appointment_Page_Time", {'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
        
         let params = {
             "UserGuid": signupDetails.UserGuid,
@@ -151,8 +151,8 @@ class confirmAppointment extends React.Component {
                 //
                 let { signupDetails } = this.props;
                 let timeRange = Trace.getTimeRange();
-                Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality,signupDetails.firebaseUserType +'Appointment_Booked', signupDetails.firebaseLocation );
-                Trace.setLogEventWithTrace( signupDetails.firebaseUserType + "Appointment_Booked", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+                Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality,signupDetails.firebaseUserType +'Appointment_Booked', signupDetails.firebaseLocation );
+                Trace.setLogEventWithTrace( signupDetails.firebaseUserType + "Appointment_Booked", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
                 //
                 setLogEvent("walkin_book_appointment_success", { UserGuid:signupDetails.UserGuid })
             }
@@ -163,8 +163,8 @@ class confirmAppointment extends React.Component {
                     //
                     let { signupDetails } = this.props;
                     let timeRange = Trace.getTimeRange();
-                    Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality,signupDetails.firebaseUserType +'Appointment_Booked', signupDetails.firebaseLocation );
-                    Trace.setLogEventWithTrace( signupDetails.firebaseUserType + "Appointment_Booked", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+                    Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality,signupDetails.firebaseUserType +'Appointment_Booked', signupDetails.firebaseLocation );
+                    Trace.setLogEventWithTrace( signupDetails.firebaseUserType + "Appointment_Booked", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
                     //
 
                     setLogEvent("new_book_appointment_success", { UserGuid:signupDetails.UserGuid,'source':'App' })
@@ -185,8 +185,8 @@ class confirmAppointment extends React.Component {
                     //
                     let { signupDetails } = this.props;
                     let timeRange = Trace.getTimeRange();
-                    Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality,signupDetails.firebaseUserType +'Appointment_Rescheduled', signupDetails.firebaseLocation );
-                    Trace.setLogEventWithTrace( signupDetails.firebaseUserType + "Appointment_Rescheduled", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+                    Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality,signupDetails.firebaseUserType +'Appointment_Rescheduled', signupDetails.firebaseLocation );
+                    Trace.setLogEventWithTrace( signupDetails.firebaseUserType + "Appointment_Rescheduled", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
                     //
                     this.props.navigation.navigate('DoctorHome');
                     setTimeout(() => {
@@ -268,7 +268,7 @@ class confirmAppointment extends React.Component {
                     "Notes": this.state.notes,
                 }
             }
-            actions.callLogin('V16/FuncForDrAppToPatientBookAppointment_V2_1', 'post', params, signupDetails.accessToken, 'postWalkinConfirm');
+            actions.callLogin('V1/FuncForDrAppToPatientBookAppointment_V2_1', 'post', params, signupDetails.accessToken, 'postWalkinConfirm');
         }
         else {
             let params = {
@@ -298,8 +298,7 @@ class confirmAppointment extends React.Component {
                     
                 }
             }
-            //console.log('----'+JSON.stringify(params))
-            actions.callLogin('V16/FuncForDrAppToPatientBookAppointment_V3', 'post', params, signupDetails.accessToken, 'postConfirm');
+            actions.callLogin('V1/FuncForDrAppToPatientBookAppointment_V3', 'post', params, signupDetails.accessToken, 'postConfirm');
         }
         signupDetails.confirmAppoinmentDate=DRONA.getSelectedAppoinDate();
         actions.setSignupDetails(signupDetails);

@@ -40,6 +40,15 @@ const styles = StyleSheet.create({
     bottom: Platform.OS === 'ios' ? responsiveHeight(-20) : responsiveHeight(-20),
     // position : 'absolute',
   },
+  modelViewSeverity: {
+    backgroundColor: Color.white,
+    borderTopStartRadius: 20,
+    borderTopEndRadius: 20,
+    width: responsiveWidth(101),
+    marginStart: -20,
+    bottom: Platform.OS === 'ios' ? responsiveHeight(-20) : responsiveHeight(-20),
+    // position : 'absolute',
+  },
   modelViewSignificant: {
     backgroundColor: Color.white,
     borderTopStartRadius: 20,
@@ -89,29 +98,28 @@ const styles = StyleSheet.create({
     paddingStart: responsiveWidth(3), paddingEnd: responsiveWidth(3),
     // paddingTop: responsiveHeight(1), paddingBottom: responsiveHeight(1)
   },
-  searchView: { flexDirection: 'row', backgroundColor: Color.mostLightGrey, borderColor: Color.grayBorder, borderWidth: 1, borderRadius: 5, alignItems: 'center', margin: 5 },
-  searchInput: {
-    color:Color.optiontext, fontWeight:CustomFont.fontWeight400, 
-    padding: 0, height: responsiveHeight(5.5), borderRadius: 5, paddingLeft: 7, paddingRight: 7, marginLeft: responsiveWidth(1),
+  searchView: { flexDirection: 'row',  borderColor: Color.createInputBorder, borderWidth: .7, borderRadius: 5, alignItems: 'center',marginTop:responsiveHeight(1.8)},
+  searchInput: { color:Color.optiontext, fontWeight:CustomFont.fontWeight400, 
+    padding: 0, height: responsiveHeight(5.5), borderRadius: 5, paddingLeft: 7, paddingRight: 7,
     marginRight: responsiveWidth(4), fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, flex: 1
   },
   crossSearch: {tintColor:Color.primary, height: responsiveHeight(2), width: responsiveHeight(2), borderRadius: responsiveHeight(1), alignSelf: 'center', marginEnd: 10 },
-  selectedView: { flexDirection: 'row', margin: responsiveWidth(1.6), height: responsiveWidth(10), borderRadius: 5, borderWidth:1, justifyContent: 'center', alignItems: 'center', backgroundColor: Color.genderSelection,borderColor:Color.liveBg  },
+  selectedView: { flexDirection: 'row', margin: responsiveWidth(1.6), borderRadius: 5, borderWidth:.7,  backgroundColor: Color.selectedBgSymptom, borderColor:Color.primary  },
   unSelectView: { flexDirection: 'row', margin: responsiveWidth(1.6), height: responsiveWidth(10), borderRadius: 5, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: Color.borderColor, },
-  txtSelect: { marginLeft: responsiveWidth(3), marginRight: responsiveWidth(1.5), fontSize: CustomFont.font14, color: Color.optiontext,fontWeight:CustomFont.fontWeight500,fontFamily:CustomFont.fontName },
+  txtSelect: { margin: responsiveWidth(3), fontSize: CustomFont.font14, color: Color.optiontext,fontWeight:CustomFont.fontWeight500,fontFamily:CustomFont.fontName },
   txtSelectMed: { marginLeft: responsiveWidth(2.5), marginRight: responsiveWidth(2.5), fontSize: CustomFont.font16, marginLeft: responsiveWidth(4), marginRight: responsiveWidth(4) },
   crossSelected: {
     alignItems: 'center', justifyContent: 'center',
     height: 15, width: 15, borderRadius: 7.5, marginLeft: 5,
-     marginRight: 7
+     marginRight: 7,marginTop:responsiveWidth(3)
   },
   crossSelectedMed: { alignItems: 'center', justifyContent: 'center', marginLeft: 10, },
   unselectView: {
-    flexDirection: 'row', margin: responsiveWidth(1.6), height: responsiveFontSize(5), borderRadius: 5, justifyContent: 'center', alignItems: 'center', borderColor: Color.borderColor, borderWidth: 1
+    flexDirection: 'row', margin: responsiveWidth(1.6), height: responsiveFontSize(5), borderRadius: 5, justifyContent: 'center', alignItems: 'center', borderColor: Color.createInputBorder, borderWidth: .7
   },
   unselectTxtColor: { marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), fontSize: CustomFont.font14, color: Color.optiontext ,fontWeight:CustomFont.fontWeight400, fontFamily:CustomFont.fontName},
-  doaseView: { width: responsiveWidth(13), borderWidth: 1, borderRadius: 5, borderColor: Color.borderColor, height: responsiveWidth(10), color: Color.darkText, fontSize: CustomFont.font13, justifyContent: 'center', alignItems: 'center', marginRight: 10 },
-  doaseViewSelect: {width: responsiveWidth(13), borderWidth: 1, borderRadius: 5, borderColor: Color.liveBg, height: responsiveWidth(10), color: Color.darkText, fontSize: CustomFont.font13, justifyContent: 'center', alignItems: 'center', marginRight: 10,backgroundColor:Color.genderSelection },
+  doaseView: { width: responsiveWidth(13), borderWidth: 1, borderRadius: 5, borderColor: Color.borderColor, height: responsiveWidth(10), color: Color.darkText, fontSize: CustomFont.font12, justifyContent: 'center', alignItems: 'center', marginRight: 10 },
+  doaseViewSelect: {width: responsiveWidth(13), borderWidth: 1, borderRadius: 5, borderColor: Color.liveBg, height: responsiveWidth(10), color: Color.darkText, fontSize: CustomFont.font12, justifyContent: 'center', alignItems: 'center', marginRight: 10,backgroundColor:Color.genderSelection },
   //doaseViewSelect: { width: responsiveWidth(13), borderRadius: 5, height: responsiveWidth(10), fontSize: CustomFont.font13, justifyContent: 'center', alignItems: 'center', marginRight: 10, backgroundColor: Color.primaryBlue },
 
   rowView: {
@@ -388,7 +396,13 @@ card:{
     paddingBottom :responsiveHeight(2), 
     },
   cardHeaderView:{
-    flex:1,margin:responsiveWidth(3)
+    backgroundColor : Color.white, 
+    borderTopLeftRadius : 10,
+    borderTopRightRadius : 10,
+    paddingLeft : responsiveHeight(2),
+    paddingRight : responsiveHeight(2),
+    paddingTop : responsiveHeight(2),
+    paddingBottom : responsiveHeight(2),
     },
   bottomCard : {
   backgroundColor : Color.white, 

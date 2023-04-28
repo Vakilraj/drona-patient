@@ -222,8 +222,8 @@ class FollowUpModal extends React.Component {
 				<TouchableOpacity onPress={() => {
 					selectedDay = Moment(new Date()).format('YYYY-MM-DD');
 					let timeRange = Trace.getTimeRange();
-					Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +"Followup",  signupDetails.firebaseLocation);
-					Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Followup", {'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+					Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +"Followup",  signupDetails.firebaseLocation);
+					Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Followup", {'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
 
 					this.setDataAndCalculate();
 

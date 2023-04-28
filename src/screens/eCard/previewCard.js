@@ -43,7 +43,6 @@ class PreviewCard extends React.Component {
       selectedCards: 0,
       activeSlide: 0,
       dName: '',
-      dCode: '',
       imageSource: '',
       previewCardUrl: '',
       doctorName: '',
@@ -57,16 +56,14 @@ class PreviewCard extends React.Component {
   componentDidMount() {
     let { actions, signupDetails } = this.props;
     let timeRange = Trace.getTimeRange();
-    Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Preview_E_Card',  signupDetails.firebaseLocation)
-    Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Preview_E_Card", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+    Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Preview_E_Card',  signupDetails.firebaseLocation)
+    Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Preview_E_Card", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
     
-    // alert(signupDetails.drProfileImgUrlinAssistantLogin);
-    this.setState({ dCode: signupDetails.shareLinkUrl });
     this.setState({ previewCardUrl: this.props.navigation.state.params.res.cardImage });
     this.setState({ doctorName: this.props.navigation.state.params.res.dName });
     this.setState({ doctorImageUrl: this.props.navigation.state.params.res.doctorImage });
     
-    this.setState({ drImageinAssistant: { uri: signupDetails.drProfileImgUrlinAssistantLogin } });
+    this.setState({ drImageinAssistant: { uri: signupDetails.profileImgUrl } });
 
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => this.props.navigation.goBack());
     setLogEvent("generate_ecard")
@@ -84,7 +81,7 @@ class PreviewCard extends React.Component {
         let options = {
           title: 'Share Title',
           message: 'Hello! For teleconsultation with ' +
-            this.state.doctorName + '  at his virtual clinic, ' + signupDetails.clinicName + ' Click to below link \n\n' + this.state.dCode,
+            this.state.doctorName + '  at his virtual clinic, ' + signupDetails.clinicName + ' Click to below link \n\n' + signupDetails.shareLinkUrl,
           url: urlString,
           type: 'text',
         };
@@ -169,7 +166,6 @@ class PreviewCard extends React.Component {
 	}
   render() {
     let { actions, signupDetails } = this.props;
-    // alert(signupDetails.drProfileImgUrlinAssistantLogin);
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: Color.patientBackground }}>
         <View style={{ paddingLeft: responsiveWidth(4), paddingRight: responsiveWidth(4), height: Platform.OS == 'ios' ? 40 : responsiveHeight(7.5), flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', backgroundColor: Color.white, width: '100%' }}>

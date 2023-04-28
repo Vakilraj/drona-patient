@@ -100,13 +100,11 @@ class PreviewRx extends React.Component {
 
         let { signupDetails } = this.props;
         timeRange = Trace.getTimeRange();
-        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Prescription_Preview', signupDetails.firebaseLocation)
-        Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Prescription_Preview", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Prescription_Preview', signupDetails.firebaseLocation)
+        Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Prescription_Preview", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
 
         //
         from = this.props.navigation.state && this.props.navigation.state.params && this.props.navigation.state.params.from ? this.props.navigation.state.params.from : '';
-        
-        
         if (from == 'normalPrescription') {
             this.getFuncForDrAppToConsulatationBillingPreview();
         } else {
@@ -114,7 +112,6 @@ class PreviewRx extends React.Component {
         }
         consultTypeValue = signupDetails.consultType;
         let filePath = this.props.navigation.state.params.PreviewPdfPath;
-        console.log(from +'   '+filePath);
         if (filePath) {
             if (filePath.includes('/')) {
                 let str = filePath.split('/');
@@ -123,12 +120,11 @@ class PreviewRx extends React.Component {
             } else {
                 this.setState({ resources: { file: filePath } });
             }
-            
+        }
         this.setState({
             filePath: filePath,
         })
-        }
-        //consultId = this.props.navigation.state.params.consultId;
+        consultId = this.props.navigation.state.params.consultId;
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)
     }
 
@@ -167,7 +163,7 @@ class PreviewRx extends React.Component {
                 month = month < 10 ? '0' + month : '' + month
                 year = new Date().getFullYear();
 
-                try {
+
                 clinicInfo = prescriptionDataFullArray.clinicInfo != null ? prescriptionDataFullArray.clinicInfo : []
                 doctorInfo = prescriptionDataFullArray.doctorInfo != null ? prescriptionDataFullArray.doctorInfo : [];
                 patientInfo = prescriptionDataFullArray.patientInfo != null ? prescriptionDataFullArray.patientInfo : [];
@@ -194,8 +190,7 @@ class PreviewRx extends React.Component {
                 noteStr = Language.language.note;
                 followupHead = Language.language.followup;
                 procedureHead = Language.language.procedures;
-                consultId=patientInfo.patientCode;
-                
+                try {
 
                 } catch (error) {
 

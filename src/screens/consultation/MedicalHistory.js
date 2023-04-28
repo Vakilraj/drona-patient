@@ -27,6 +27,7 @@ import cross_select from '../../../assets/cross_pink.png';
 import cross_pink from '../../../assets/cross_pink.png';
 
 import ThreeDotsModal from './ThreeDotsModal';
+import PreviewRxButton from './PreviewRxButton';
 import { setLogEvent } from '../../service/Analytics';
 import Trace from '../../service/Trace'
 let timeRange = '';
@@ -123,8 +124,8 @@ class medicalHistory extends React.Component {
 	componentDidMount() {
 		let { signupDetails } = this.props;
 		timeRange = Trace.getTimeRange();
-        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Medical_History_Screen',  signupDetails.firebaseLocation)
-        Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Medical_History_Screen", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Medical_History_Screen',  signupDetails.firebaseLocation)
+        Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Medical_History_Screen", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
 		appoinmentGuid = this.props.data && this.props.data.pastAppointmentGuid ? this.props.data.pastAppointmentGuid : signupDetails.appoinmentGuid;
 		patientGuid = this.props.item && this.props.item.patientGuid ? this.props.item.patientGuid : signupDetails.patientGuid;
 		appointmentStatus = this.props.item && this.props.item.appointmentStatus ? this.props.item.appointmentStatus : '';
@@ -788,8 +789,8 @@ class medicalHistory extends React.Component {
 							<TouchableOpacity onPress={() => {
 								let {signupDetails} = this.props;
 								timeRange = Trace.getTimeRange();
-								Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Conditions_Popup',  signupDetails.firebaseLocation)
-								Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Conditions_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+								Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Conditions_Popup',  signupDetails.firebaseLocation)
+								Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Conditions_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
 								this.setState({
 									isConditionsModalOpen: true
 								});
@@ -802,8 +803,8 @@ class medicalHistory extends React.Component {
 											<TouchableOpacity onPress={() => {
 												let {signupDetails} = this.props;
 												timeRange = Trace.getTimeRange();
-												Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Conditions_Popup',  signupDetails.firebaseLocation)
-												Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Conditions_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+												Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Conditions_Popup',  signupDetails.firebaseLocation)
+												Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Conditions_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
 												this.setState({
 													isConditionsModalOpen: true
 												});
@@ -821,8 +822,8 @@ class medicalHistory extends React.Component {
 							<TouchableOpacity onPress={() => {
 								let { signupDetails } = this.props;
 								timeRange = Trace.getTimeRange();
-								Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Current_Medication_Popup',  signupDetails.firebaseLocation)
-								Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Current_Medication_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+								Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Current_Medication_Popup',  signupDetails.firebaseLocation)
+								Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Current_Medication_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
 								this.setState({
 									iscurrentMedicationModalOpen: true
 								});
@@ -835,8 +836,8 @@ class medicalHistory extends React.Component {
 											<TouchableOpacity onPress={() => {
 												let { signupDetails } = this.props;
 												timeRange = Trace.getTimeRange();
-												Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Current_Medication_Popup',  signupDetails.firebaseLocation)
-												Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Current_Medication_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+												Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Current_Medication_Popup',  signupDetails.firebaseLocation)
+												Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Current_Medication_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
 												this.setState({
 													iscurrentMedicationModalOpen: true
 												});
@@ -853,8 +854,8 @@ class medicalHistory extends React.Component {
 							<TouchableOpacity onPress={() => {
 								let { signupDetails } = this.props;
 								timeRange = Trace.getTimeRange();
-								Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Allergies_Popup',  signupDetails.firebaseLocation)
-								Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Allergies_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+								Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Allergies_Popup',  signupDetails.firebaseLocation)
+								Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Allergies_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
 								this.setState({
 									isAllergiesModalOpen: true
 								});
@@ -866,8 +867,8 @@ class medicalHistory extends React.Component {
 											<TouchableOpacity onPress={() => {
 												let { signupDetails } = this.props;
 												timeRange = Trace.getTimeRange();
-												Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Allergies_Popup',  signupDetails.firebaseLocation)
-												Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Allergies_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+												Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Allergies_Popup',  signupDetails.firebaseLocation)
+												Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Allergies_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
 												
 												this.setState({
 													isAllergiesModalOpen: true
@@ -914,8 +915,8 @@ class medicalHistory extends React.Component {
 							<TouchableOpacity onPress={() => {
 									let { signupDetails } = this.props;
 									timeRange = Trace.getTimeRange();
-									Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Significant_History_Popup',  signupDetails.firebaseLocation)
-									Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Significant_History_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+									Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Significant_History_Popup',  signupDetails.firebaseLocation)
+									Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Significant_History_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
 								isUpdateGlobalStatusBackup = DRONA.getIsConsultationChange();
 								DRONA.setIsConsultationChange(false)
 								this.setState({ isModalVisibleSignificant: true, })
@@ -960,7 +961,9 @@ class medicalHistory extends React.Component {
 							}} style={{ height: responsiveHeight(6), width: responsiveWidth(78), justifyContent: 'center', alignItems: 'center', marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), backgroundColor: Color.primary, borderRadius: 5, marginTop: 7, marginBottom: 7 }}>
 								<Text style={{ color: Color.white, fontSize: CustomFont.font16 }}>Save</Text>
 							</TouchableOpacity>
-							}
+
+							//<PreviewRxButton nav={{ navigation: this.props.nav.navigation }} showCall={this.props.showCall} />
+						}
 
 
 					</View>
@@ -1233,8 +1236,8 @@ class medicalHistory extends React.Component {
 										//this.getAdditionalInfo();
 										let { signupDetails } = this.props;
 										timeRange = Trace.getTimeRange();
-										Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Family_History_Popup',  signupDetails.firebaseLocation)
-										Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Family_History_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+										Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Family_History_Popup',  signupDetails.firebaseLocation)
+										Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Family_History_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
 										let tmpArr = [...this.state.FamilyHistoryArr];
 										setTimeout(() => {
 											this.setState({ isFamilyDetailsModalOpen: false, isFamilyMemberModalOpen: true, medicineSearchTxt: '', FamilyHistoryArr: tmpArr })
@@ -1245,8 +1248,8 @@ class medicalHistory extends React.Component {
 									<TouchableOpacity style={{ padding: 10 }} onPress={() => {
 										let { signupDetails } = this.props;
 										timeRange = Trace.getTimeRange();
-										Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Family_History_Popup',  signupDetails.firebaseLocation)
-										Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Family_History_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+										Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Family_History_Popup',  signupDetails.firebaseLocation)
+										Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Family_History_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
 										let tmpArr = [...this.state.FamilyHistoryArr];
 										setTimeout(() => {
 											this.setState({ isFamilyDetailsModalOpen: false, isFamilyMemberModalOpen: true, medicineSearchTxt: '', FamilyHistoryArr: tmpArr })

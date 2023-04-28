@@ -352,7 +352,7 @@ class TimeSlotTreatment extends React.Component {
 				"PatientTreatmentDetailsGuid": patientTreatmentDetailsGuid,
 			}
 		}
-		actions.callLogin('V16/FuncForDrAppToPatientBookAppointment_V3', 'post', params, signupDetails.accessToken, 'postConfirmTimeSlot');
+		actions.callLogin('V1/FuncForDrAppToPatientBookAppointment_V3', 'post', params, signupDetails.accessToken, 'postConfirmTimeSlot');
 	}
 	clearPreviousSelection = () => {
 		if (this.state.dataArrayMorning && this.state.dataArrayMorning.length > 0) {

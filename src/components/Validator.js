@@ -52,4 +52,8 @@ static isDecimalYear(mobile) {
   const reg = /^[+-]?([1-9]+\.?[0-9]*|\.[0-9]+)$/;
   return reg.test(mobile);
 }
+static isNumberDotAndHyphan(mobile) {
+  const reg =/^[0-9a-zA-Z./-]*$/;
+  return reg.test(mobile);
+}
 }

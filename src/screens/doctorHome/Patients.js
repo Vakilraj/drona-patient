@@ -46,8 +46,8 @@ class Patients extends React.PureComponent {
 	componentDidMount() {
 		let { actions, signupDetails } = this.props;
         let timeRange = Trace.getTimeRange();
-        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +"Patient_Tab_Time",  signupDetails.firebaseLocation);
-        Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Patient_Tab_Time", {'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +"Patient_Tab_Time",  signupDetails.firebaseLocation);
+        Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Patient_Tab_Time", {'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
 
 		this.getSearchData();
 

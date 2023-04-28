@@ -176,6 +176,7 @@ class WebPagePreview extends React.Component {
 									</TouchableOpacity>
 
 									<TouchableOpacity style={{ height: responsiveHeight(5.8), alignItems: 'center', justifyContent: 'center', borderRadius: 5, backgroundColor: Color.primaryBlue, marginTop: responsiveHeight(1.8) }} onPress={() => {
+										DRONA.setIsReloadApi(true);
 										this.props.navigation.navigate('DoctorHome');
 									}}>
 										<Text style={{ fontFamily: CustomFont.fontName, color: Color.white, fontSize: CustomFont.font16 }}>Continue to Home</Text>

@@ -9,7 +9,7 @@ var init = () => {
   doctorGuid='',clinicGuid='',selectedIndexClinic=0,
   scheduleTypeGuid='', startDate='',endDate='',selectedAppoinDate=''
   customerCareNo='',customerCareEmail='',questionListHeader='',answerDetailsHeader='FAQ',that = null,address='',subscription='',twilioToken='',
-  roomName='',showAppoinmentCompleteMsg=0,isDrTimingsUpdated=true,isAddAppointmentModal=0,isReloadApi=true,isNetConnected=true,isConsultationChange=false,isNeedForTabChane=false;
+  roomName='',showAppoinmentCompleteMsg=0,isDrTimingsUpdated=true,isAddAppointmentModal=0,isReloadApi=true,isNetConnected=true,isConsultationChange=false,isNeedForTabChane=false,isServiceVailable=true;
    
     return {
    
@@ -181,6 +181,15 @@ var init = () => {
       getIsNeedForTabChane: () => {
         return isNeedForTabChane;
       },
+
+      setIsServiceVailable: t => {
+        isServiceVailable = t;
+      },
+      getIsServiceVailable: () => {
+        return isServiceVailable;
+      },
+
+
     };
   })();
 };

@@ -52,4 +52,12 @@ static isDecimalYear(mobile) {
   const reg = /^[+-]?([1-9]+\.?[0-9]*|\.[0-9]+)$/;
   return reg.test(mobile);
 }
+static isCharValidate(mobile) {
+  const reg = /^[A-Za-z]+$/;
+  return reg.test(mobile);
+}
+static isNumberHyphanDotSlashValidate(mobile) {
+  const reg = /^[0-9./-]+$/;
+  return reg.test(mobile);
+}
 }

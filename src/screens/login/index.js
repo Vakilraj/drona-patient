@@ -59,8 +59,8 @@ class Login extends React.Component {
 					await AsyncStorage.setItem('accessToken',CryptoJS.AES.encrypt(newProps.responseData.accessToken, 'MNKU').toString());
 					await AsyncStorage.setItem('userGuid',CryptoJS.AES.encrypt(newProps.responseData.data.userInfo.userGuid, 'MNKU').toString());
 					Snackbar.show({ text: 'Login successful', duration: Snackbar.LENGTH_LONG, backgroundColor: Color.primary });
-					this.props.navigation.navigate('DoctorHome');
-					//this.props.navigation.navigate('ChooseClinic',{from:'login'});
+					//this.props.navigation.navigate('DoctorHome');
+					this.props.navigation.navigate(signupDetails.roleCode==10? 'ChooseClinic':'DoctorHome');
 					setLogin("email")
 				} else {
 					//alert(newProps.responseData.statusMessage)

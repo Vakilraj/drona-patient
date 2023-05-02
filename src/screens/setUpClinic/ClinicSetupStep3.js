@@ -235,7 +235,7 @@ class ClinicSetupStep3 extends React.Component {
 			//objParams.consultationTimeslots=consultationTimeslots;
 			let { actions, signupDetails } = this.props;
 			//console.log(JSON.stringify(params));
-			actions.callLogin('V1/FuncForDrAppToSaveUpdateDoctorConsultationTimings', 'post', objParams, signupDetails.accessToken, 'SaveUpdateDoctorConsultationTimings');
+			actions.callLogin('V15/FuncForDrAppToSaveUpdateDoctorConsultationTimings', 'post', objParams, signupDetails.accessToken, 'SaveUpdateDoctorConsultationTimings');
 			setLogEvent("edit_clinic", { "save": "click", userGuid: signupDetails.UserGuid })
 		}
 	}
@@ -243,7 +243,7 @@ class ClinicSetupStep3 extends React.Component {
 		if (objParamsBackup)
 			objParamsBackup.data.editConsent = true;
 		let { actions, signupDetails } = this.props;
-		actions.callLogin('V1/FuncForDrAppToSaveUpdateDoctorConsultationTimings', 'post', objParamsBackup, signupDetails.accessToken, 'SaveUpdateDoctorConsultationTimings');
+		actions.callLogin('V15/FuncForDrAppToSaveUpdateDoctorConsultationTimings', 'post', objParamsBackup, signupDetails.accessToken, 'SaveUpdateDoctorConsultationTimings');
 	}
 	render() {
 		let { actions, signupDetails } = this.props;

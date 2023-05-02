@@ -175,8 +175,8 @@ class ThreeDotsModal extends React.Component {
 				Snackbar.show({ text: 'Schedule time is not expired yet.', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 			} else {
 				let timeRange = Trace.getTimeRange();
-				Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + "No_Show", signupDetails.firebaseLocation);
-				Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "No_Show", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+				Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + "No_Show", signupDetails.firebaseLocation);
+				Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "No_Show", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
 
 				setLogEvent("consultation", { "no_show": "click", UserGuid: signupDetails.UserGuid })
 				this.setState({ isModalVisible3Dots: false });

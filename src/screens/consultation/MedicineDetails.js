@@ -22,11 +22,11 @@ import Snackbar from 'react-native-snackbar';
 import { setLogEvent } from '../../service/Analytics';
 import Validator from '../../components/Validator';
 let prevIndexTimings = 0, prevIndexDoase = 0, prevIndexDuration = 1, medicineType = '', medicineTypeGuid = '', DurationType = 'days', DurationTypeValue = '5', MedicineDoasesGuId = '', doasestype = '', Dosages = '', TimingTypeGuid = '', dosagePattern = '';
-let doasagesPatterArr = [{ label: '1-0-0', value: '1-0-0', isSelect: true }, { label: '0-1-0', value: '0-1-0', isSelect: false }, { label: '0-0-1', value: '0-0-1', isSelect: false }, { label: '1-1-0', value: '1-1-0', isSelect: false }, { label: '0-1-1', value: '0-1-1', isSelect: false }, { label: '1-0-1', value: '1-0-1', isSelect: false }, { label: '1-1-1', value: '1-1-1', isSelect: false }, { label: '6 Hourly', value: '6 Hourly', isSelect: false }, { label: 'Alternate Day', value: 'Alternate Day', isSelect: false }, { label: 'Weekly', value: 'Weekly', isSelect: false }, { label: 'Monthly', value: 'Monthly', isSelect: false }, { label: 'SOS', value: 'SOS', isSelect: false }, { label: 'Custom dosage', value: 'Custom dosage', isSelect: false }]
+let doasagesPatterArr = [{ label: '1-0-0', value: '1-0-0', isSelect: true }, { label: '0-1-0', value: '0-1-0', isSelect: false }, { label: '0-0-1', value: '0-0-1', isSelect: false }, { label: '1-1-0', value: '1-1-0', isSelect: false }, { label: '0-1-1', value: '0-1-1', isSelect: false }, { label: '1-0-1', value: '1-0-1', isSelect: false }, { label: '1-1-1', value: '1-1-1', isSelect: false }, { label: '6 Hourly', value: '6 Hourly', isSelect: false }, { label: 'Alternate Day', value: 'Alternate Day', isSelect: false }, { label: 'Weekly', value: 'Weekly', isSelect: false }, { label: 'Monthly', value: 'Monthly', isSelect: false }, { label: 'SOS', value: 'SOS', isSelect: false }]
 let clickFlag = 0, isEdit = false, prvLength = -1, InputTxtLengthDosage = 5, InputTxtLengthDuration = 5, InputTxtLengthUnit = 5;
 import Trace from '../../service/Trace'
 import _ from 'lodash';
-let medicineTimingFrequency = 'Empty Stomach';
+let medicineTimingFrequency = '',fullArrayUnit=[];
 
 class MedicineDetails extends React.Component {
 	constructor(props) {
@@ -63,8 +63,10 @@ class MedicineDetails extends React.Component {
 		TimingTypeGuid = '';
 		dosagePattern = '';
 		isEdit = false;
+		medicineTimingFrequency = 'Empty Stomach';
 	}
 	async componentDidMount() {
+		
 		clickFlag = 0;
 		this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
 			this.props.navigation.goBack()
@@ -74,66 +76,20 @@ class MedicineDetails extends React.Component {
 			}
 		});
 		let item = this.props.navigation.state.params.item;
-		console.log('item-------' + JSON.stringify(item))
+		console.log('item----111---' + JSON.stringify(item))
 		medicineTypeGuid = item.medicineTypeGuid;
 		medicineType = item.medicineType;
 
 		if (item.medicineDosasesType && item.medicineDosasesType.length > 0) {
-			// let tempDoaseArr = [];
-			// for (let i = 0; i < item.medicineDosasesType.length; i++) {
-			// 	tempDoaseArr.push({ label: item.medicineDosasesType[i].doasestype, value: item.medicineDosasesType[i].medicineTypeGuid, medicineDoasesGuId: item.medicineDosasesType[i].medicineDoasesGuId })
-			// }
 			medicineTypeGuid = item.medicineDosasesType[0].medicineTypeGuid;
 			MedicineDoasesGuId = item.medicineDosasesType[0].medicineDoasesGuId;
 			doasestype = item.medicineDosasesType[0].doasestype;
-			//this.setState({ DosageTitleArr: tempDoaseArr });
-			// if (doasestype === 'Tablet') {
-			// 	let tmpArr = [{ label: '1/2', value: '1/2', isSelect: false }, { label: '3/4', value: '3/4', isSelect: false }, { label: '1', value: '1', isSelect: true }, { label: '2', value: '2', isSelect: false }];
-			// 	// for (let i = 2; i < 3; i++) {
-			// 	// 	tmpArr.push({ label: i + '', value: i + '', isSelect: false })
-			// 	// }
-			// 	this.setState({ DosageArr: tmpArr, doaseUnit: doasestype })
-			// 	prevIndexDoase = 2;
-			// } else {
-			// 	this.setState({ DosageArr: [{ label: '1', value: '1', isSelect: true }, { label: '2', value: '2', isSelect: false }, { label: '3', value: '3', isSelect: false }, { label: '4', value: '4', isSelect: false }], doaseUnit: doasestype })
-			// }
+			fullArrayUnit=item.medicineDosasesType;
+			console.log('----'+JSON.stringify(fullArrayUnit))
 		}
-		// let medTiming = this.props.navigation.state.params.medTiming;
-		// if (medTiming) {
-		// 	let tempTimingArr = [];
-		// 	prevIndexTimings = 0;
-		// 	for (let i = 0; i < medTiming.length; i++) {
-		// 		// if (i == 0)
-		// 		// 	tempTimingArr.push({ label: medTiming[i].medicineTiming, value: medTiming[i].medicineTimingGuId, isSelect: true })
-		// 		// else
-		// 		if (medTiming[i].medicineTimingGuId == item.timingTypeGuid)
-		// 			prevIndexTimings = i;
-		// 		tempTimingArr.push({ label: medTiming[i].medicineTiming, value: medTiming[i].medicineTimingGuId, isSelect: medTiming[i].medicineTimingGuId == item.timingTypeGuid })
-		// 	}
-		// 	TimingTypeGuid = medTiming[0].medicineTimingGuId
-		// 	if (item.timingTypeGuid) {
-		// 		TimingTypeGuid = item.timingTypeGuid;
-		// 	} else {
-		// 		tempTimingArr[0].isSelect = true;
-		// 	}
-		// 	this.setState({ TimingTitleArr: tempTimingArr, defaultTimingTitle: TimingTypeGuid });
-
-		// }
-
 		//prefilled
 		setTimeout(() => {
 			try {
-				// let index = this.state.DosageArr.findIndex(x => x.value == item.dosages);
-				// if (index > -1) {
-				// 	this.state.DosageArr[prevIndexDoase].isSelect = false;
-				// 	prevIndexDoase = index;
-				// 	this.state.DosageArr[index].isSelect = true;
-				// 	this.setState({ DosageArr: this.state.DosageArr })
-				// } else {
-				// 	if (item.dosages && item.dosages != 0)
-				// 		this.state.DosageArr[prevIndexDoase].isSelect = false;
-				// 	this.setState({ doaseValue: item.dosages ? item.dosages : '', DosageArr: this.state.DosageArr })
-				// }
 
 				Dosages = item.dosages ? item.dosages : 1;
 				DurationType = item.durationType ? item.durationType : 'days';
@@ -155,29 +111,10 @@ class MedicineDetails extends React.Component {
 				let durationRefileedTxt = DurationTypeValue + ' ' + DurationType;
 				InputTxtLengthDuration = durationRefileedTxt.length;
 
-				let unitRefileedTxt = Dosages + ' ' + doasestype;
-				InputTxtLengthUnit = unitRefileedTxt.length;
+				// let unitRefileedTxt = Dosages + ' ' + doasestype;
+				// InputTxtLengthUnit = unitRefileedTxt.length;
 
-				this.setState({ dutaionTxt: durationRefileedTxt, unitTxt: unitRefileedTxt })
-
-				// let indexDuratuion = this.state.DurationArr.findIndex(x => x.value == item.durationValue);
-				// if (indexDuratuion > -1) {
-				// 	this.state.DurationArr[prevIndexDuration].isSelect = false;
-				// 	prevIndexDuration = indexDuratuion;
-				// 	this.state.DurationArr[indexDuratuion].isSelect = true;
-				// 	this.setState({ DurationArr: this.state.DurationArr })
-				// } else {
-				// 	if (item.durationValue && item.durationValue != 0)
-				// 		this.state.DurationArr[prevIndexDuration].isSelect = false;
-				// 	this.setState({ durationValue: item.durationValue ? item.durationValue + '' : '', DurationArr: this.state.DurationArr })
-				// }
-				// if (item.durationValue)
-				// 	DurationTypeValue = item.durationValue;
-				//this.setState({ takingTimeIndex: timings == "Empty Stomach" ? 0 : timings == "Before Food" ? 1 : timings == "After Food" ? 2 : timings == "No Preference" ? 3 : 0 });
-
-				//this.setState({ defaultTimingTitle: TimingTypeGuid })
-
-
+				this.setState({ dutaionTxt: durationRefileedTxt, unitTxt: this.state.UnitDropdownArr[0].doasestype })
 
 			} catch (e) { }
 
@@ -189,8 +126,8 @@ class MedicineDetails extends React.Component {
 		clickFlag = 1;
 		let { signupDetails } = this.props;
 		let timeRange = Trace.getTimeRange();
-		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Medicine_Add', signupDetails.firebaseLocation)
-		Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Medicine_Add", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Medicine_Add', signupDetails.firebaseLocation)
+		Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Medicine_Add", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
 		let item = this.props.navigation.state.params.item;
 		let data = {
 			appointmentGuid: signupDetails.appoinmentGuid,
@@ -217,7 +154,6 @@ class MedicineDetails extends React.Component {
 		const { navigation } = this.props;
 		navigation.goBack();
 		navigation.state.params.Refresh({ isEdit: isEdit, data: data });
-		//actions.callLogin('V1/FuncForDrAppToAddUpdateMedicine', 'post', params, signupDetails.accessToken, 'saveMedicine');
 		setLogEvent("patient_consultation", { "save_medicine": "click", UserGuid: signupDetails.UserGuid })
 
 	}
@@ -249,47 +185,61 @@ class MedicineDetails extends React.Component {
 	}
 
 	SearchFilterFunctionDosage = (text) => {
+		// if (text && text.length > 0) {
+		// 	if (text.indexOf('.') > -1) {
+		// 		Snackbar.show({ text: 'Please select custom dosage from list ', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
+		// 	}
+		// 	let txtWithOutHifen = ''
+		// 	if (text.indexOf('-') > -1) {
+		// 		try {
+		// 			txtWithOutHifen = text.replaceAll('-', '');
+		// 		} catch (error) {
+		// 			txtWithOutHifen = text;
+		// 		}
+		// 	} else {
+		// 		txtWithOutHifen = text;
+		// 	}
+
+		// 	if (Validator.isMobileValidate(txtWithOutHifen)) {
+		// 		if (prvLength > text.length) {
+		// 			this.setState({ dosageSearchTxt: text });
+		// 		} else {
+		// 			let str = txtWithOutHifen;
+		// 			if (str.length > 1) {
+		// 				try {
+		// 					var parts = str.split("");
+		// 					text = parts.join("-");
+		// 				} catch (error) {
+
+		// 				}
+
+		// 			}
+		// 			this.setState({ dosageSearchTxt: text });
+		// 		}
+		// 	}
+		// 	var searchResult = _.filter(doasagesPatterArr, function (item) {
+		// 		return item.label.indexOf(text) > -1;
+		// 	});
+		// 	this.setState({ dosageDropdownArr: searchResult, showStateDosage: true });
+
+		// 	dosagePattern = text;
+		// 	prvLength = text.length;
+		// } else
+		// 	this.setState({ dosageSearchTxt: '', dosageDropdownArr: doasagesPatterArr });
 		if (text && text.length > 0) {
-			if (text.indexOf('.') > -1) {
-				Snackbar.show({ text: 'Please select custom dosage from list ', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-			}
-			let txtWithOutHifen = ''
-			if (text.indexOf('-') > -1) {
-				try {
-					txtWithOutHifen = text.replaceAll('-', '');
-				} catch (error) {
-					txtWithOutHifen = text;
-				}
-			} else {
-				txtWithOutHifen = text;
-			}
+		if (Validator.isNumberHyphanDotSlashValidate(text)) {
+			this.setState({ dosageSearchTxt: text });
+		}
+		var searchResult = _.filter(doasagesPatterArr, function (item) {
+			return item.label.indexOf(text) > -1;
+		});
+		this.setState({ dosageDropdownArr: searchResult, showStateDosage: true });
 
-			if (Validator.isMobileValidate(txtWithOutHifen)) {
-				if (prvLength > text.length) {
-					this.setState({ dosageSearchTxt: text });
-				} else {
-					let str = txtWithOutHifen;
-					if (str.length > 1) {
-						try {
-							var parts = str.split("");
-							text = parts.join("-");
-						} catch (error) {
-
-						}
-
-					}
-					this.setState({ dosageSearchTxt: text });
-				}
-			}
-			var searchResult = _.filter(doasagesPatterArr, function (item) {
-				return item.label.indexOf(text) > -1;
-			});
-			this.setState({ dosageDropdownArr: searchResult, showStateDosage: true });
-
-			dosagePattern = text;
-			prvLength = text.length;
-		} else
-			this.setState({ dosageSearchTxt: '', dosageDropdownArr: doasagesPatterArr });
+		dosagePattern = text;
+		prvLength = text.length;
+	} else
+		this.setState({ dosageSearchTxt: '', dosageDropdownArr: doasagesPatterArr });
+			
 	}
 	DoseValidation = (text) => {
 		if (text) {
@@ -348,11 +298,25 @@ class MedicineDetails extends React.Component {
 	}
 
 	handleUnitData = (text) => {
-		if (text && Validator.isMobileValidate(text)) {
-			Dosages = text;
-			this.setState({ unitTxt: text, showUnitDropDown: true });
-		} else
-			this.setState({ unitTxt: text, showUnitDropDown: false });
+		if(text && Validator.isMobileValidate(text)){
+			var searchResult = _.filter(fullArrayUnit, function (item) {
+				return item.doasestype.toLowerCase().indexOf(text.toLowerCase()) > -1;
+			});
+			this.setState({
+				UnitDropdownArr: searchResult
+			});
+		}else{
+			this.setState({
+				UnitDropdownArr: fullArrayUnit
+			});
+		}
+		
+		this.setState({ unitTxt: text, showUnitDropDown: true });
+		// if (text && Validator.isMobileValidate(text)) {
+		// 	Dosages = text;
+		// 	this.setState({ unitTxt: text, showUnitDropDown: true });
+		// } else
+		// 	this.setState({ unitTxt: text, showUnitDropDown: false });
 
 	}
 
@@ -361,9 +325,9 @@ class MedicineDetails extends React.Component {
 		medicineType = item.doasestype;
 		medicineTypeGuid = item.medicineTypeGuid;
 		MedicineDoasesGuId = item.medicineDoasesGuId;
-		let str = this.state.unitTxt + ' ' + doasestype;
-		InputTxtLengthUnit = str.length;
-		this.setState({ unitTxt: str, showUnitDropDown: false })
+		// let str = this.state.unitTxt + ' ' + doasestype;
+		// InputTxtLengthUnit = str.length;
+		this.setState({ unitTxt: item.doasestype, showUnitDropDown: false })
 	}
 
 	render() {
@@ -397,7 +361,7 @@ class MedicineDetails extends React.Component {
 							<TextInput onBlur={this.callIsBlurUnit} onFocus={this.callIsFucusedUnit} keyboardType={'phone-pad'} style={[styles.createInputStyle, { borderColor: this.state.InpborderColorUnit }]} placeholder={'Enter Unit'} placeholderTextColor={Color.placeHolderColor} value={this.state.unitTxt} maxLength={InputTxtLengthUnit}
 								onChangeText={(text) => this.handleUnitData(text)} ref='search' returnKeyType='done' />
 
-							{this.state.unitTxt && this.state.showUnitDropDown ?
+							{this.state.showUnitDropDown && this.state.UnitDropdownArr && this.state.UnitDropdownArr.length>0?
 								<View style={{
 									borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,
 									borderBottomColor: Color.createInputBorder, borderTopColor: Color.white, marginTop: responsiveHeight(-.8)
@@ -405,7 +369,7 @@ class MedicineDetails extends React.Component {
 									data={this.state.UnitDropdownArr}
 									renderItem={({ item, index }) => (
 										<TouchableOpacity style={{ zIndex: 999, height: responsiveHeight(7), justifyContent: 'flex-start', }} onPress={() => this.clickOnUnit(item)}>
-											<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }} >{this.state.unitTxt} {this.state.unitTxt == 1 ? item.doasestype : item.doasestype}</Text>
+											<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }} >{item.doasestype}</Text>
 										</TouchableOpacity>
 									)}
 									keyExtractor={(item, index) => index.toString()}
@@ -416,10 +380,10 @@ class MedicineDetails extends React.Component {
 
 							<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>Dosage </Text>
 							<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-								<TextInput onBlur={this.callIsBlur2} onFocus={this.callIsFucused2} keyboardType={'phone-pad'} style={[styles.createInputStyle, { flex: 1, borderColor: this.state.InpborderColor2 }]} placeholder="Enter dosages" placeholderTextColor={Color.placeHolderColor} value={this.state.dosageSearchTxt} onChangeText={(dosageSearchTxt) => { return this.state.CustomInput ? this.DoseValidation(dosageSearchTxt) : this.SearchFilterFunctionDosage(dosageSearchTxt); }} maxLength={this.state.CustomInput ? 14 : InputTxtLengthDosage} ref='search' returnKeyType='done' />
-								{this.state.CustomInput ? <TouchableOpacity style={{ height: responsiveHeight(6), width: responsiveWidth(15), justifyContent: 'center', alignItems: 'center', marginLeft: 10, borderWidth: 1, borderColor: this.state.InpborderColor2, marginTop: responsiveHeight(1.8), borderRadius: 6 }} onPress={() => this.setState({ dosageSearchTxt: '', CustomInput: !this.state.CustomInput, showStateDosage: true })}>
+								<TextInput onBlur={this.callIsBlur2} onFocus={this.callIsFucused2} keyboardType={'phone-pad'} style={[styles.createInputStyle, { flex: 1, borderColor: this.state.InpborderColor2 }]} placeholder="Enter dosages" placeholderTextColor={Color.placeHolderColor} value={this.state.dosageSearchTxt} onChangeText={(dosageSearchTxt) => { this.SearchFilterFunctionDosage(dosageSearchTxt) }} maxLength={15} ref='search' returnKeyType='done' />
+								{/* {this.state.CustomInput ? <TouchableOpacity style={{ height: responsiveHeight(6), width: responsiveWidth(15), justifyContent: 'center', alignItems: 'center', marginLeft: 10, borderWidth: 1, borderColor: this.state.InpborderColor2, marginTop: responsiveHeight(1.8), borderRadius: 6 }} onPress={() => this.setState({ dosageSearchTxt: '', CustomInput: !this.state.CustomInput, showStateDosage: true })}>
 									<Image source={downarrow} style={{ height: responsiveFontSize(2.5), width: responsiveFontSize(2.5), resizeMode: 'contain' }} />
-								</TouchableOpacity> : null}
+								</TouchableOpacity> : null} */}
 
 							</View>
 
@@ -441,7 +405,7 @@ class MedicineDetails extends React.Component {
 									</View> : null}
 							</View>
 							{/* ------- When to Take------- */}
-							<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>When To Take</Text>
+							<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>When </Text>
 							<DropDownPicker zIndex={10}
 								items={this.state.whenToTakeArr}
 								containerStyle={{ borderRadius: responsiveWidth(2), height: responsiveHeight(6), marginTop: responsiveHeight(1.6) }}
@@ -454,7 +418,7 @@ class MedicineDetails extends React.Component {
 								medicineTimingFrequency = item.value;
 								}}
 								globalTextStyle={{ color: Color.fontColor, fontSize: CustomFont.font16 }}
-								placeholder="Empty Stomach"
+								placeholder={medicineTimingFrequency}
 								placeholderStyle={{ color: Color.placeHolderColor, fontSize: CustomFont.font16 }}
 							/>
 							{/* ------- Duration------- */}

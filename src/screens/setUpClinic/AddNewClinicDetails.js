@@ -165,7 +165,7 @@ class AddNewClinicDetails extends React.Component {
 			let params = {
 				"UserGuid": signupDetails.UserGuid,
 				"DoctorGuid": signupDetails.doctorGuid,
-				"ClinicGuid": signupDetails.clinicGuid,//DRONA.getClinicGuid()
+				"ClinicGuid": DRONA.getClinicGuid(),//signupDetails.clinicGuid DRONA.getClinicGuid()
 				"Data": null
 			}
 			actions.callLogin('V1/FuncForDrAppToGetClinicDetails', 'post', params, signupDetails.accessToken, 'GetClinicDetails');
@@ -276,7 +276,7 @@ class AddNewClinicDetails extends React.Component {
 			"DoctorGuid": signupDetails.doctorGuid,
 			"data": {
 				"clinicId": 0,
-				"clinicGuid": this.props.navigation.state.params.from == 'edit' ? signupDetails.clinicGuid : null,//DRONA.getClinicGuid()
+				"clinicGuid": this.props.navigation.state.params.from == 'edit' ? DRONA.getClinicGuid() : null,//DRONA.getClinicGuid() signupDetails.clinicGuid
 				"clinicName": this.state.clinicName.trim(),
 				"clinicImageUrl": "",
 				"primaryNumber": signupDetails.mobile,

@@ -1,7 +1,7 @@
 import React from 'react';
 import {
 	SafeAreaView, View,
-	Text, Image, TextInput, TouchableOpacity, FlatList, StatusBar, Platform, BackHandler,
+	Text, Image, TextInput, TouchableOpacity, FlatList, StatusBar, Alert, BackHandler,
 } from 'react-native';
 import styles from './style';
 import CustomFont from '../../components/CustomFont';
@@ -19,10 +19,11 @@ import Snackbar from 'react-native-snackbar';
 import app_icon from '../../../assets/app_icon.png';
 import home_bg from '../../../assets/home_bg.png';
 import clinic_image from '../../../assets/clinic_image.png';
-import arrow_right_clinic from '../../../assets/arrow_right_clinic.png';
+import delete_red from '../../../assets/delete_red.png';
 import edit_primary from '../../../assets/edit_primary.png';
 import inclinic_consult from '../../../assets/inclinic_consult.png';
 import { NavigationEvents } from 'react-navigation';
+let delIndex=0;
 import AsyncStorage from 'react-native-encrypted-storage';
 class ChooseClinicBeforeEdit extends React.Component {
 
@@ -67,6 +68,25 @@ class ChooseClinicBeforeEdit extends React.Component {
 					
 						this.setState({ dataArray: tmpArr });
 				}
+			}else if(tagname=='deleteClinic'){
+				if (newProps.responseData.statusCode == 0) {
+				let tempArr=[...this.state.dataArray];
+				tempArr.splice(delIndex,1)
+				this.setState({dataArray:tempArr});
+				}
+				if(delIndex=DRONA.getSelectedIndexClinic()){
+					let tempArr = DRONA.getClinicList();
+
+        let { actions, signupDetails } = this.props;
+        signupDetails.clinicName = tempArr[0].clinicName;
+        signupDetails.clinicGuid = tempArr[0].clinicGuid;
+        actions.setSignupDetails(signupDetails);
+        DRONA.setSelectedIndexClinic(0);
+			AsyncStorage.setItem('clinicGuid', item.clinicGuid);
+				}
+				setTimeout(()=>{
+					Snackbar.show({ text: newProps.responseData.statusMessage, duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
+				},1000)
 			}
 		}
 
@@ -111,13 +131,46 @@ class ChooseClinicBeforeEdit extends React.Component {
 				<Text style={{ fontFamily: CustomFont.fontName, fontWeight: 'normal', fontSize: CustomFont.font12, color: Color.textItem, marginTop: responsiveHeight(1), }}>{item.clinicAddress}</Text>
 				<Text style={{ fontFamily: CustomFont.fontName, fontWeight: 'normal', fontSize: CustomFont.font12, color: Color.textItem, marginTop: responsiveHeight(1), marginBottom: responsiveHeight(1.6) }}>Clinic No. : {item.clinicNumber}</Text>
 			</View>
+			<View style={{ flex: 1.5, }}>
 			<View style={{ flex:1.5, alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }}>
 						<Image source={edit_primary} style={{ height: responsiveFontSize(1.8), width: responsiveFontSize(1.8), resizeMode: 'contain', marginRight: responsiveWidth(1) }} />
 						<Text style={{ fontFamily: CustomFont.fontName, fontWeight: 'bold', fontSize: CustomFont.font14, color: Color.primary, marginRight: responsiveWidth(3) }}>Edit</Text>	
 			</View>
+			{this.state.dataArray && this.state.dataArray.length>1? <TouchableOpacity style={{ flex:1.5, alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }} onPress={()=>this.deleteClinic(item,index)}>
+						<Image source={delete_red} style={{ height: responsiveFontSize(2), width: responsiveFontSize(2), resizeMode: 'contain', margin: responsiveWidth(1),tintColor:Color.primary }} />
+			</TouchableOpacity> :null}
+			
+			</View>
+			
 		</TouchableOpacity>
 
 	);
+	deleteClinic=(item,index)=>{
+		Alert.alert(
+            "Delete Message",
+            "Are you sure want to delete?",
+            [
+                {
+                    text: "Cancel",
+                    onPress: () => console.log(""),
+                    style: "cancel"
+                },
+                { text: "OK", onPress: () =>{
+					delIndex=index;
+					let { actions, signupDetails } = this.props;
+        let params = {
+            "DoctorGuid": signupDetails.doctorGuid,
+            "ClinicGuid": item.clinicGuid,
+            "UserGuid": signupDetails.UserGuid,
+            "Data": null
+        }
+        actions.callLogin('V15/FuncForDrAppToDeleteClinic', 'post', params, signupDetails.accessToken, 'deleteClinic');
+        
+				} }
+            ]
+        );
+		
+	}
 	render() {
 		let { signupDetails } = this.props;
 		return (
@@ -134,7 +187,7 @@ class ChooseClinicBeforeEdit extends React.Component {
 						<Text style={{ fontFamily: CustomFont.fontName, fontWeight: 'bold', fontSize: CustomFont.font14, color: Color.primary, }}>Add New Clinic</Text>
 					</TouchableOpacity>}
 					
-					{this.state.dataArray && this.state.dataArray.length>0 ? <FlatList
+					{this.state.dataArray && this.state.dataArray.length>0 && !signupDetails.isAssistantUser ? <FlatList
 							data={this.state.dataArray}
 							renderItem={this.renderList}
 							extraData={this.state}

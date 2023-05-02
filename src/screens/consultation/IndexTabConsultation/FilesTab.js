@@ -72,8 +72,8 @@ class CN extends React.Component {
 		// this.getAppointmentPatientDetailApi(item);
 		// let { actions, signupDetails } = this.props;
 		// let timeRange = Trace.getTimeRange();
-		// Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + "Consult_Now_Page_Time", signupDetails.firebaseLocation);
-		// Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Consult_Now_Page_Time", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+		// Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + "Consult_Now_Page_Time", signupDetails.firebaseLocation);
+		// Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Consult_Now_Page_Time", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
 		// //ifClickOnEdit = false;
 		// this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
 		// 	this.props.navigation.goBack();
@@ -257,15 +257,6 @@ class CN extends React.Component {
 
 					let data = newProps.responseData.data.patientDetail;
 					this.setState({ data: data });
-					// let { actions, signupDetails } = this.props;
-					// signupDetails.appoinmentGuid = data.appointmentGuid;
-					// signupDetails.doctorType = data.doctorSpeciality;
-					// actions.setSignupDetails(signupDetails);
-					// if (!data.appointmentGuid) {
-					// 	this.setState({ visibleForAppoinmented: false })
-					// }
-
-
 
 				} else {
 					Snackbar.show({ text: newProps.responseData.statusMessage, duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });

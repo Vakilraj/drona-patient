@@ -100,8 +100,8 @@ class PreviewRx extends React.Component {
 
         let { signupDetails } = this.props;
         timeRange = Trace.getTimeRange();
-        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Prescription_Preview', signupDetails.firebaseLocation)
-        Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Prescription_Preview", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Prescription_Preview', signupDetails.firebaseLocation)
+        Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Prescription_Preview", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
 
         //
         from = this.props.navigation.state && this.props.navigation.state.params && this.props.navigation.state.params.from ? this.props.navigation.state.params.from : '';
@@ -568,20 +568,6 @@ class PreviewRx extends React.Component {
                             />
                         </View>
                     </View>}
-
-
-
-                    {/* <View style={{ backgroundColor: Color.patientBackground, flex: 1 }}>
-                        <View style={{ flex: 1 }}>
-                            <PDFView
-                                fadeInDuration={250.0}
-                                style={{ flex: 1, margin: 15 }}
-                                resource={Platform.OS === 'android' ? this.state.filePath : this.state.resources[resourceType]}
-                                resourceType={resourceType}
-                            />
-                        </View>
-                    </View> */}
-
 
 
                     <View style={{ flexDirection: 'row', padding: 10, backgroundColor: Color.white, borderTopLeftRadius: 10, borderTopRightRadius: 10 }}>

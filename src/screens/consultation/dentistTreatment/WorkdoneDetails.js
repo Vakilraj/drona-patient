@@ -32,8 +32,8 @@ class Dentist extends React.Component {
     componentDidMount() {
         let { signupDetails } = this.props;
 		let timeRange = Trace.getTimeRange();
-		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Add_Treatment_Details',  signupDetails.firebaseLocation)
-		Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Add_Treatment_Details", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Add_Treatment_Details',  signupDetails.firebaseLocation)
+		Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Add_Treatment_Details", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
         item = {};
         item = this.props.navigation.state.params.item;
         this.setState({ treatmentDateAndTime :item.appointmentDate + ', ' + item.appointmentTime})

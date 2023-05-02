@@ -158,8 +158,8 @@ class PastEncountersDetail extends React.Component {
   repeatVisit = () => {
     let { actions, signupDetails } = this.props;
     timeRange = Trace.getTimeRange();
-    Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Duplicate_rx',  signupDetails.firebaseLocation)
-    Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Duplicate_rx", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+    Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Duplicate_rx',  signupDetails.firebaseLocation)
+    Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Duplicate_rx", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
     let params = {
       "userGuid": signupDetails.UserGuid, "DoctorGuid": signupDetails.doctorGuid
       , "ClinicGuid": signupDetails.clinicGuid,

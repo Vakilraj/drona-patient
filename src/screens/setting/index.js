@@ -538,8 +538,8 @@ class Setting extends React.Component {
 					onPress={() => {
 						let { signupDetails } = this.props;
 						let timeRange = Trace.getTimeRange();
-		                Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality,signupDetails.firebaseUserType +'Choose_Prescription_Language', signupDetails.firebaseLocation );
-				        Trace.setLogEventWithTrace( signupDetails.firebaseUserType + "Choose_Prescription_Language", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+		                Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality,signupDetails.firebaseUserType +'Choose_Prescription_Language', signupDetails.firebaseLocation );
+				        Trace.setLogEventWithTrace( signupDetails.firebaseUserType + "Choose_Prescription_Language", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
 						this.setState({ isLanguage: true }) }}>
 					<View style={styles.viewContainer}>
 						<View style={styles.imageContainer}>
@@ -630,8 +630,8 @@ class Setting extends React.Component {
 
 								<TouchableOpacity style={{ marginTop: responsiveHeight(2) }} onPress={() =>{
 									let timeRange = Trace.getTimeRange();
-									Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +"Change_Password",  signupDetails.firebaseLocation);
-									Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Change_Password", {'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+									Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +"Change_Password",  signupDetails.firebaseLocation);
+									Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Change_Password", {'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
 									this.setState({ isChangePasswordModal: true })
 								} } >
 									<Text style={[styles.profileTxt, { color: Color.primary }]}>Change Password</Text>

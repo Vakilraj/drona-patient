@@ -830,31 +830,12 @@ class PreviewRxButton extends React.Component {
 				let data = newProps.responseData.data
 				let billingDetailsFullArray = data.billingDetails;
 				let prescriptionDataFullArray = data.prescriptionData;
-				// if (billingDetailsFullArray == null) {
-				// 	this.setState({
-				// 		successPdfGeneration: true,
-				// 		successPdfGenerationMsg: 'Due to billing data not added. Preview can not be generated.'
-				// 	});
-				// }
-				// else if (billingDetailsFullArray.billingStatus == 'Due') {
-				// 	this.setState({
-				// 		successPdfGeneration: true,
-				// 		successPdfGenerationMsg: 'Record payment is not done'
-				// 	});
-				// }
-				// else if (billingDetailsFullArray.billingStatus == 'Canceled') {
-				// 	this.setState({
-				// 		successPdfGeneration: true,
-				// 		successPdfGenerationMsg: 'Please create bill first'
-				// 	});
-				// }
-				// else {
+				
 				this.setState({
 					prescriptionDataFullArray: prescriptionDataFullArray,
 					billingDetailsFullArray: billingDetailsFullArray
 				})
-				this.createPDF(prescriptionDataFullArray, billingDetailsFullArray)
-				//}
+				this.createPDF(prescriptionDataFullArray, billingDetailsFullArray);
 			}
 		}
 	}

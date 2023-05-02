@@ -69,8 +69,12 @@ class ClinicSetupStep1 extends React.Component {
 			}
 		}
 		actions.callLogin('V1/FuncForDrAppToGetCityList', 'post', params, signupDetails.accessToken, 'cityListForClinic');
+		console.log('++++++++'+from)
 		if(from=='add'){
 			clinicGuid=null;
+			slectedCity=null;
+			base64=null;
+			this.setState({clinicName:'',assistantNumber:'',cityName:''});
 		}else{
 			actions.callLogin('V1/FuncForDrAppToGetClinicDetailsStep1', 'post', params, signupDetails.accessToken, 'GetClinicAccessMasterStep1');
 		}
@@ -106,6 +110,7 @@ class ClinicSetupStep1 extends React.Component {
 					actions.setSignupDetails(signupDetails);
 					DRONA.setClinicGuid(newProps.responseData.data.clinicGuid);
 					clinicGuid=newProps.responseData.data.clinicGuid; // if user back and save again
+					this.props.navigation.pop(); //for remove endless loop issue
 					this.props.navigation.navigate('ClinicSetupStep2', { from: 'first' }); //from=='add' ? 'add':
 				} else {
 					setTimeout(() => {
@@ -300,7 +305,7 @@ class ClinicSetupStep1 extends React.Component {
 				<StatusBar backgroundColor={Color.statusBarNewColor} barStyle="dark-content" />
 				<TouchableOpacity style={{ flexDirection: 'row', backgroundColor: Color.white, alignItems: 'center', zIndex: 999, }} onPress={() =>{
 					if(from=='add')
-						this.props.navigation.goBack();
+					this.props.navigation.navigate('ChooseClinicBeforeEdit');
 					} }>
 						{from=='add' ? 
 				<Image source={arrowBack} style={{ height: responsiveWidth(4), width: responsiveWidth(5), tintColor: Color.primary,marginTop:20,marginLeft:10 }} />:null}
@@ -451,6 +456,7 @@ class ClinicSetupStep1 extends React.Component {
 				</View>
 				<View style={{ marginLeft: responsiveWidth(-1), borderTopLeftRadius: 10, borderTopRightRadius: 10, position: 'absolute', bottom: -5, alignItems: 'center', justifyContent: 'center', width: responsiveWidth(101), backgroundColor: Color.white }}>
 					<TouchableOpacity style={{ width: responsiveWidth(93), alignItems: 'center', justifyContent: 'center', borderRadius: 4, height: responsiveHeight(5.5), backgroundColor: Color.primary, marginBottom: responsiveHeight(4), marginTop: responsiveHeight(2) }} onPress={() => {
+						//this.props.navigation.goBack()
 						this.gotoNext();
 					}}>
 						<Text style={{ fontFamily: CustomFont.fontName, color: Color.white, fontSize: CustomFont.font16, textAlign: 'center' }}>Save & Continue</Text>

@@ -21,7 +21,7 @@ import DeviceInfo from 'react-native-device-info';
 let drawerArray = [
   {
     name: 'Edit Clinic',
-    route: 'SetUpClinic',//ChooseClinicBeforeEdit SetUpClinic
+    route: 'ChooseClinicBeforeEdit',//ChooseClinicBeforeEdit SetUpClinic
     icon: require('../../../assets/Edit_Clinic_blue.png'),
   },
   {
@@ -172,9 +172,8 @@ class DrawerContainer extends React.Component {
           <View style={{ flex: 1.3, alignItems: 'center', }}>
             <View style={{ marginTop: 5, height: responsiveFontSize(5), width: responsiveFontSize(5), borderRadius: responsiveFontSize(2.5), backgroundColor: '#ededed', justifyContent: 'center', alignItems: 'center' }}>
               {
-                signupDetails.profileImgUrl ? <Image source={{ uri: signupDetails.profileImgUrl }} style={{ height: responsiveFontSize(5), width: responsiveFontSize(5), borderRadius: responsiveFontSize(2.5) }} /> :
-                  // <Image source={profile} style={{ height: responsiveFontSize(6), width: responsiveFontSize(6), borderRadius: responsiveFontSize(3) }} />
-                  <Text style={{ textTransform: 'uppercase', fontSize: CustomFont.font20, color: Color.fontColor, textAlign: 'center' }}>{signupDetails.isAssistantUser ? this.makeShortName(signupDetails.assistantName) : this.makeShortName(signupDetails.fullName)}</Text>
+                signupDetails.roleCode ==10 && signupDetails.profileImgUrl ? <Image source={{ uri: signupDetails.profileImgUrl }} style={{ height: responsiveFontSize(5), width: responsiveFontSize(5), borderRadius: responsiveFontSize(2.5) }} /> :
+                  <Text style={{ textTransform: 'uppercase', fontSize: CustomFont.font20, color: Color.fontColor, textAlign: 'center' }}>{signupDetails.isAssistantUser ? this.makeShortName(signupDetails.userName) : this.makeShortName(signupDetails.doctorFullName)}</Text>
                   
               }
             </View>
@@ -187,7 +186,7 @@ class DrawerContainer extends React.Component {
                 this.props.navigation.navigate('Profile')
               }
             }}>
-              <Text style={styles.drNameTxt}>{!signupDetails.isAssistantUser ? 'Dr. ' : ''}{signupDetails.isAssistantUser ? signupDetails.assistantName : signupDetails.fullName}</Text>
+              <Text style={styles.drNameTxt}>{!signupDetails.isAssistantUser ? 'Dr. ' : ''}{signupDetails.isAssistantUser ? signupDetails.userName : signupDetails.doctorFullName}</Text>
               <Text style={styles.splTxt}>{signupDetails.isAssistantUser ? 'Staff' : signupDetails.drSpeciality}</Text>
             </TouchableOpacity>
           </View>

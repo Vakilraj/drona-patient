@@ -97,8 +97,8 @@ class vaccinationHistory extends React.Component {
         
         let { signupDetails } = this.props;
         let timeRange = Trace.getTimeRange();
-        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Vaccination_List',  signupDetails.firebaseLocation)
-        Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Vaccination_List", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Vaccination_List',  signupDetails.firebaseLocation)
+        Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Vaccination_List", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
             const { navigation } = this.props;
             navigation.goBack();
@@ -152,7 +152,7 @@ class vaccinationHistory extends React.Component {
     removeImage = (item, index) => {
         Alert.alert(
             "Delete Message",
-            "Are you sure to delete?",
+            "Are you sure want to delete?",
             [
                 {
                     text: "Cancel",
@@ -398,8 +398,8 @@ class vaccinationHistory extends React.Component {
     clickOnEdit = (item, section) => {
         let { signupDetails } = this.props;
         let timeRange = Trace.getTimeRange();
-        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +"Add_And_Edit_Vaccination",  signupDetails.firebaseLocation);
-        Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Add_And_Edit_Vaccination", {'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +"Add_And_Edit_Vaccination",  signupDetails.firebaseLocation);
+        Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Add_And_Edit_Vaccination", {'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
 
         //alert(item.attachmentList.length)
         this.setState({ groupType: section.ageGroup })
@@ -916,8 +916,8 @@ class vaccinationHistory extends React.Component {
     addNewVaccine = (section) => {
         let { signupDetails } = this.props;
         let timeRange = Trace.getTimeRange();
-        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +"Add_And_Edit_Vaccination",  signupDetails.firebaseLocation);
-        Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Add_And_Edit_Vaccination", {'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
+        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +"Add_And_Edit_Vaccination",  signupDetails.firebaseLocation);
+        Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Add_And_Edit_Vaccination", {'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
 
         this.setState({ groupType: section.ageGroup })
         this.setState({ groupTypeGuid: section.ageGroupGuId })

@@ -2146,8 +2146,11 @@ class Consultation extends React.Component {
 	}
 	getSelectedMMedicineTxt = (item) => {
 		let tempStr = '';
+		if(item.unitTxt)
+		tempStr = item.unitTxt + ', ';
+
 		if (item.dosages)
-			tempStr = item.dosages + ' ' + item.medicineType;
+			tempStr += item.dosages + ' ' + item.medicineType;
 
 		if (item.dosagePattern)
 			tempStr += tempStr ? ', ' + item.dosagePattern : item.dosagePattern;
@@ -2810,13 +2813,14 @@ class Consultation extends React.Component {
 										{this.state.SelectedMedicineArr && this.state.SelectedMedicineArr.length > 0 ? this.state.SelectedMedicineArr.map((item, index) => {
 											return (<View style={styles.selectedView} >
 												<TouchableOpacity onPress={() => {
+                                                    let medicineUnitVal = [...this.state.MedicineArr];
 													let { signupDetails } = this.props;
 													setLogEvent("medicine", { "select_medicine": "click", UserGuid: signupDetails.UserGuid })
 													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Select_Medicine", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
 													this.setState({ isMedicineModalOpen: false })
 													medicineIndex = index;
 													medicineAddUpdateFlag = 'update';
-													this.props.nav.navigation.navigate('MedicineDetails', { item: item, medTiming: medTiming, Refresh: this.RefreshData });
+													this.props.nav.navigation.navigate('MedicineDetails', { medicineUnitVal: medicineUnitVal, item: item,  medTiming: medTiming, Refresh: this.RefreshData });
 												}} style={{maxWidth:responsiveWidth(82) }}>
 													<Text style={styles.txtSelect}>{this.getSelectedMMedicineTxt(item)}</Text>
 												</TouchableOpacity>

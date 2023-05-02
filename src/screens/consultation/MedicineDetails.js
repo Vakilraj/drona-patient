@@ -23,11 +23,13 @@ import { setLogEvent } from '../../service/Analytics';
 import Validator from '../../components/Validator';
 let prevIndexTimings = 0, prevIndexDoase = 0, prevIndexDuration = 1, medicineType = '', medicineTypeGuid = '', DurationType = 'days', DurationTypeValue = '5', MedicineDoasesGuId = '', doasestype = '', Dosages = '', TimingTypeGuid = '', dosagePattern = '';
 let doasagesPatterArr = [{ label: '1-0-0', value: '1-0-0', isSelect: true }, { label: '0-1-0', value: '0-1-0', isSelect: false }, { label: '0-0-1', value: '0-0-1', isSelect: false }, { label: '1-1-0', value: '1-1-0', isSelect: false }, { label: '0-1-1', value: '0-1-1', isSelect: false }, { label: '1-0-1', value: '1-0-1', isSelect: false }, { label: '1-1-1', value: '1-1-1', isSelect: false }, { label: '6 Hourly', value: '6 Hourly', isSelect: false }, { label: 'Alternate Day', value: 'Alternate Day', isSelect: false }, { label: 'Weekly', value: 'Weekly', isSelect: false }, { label: 'Monthly', value: 'Monthly', isSelect: false }, { label: 'SOS', value: 'SOS', isSelect: false }, { label: 'Custom dosage', value: 'Custom dosage', isSelect: false }]
-let clickFlag = 0, isEdit = false, prvLength = -1, InputTxtLengthDosage = 5, InputTxtLengthDuration = 5, InputTxtLengthUnit = 5;
+let clickFlag = 0, isEdit = false, prvLength = -1, InputTxtLengthDosage = 15, InputTxtLengthDuration = 5, InputTxtLengthUnit = 5;
 import Trace from '../../service/Trace'
 import _ from 'lodash';
 let medicineTimingFrequency = '';
-
+let medicineDosasesType;
+let medicineDosasesTypeArr = [];
+let unitTxt = '';
 class MedicineDetails extends React.Component {
 	constructor(props) {
 		super(props);
@@ -44,9 +46,10 @@ class MedicineDetails extends React.Component {
 			showDurationDropDown: false,
 			showUnitDropDown: false,
 			dutaionTxt: '',
-			unitTxt: '',
+			// unitTxt: '',
 			DurationDropdownArr: [],
-			UnitDropdownArr: props.navigation.state.params.item.medicineDosasesType,
+			// UnitDropdownArr: props.navigation.state.params.item.medicineDosasesType,
+			// UnitDropdownArr: medicineDosasesTypeArr,
 
 
 
@@ -64,6 +67,8 @@ class MedicineDetails extends React.Component {
 		dosagePattern = '';
 		isEdit = false;
 		medicineTimingFrequency = 'Empty Stomach';
+		unitTxt = props.navigation.state.params.item?.unitTxt ? props.navigation.state.params.item?.unitTxt : 'Unit';
+
 	}
 	async componentDidMount() {
 		clickFlag = 0;
@@ -78,6 +83,30 @@ class MedicineDetails extends React.Component {
 		console.log('item----111---' + JSON.stringify(item))
 		medicineTypeGuid = item.medicineTypeGuid;
 		medicineType = item.medicineType;
+		let medicineUnitVal = this.props.navigation.state.params.medicineUnitVal;
+
+		if(medicineUnitVal){
+			medicineDosasesTypeArr = [];
+			const ans = medicineUnitVal.filter((val)=> val.medicineName.trim() == item.medicineName.trim());
+			console.log('========ans========>>>>>>>>>>>>>>>>>', JSON.stringify(ans))
+			console.log('======== medicineUnitVal ========>>>>>>>>>>>>>>>>>', JSON.stringify(medicineUnitVal))
+			ans[0].medicineDosasesType.forEach((val, index) => {
+				medicineDosasesTypeArr.push({
+					label: val?.doasestype,
+					value: val?.doasestype
+				})
+			})
+		} else {
+			medicineDosasesTypeArr = [];
+		medicineDosasesType = this.props.navigation.state.params.item.medicineDosasesType
+		item.medicineDosasesType.forEach((val, index) => {
+			medicineDosasesTypeArr.push({
+				label: val?.doasestype,
+				value: val?.doasestype
+			})
+		})
+	}
+		// unitTxt = this.props.navigation.state.params.item.unitTxt
 
 		if (item.medicineDosasesType && item.medicineDosasesType.length > 0) {
 			// let tempDoaseArr = [];
@@ -147,7 +176,7 @@ class MedicineDetails extends React.Component {
 
 				if (item.dosagePattern) {
 					dosagePattern = item.dosagePattern;
-					InputTxtLengthDosage = dosagePattern.length;
+					// InputTxtLengthDosage = dosagePattern.length;
 					if (dosagePattern && dosagePattern.indexOf('.')) {
 						this.setState({ CustomInput: true })
 					}
@@ -207,6 +236,7 @@ class MedicineDetails extends React.Component {
 			timingTypeGuid: TimingTypeGuid,
 			medicineTimingShift: null,
 			medicineTimingFrequency: medicineTimingFrequency,
+			unitTxt: unitTxt,
 			dosages: Dosages,
 			dosagePattern: dosagePattern,
 			note: this.state.noteData,
@@ -251,36 +281,22 @@ class MedicineDetails extends React.Component {
 
 	SearchFilterFunctionDosage = (text) => {
 		if (text && text.length > 0) {
-			if (text.indexOf('.') > -1) {
-				Snackbar.show({ text: 'Please select custom dosage from list ', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-			}
-			let txtWithOutHifen = ''
-			if (text.indexOf('-') > -1) {
-				try {
-					txtWithOutHifen = text.replaceAll('-', '');
-				} catch (error) {
-					txtWithOutHifen = text;
-				}
-			} else {
-				txtWithOutHifen = text;
-			}
+			// if (text.indexOf('.') > -1) {
+			// 	Snackbar.show({ text: 'Please select custom dosage from list ', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
+			// }
+			// let txtWithOutHifen = ''
+			// if (text.indexOf('-') > -1) {
+			// 	try {
+			// 		txtWithOutHifen = text.replaceAll('-', '');
+			// 	} catch (error) {
+			// 		txtWithOutHifen = text;
+			// 	}
+			// } else {
+			// 	txtWithOutHifen = text;
+			// }
 
-			if (Validator.isMobileValidate(txtWithOutHifen)) {
-				if (prvLength > text.length) {
-					this.setState({ dosageSearchTxt: text });
-				} else {
-					let str = txtWithOutHifen;
-					if (str.length > 1) {
-						try {
-							var parts = str.split("");
-							text = parts.join("-");
-						} catch (error) {
-
-						}
-
-					}
-					this.setState({ dosageSearchTxt: text });
-				}
+			if (Validator.isNumberHyphanDotSlashValidate(text)) {
+				this.setState({ dosageSearchTxt: text });
 			}
 			var searchResult = _.filter(doasagesPatterArr, function (item) {
 				return item.label.indexOf(text) > -1;
@@ -293,7 +309,7 @@ class MedicineDetails extends React.Component {
 			this.setState({ dosageSearchTxt: '', dosageDropdownArr: doasagesPatterArr });
 
 
-			
+
 	}
 	DoseValidation = (text) => {
 		if (text) {
@@ -320,7 +336,7 @@ class MedicineDetails extends React.Component {
 		else {
 			dosagePattern = item.value;
 			//if(dosagePattern && dosagePattern.length>4)
-			InputTxtLengthDosage = dosagePattern.length;
+			// InputTxtLengthDosage = dosagePattern.length;
 			this.setState({ dosageSearchTxt: item.label, showStateDosage: false, CustomInput: false })
 		}
 	}
@@ -398,7 +414,7 @@ class MedicineDetails extends React.Component {
 							</View>
 							{/* ------- Unit------- */}
 							<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>Units</Text>
-							<TextInput onBlur={this.callIsBlurUnit} onFocus={this.callIsFucusedUnit} keyboardType={'phone-pad'} style={[styles.createInputStyle, { borderColor: this.state.InpborderColorUnit }]} placeholder={'Enter Unit'} placeholderTextColor={Color.placeHolderColor} value={this.state.unitTxt} maxLength={InputTxtLengthUnit}
+							{/* <TextInput onBlur={this.callIsBlurUnit} onFocus={this.callIsFucusedUnit} keyboardType={'phone-pad'} style={[styles.createInputStyle, { borderColor: this.state.InpborderColorUnit }]} placeholder={'Enter Unit'} placeholderTextColor={Color.placeHolderColor} value={this.state.unitTxt} maxLength={InputTxtLengthUnit}
 								onChangeText={(text) => this.handleUnitData(text)} ref='search' returnKeyType='done' />
 
 							{this.state.unitTxt && this.state.showUnitDropDown ?
@@ -414,16 +430,35 @@ class MedicineDetails extends React.Component {
 									)}
 									keyExtractor={(item, index) => index.toString()}
 									/>
-								</View> : null}
+								</View> : null} */}
+
+							<DropDownPicker zIndex={10}
+								items={medicineDosasesTypeArr}
+								containerStyle={{ borderRadius: responsiveWidth(2), height: responsiveHeight(6), marginTop: responsiveHeight(1.6) }}
+								style={{ backgroundColor: '#ffffff', color: Color.textGrey }}
+								textStyle={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16 }} itemStyle={{
+									justifyContent: 'flex-start'
+								}}
+								// defaultValue={unitTxtvalue ? unitTxtvalue : 'abc'}
+								dropDownStyle={{ backgroundColor: '#fafafa', zIndex: 4 }}
+								onChangeItem={item => {
+									unitTxt = item.value;
+								}}
+								globalTextStyle={{ color: Color.fontColor, fontSize: CustomFont.font16 }}
+								placeholder={unitTxt}
+								placeholderStyle={{ color: Color.placeHolderColor, fontSize: CustomFont.font16 }}
+							/>
 
 							{/* ------- Dosage------- */}
 
 							<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>Dosage </Text>
 							<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-								<TextInput onBlur={this.callIsBlur2} onFocus={this.callIsFucused2} keyboardType={'phone-pad'} style={[styles.createInputStyle, { flex: 1, borderColor: this.state.InpborderColor2 }]} placeholder="Enter dosages" placeholderTextColor={Color.placeHolderColor} value={this.state.dosageSearchTxt} onChangeText={(dosageSearchTxt) => { return this.state.CustomInput ? this.DoseValidation(dosageSearchTxt) : this.SearchFilterFunctionDosage(dosageSearchTxt); }} maxLength={this.state.CustomInput ? 14 : InputTxtLengthDosage} ref='search' returnKeyType='done' />
-								{this.state.CustomInput ? <TouchableOpacity style={{ height: responsiveHeight(6), width: responsiveWidth(15), justifyContent: 'center', alignItems: 'center', marginLeft: 10, borderWidth: 1, borderColor: this.state.InpborderColor2, marginTop: responsiveHeight(1.8), borderRadius: 6 }} onPress={() => this.setState({ dosageSearchTxt: '', CustomInput: !this.state.CustomInput, showStateDosage: true })}>
+								<TextInput onBlur={this.callIsBlur2} onFocus={this.callIsFucused2} keyboardType={'phone-pad'} style={[styles.createInputStyle, { flex: 1, borderColor: this.state.InpborderColor2 }]} placeholder="Enter dosages" placeholderTextColor={Color.placeHolderColor} value={this.state.dosageSearchTxt} onChangeText={(dosageSearchTxt) => { return this.SearchFilterFunctionDosage(dosageSearchTxt) }}
+									maxLength={InputTxtLengthDosage}
+									ref='search' returnKeyType='done' />
+								{/* {this.state.CustomInput ? <TouchableOpacity style={{ height: responsiveHeight(6), width: responsiveWidth(15), justifyContent: 'center', alignItems: 'center', marginLeft: 10, borderWidth: 1, borderColor: this.state.InpborderColor2, marginTop: responsiveHeight(1.8), borderRadius: 6 }} onPress={() => this.setState({ dosageSearchTxt: '', CustomInput: !this.state.CustomInput, showStateDosage: true })}>
 									<Image source={downarrow} style={{ height: responsiveFontSize(2.5), width: responsiveFontSize(2.5), resizeMode: 'contain' }} />
-								</TouchableOpacity> : null}
+								</TouchableOpacity> : null} */}
 
 							</View>
 
@@ -445,17 +480,17 @@ class MedicineDetails extends React.Component {
 									</View> : null}
 							</View>
 							{/* ------- When to Take------- */}
-							<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>When To Take</Text>
+							<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>When</Text>
 							<DropDownPicker zIndex={10}
 								items={this.state.whenToTakeArr}
 								containerStyle={{ borderRadius: responsiveWidth(2), height: responsiveHeight(6), marginTop: responsiveHeight(1.6) }}
 								style={{ backgroundColor: '#ffffff', color: Color.textGrey }}
-								textStyle={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16}}								itemStyle={{
+								textStyle={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16 }} itemStyle={{
 									justifyContent: 'flex-start'
 								}}
 								dropDownStyle={{ backgroundColor: '#fafafa', zIndex: 4 }}
 								onChangeItem={item => {
-								medicineTimingFrequency = item.value;
+									medicineTimingFrequency = item.value;
 								}}
 								globalTextStyle={{ color: Color.fontColor, fontSize: CustomFont.font16 }}
 								placeholder={medicineTimingFrequency}

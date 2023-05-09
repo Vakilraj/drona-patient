@@ -57,7 +57,7 @@ static isNumberHyphanDotSlashValidate(mobile) {
   return reg.test(mobile);
 }
 static isNameAcceptDot(name) {
-  const reg = /^[A-Za-z-.]+$/;
+  const reg = /^[A-Za-z. ]*$/;
   return reg.test(name);
 }
 }

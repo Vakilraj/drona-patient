@@ -83,7 +83,7 @@ class RegistrationForm extends React.Component {
 		if (!this.state.fname.trim()) {
 			this.setState({ fnameAlert: 'Please enter first name' });
 			this.refs.fname.focus();
-		} else if (!Validator.isNameValidate(this.state.fname.trim())) {
+		} else if (!Validator.isNameAcceptDot(this.state.fname.trim())) {
 			this.setState({ fnameAlert: 'Name should contain only alphabets' });
 			this.refs.fname.focus();
 		} else if (this.state.fname.trim().length < 1) {
@@ -95,7 +95,7 @@ class RegistrationForm extends React.Component {
 		} else if (this.state.lname.trim().length < 1) {
 			this.setState({ lnameAlert: 'Minimum 1 characters required' });
 			this.refs.lname.focus();
-		} else if (!Validator.isNameValidate(this.state.lname.trim())) {
+		} else if (!Validator.isNameAcceptDot(this.state.lname.trim())) {
 			this.setState({ lnameAlert: 'Name should contain only alphabets' });
 			this.refs.lname.focus();
 		}
@@ -339,7 +339,7 @@ class RegistrationForm extends React.Component {
 									<View style={{ flex: 11 }}><TextInput returnKeyType="done" onBlur={this.callIsBlur1} onFocus={this.callIsFucused1} style={[styles.createInputStyle, { borderColor: this.state.InpborderColor1,  marginLeft: -3 }]} placeholder="First Name *" placeholderTextColor={Color.placeHolderColor} onChangeText={fname => {
 
 										this.setState({ fname })
-										if (!fname || Validator.isNameValidate(fname)) {
+										if (!fname || Validator.isNameAcceptDot(fname)) {
 											this.setState({ fnameAlert: '' })
 										} else {
 											this.setState({ fnameAlert: 'Name should contain only alphabets' })
@@ -351,7 +351,7 @@ class RegistrationForm extends React.Component {
 								{/* <Text style={styles.labelStyle}>Last Name *</Text> */}
 								<TextInput returnKeyType="done" onBlur={this.callIsBlur2} onFocus={this.callIsFucused2} style={[styles.createInputStyle, { borderColor: this.state.InpborderColor2, }]} placeholder="Last Name *" placeholderTextColor={Color.placeHolderColor} onChangeText={lname => {
 									this.setState({ lname })
-									if (!lname || Validator.isNameValidate(lname)) {
+									if (!lname || Validator.isNameAcceptDot(lname)) {
 										this.setState({ lnameAlert: '' })
 									} else {
 										this.setState({ lnameAlert: 'Name should contain only alphabets' })

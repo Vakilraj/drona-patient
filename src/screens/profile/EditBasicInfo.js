@@ -190,7 +190,7 @@ class EditBasicInfo extends React.Component {
 		if (!this.state.fname.trim()) {
 			this.setState({ fnameAlert: 'Please enter first name', fld1: Color.inputErrorBorder });
 			this.refs.fname.focus();
-		} else if (!Validator.isNameValidate(this.state.fname)) {
+		} else if (!Validator.isNameAcceptDot(this.state.fname)) {
 			this.setState({ fnameAlert: 'Name should contain only alphabets', fld1: Color.inputErrorBorder });
 			this.refs.fname.focus();
 		} else if (this.state.fname.length < 1) {
@@ -202,7 +202,7 @@ class EditBasicInfo extends React.Component {
 		} else if (this.state.lname.length < 1) {
 			this.setState({ lnameAlert: 'Last name minimum 1 character', fld2: Color.inputErrorBorder });
 			this.refs.lname.focus();
-		} else if (!Validator.isNameValidate(this.state.lname)) {
+		} else if (!Validator.isNameAcceptDot(this.state.lname)) {
 			this.setState({ lnameAlert: 'Name should contain only alphabets', fld2: Color.inputErrorBorder });
 			this.refs.lname.focus();
 		} else if (!this.state.isMale && !this.state.isFemale && !this.state.isOther) {
@@ -428,7 +428,7 @@ class EditBasicInfo extends React.Component {
 									onBlur={() => this.isCallBlur('1')}
 									style={[styles.createInputStylefname, { borderColor: this.state.fld1 }]} placeholder="First Name" placeholderTextColor={Color.placeHolderColor} onChangeText={fname => {
 										this.setState({ fname })
-										if (!fname || Validator.isNameValidate(fname)) {
+										if (!fname || Validator.isNameAcceptDot(fname)) {
 											this.setState({ fnameAlert: '' })
 										} else {
 
@@ -442,7 +442,7 @@ class EditBasicInfo extends React.Component {
 								<TextInput returnKeyType="done"
 									onBlur={() => this.isCallBlur('2')} style={[styles.createInputStyle, { borderColor: this.state.fld2 }]} placeholderTextColor={Color.placeHolderColor} placeholder="Last Name" onChangeText={lname => {
 										this.setState({ lname })
-										if (!lname || Validator.isNameValidate(lname)) {
+										if (!lname || Validator.isNameAcceptDot(lname)) {
 											this.setState({ lnameAlert: '' })
 										} else {
 

@@ -387,7 +387,7 @@ class AddNewPatients extends React.Component {
 			this.setState({ fnameAlert: 'Please enter first name' });
 			this.refs.fname.focus();
 		}
-		else if (!Validator.isNameValidate(this.state.fname)) {
+		else if (!Validator.isNameAcceptDot(this.state.fname)) {
 			this.setState({ fnameAlert: 'Name should contain only alphabets' });
 			this.refs.fname.focus();
 		} else if (this.state.fname.length < 1) {
@@ -830,7 +830,7 @@ class AddNewPatients extends React.Component {
 										style={[styles.createInputStyle, { borderColor: this.state.fld1 }]} placeholder="Enter Name" placeholderTextColor={Color.placeHolderColor} onChangeText={fname => {
 											fname = fname;
 											this.setState({ fname, showDiscard: true })
-											if (!fname || Validator.isNameValidate(fname)) {
+											if (!fname || Validator.isNameAcceptDot(fname)) {
 												this.setState({ fnameAlert: '', fld1: Color.inputErrorBorder })
 											} else {
 												this.setState({ fnameAlert: 'Name should contain only alphabets', fld1: Color.inputErrorBorder })
@@ -844,7 +844,7 @@ class AddNewPatients extends React.Component {
 										style={[styles.createInputStyle, { borderColor: this.state.fld2, borderWidth: 1 }]} placeholder="Last Name" placeholderTextColor={Color.placeHolderColor} onChangeText={lname => {
 											lname = lname;
 											this.setState({ lname, showDiscard: true })
-											if (!lname || Validator.isNameValidate(lname)) {
+											if (!lname || Validator.isNameAcceptDot(lname)) {
 												this.setState({ lnameAlert: '', fld2: Color.inputErrorBorder })
 											} else {
 												this.setState({ lnameAlert: 'name should contain only alphabets', fld2: Color.inputErrorBorder })

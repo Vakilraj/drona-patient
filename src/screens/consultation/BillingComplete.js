@@ -211,13 +211,13 @@ class BillingComplete extends React.Component {
             if (response) {
                 PrescriptionGuId = response.prescriptionGuId;
             }
-            setTimeout(() => {
-                DRONA.setShowAppoinmentCompleteMsg(1);
-                this.props.navigation.navigate('DoctorHome');
-            }, 2000)
-            setTimeout(()=>{
-                Snackbar.show({ text: 'Appointment Completed successfully', duration: Snackbar.LENGTH_LONG, backgroundColor: Color.primary });
-            },500)
+            // setTimeout(() => {
+            //     DRONA.setShowAppoinmentCompleteMsg(1);
+            //     this.props.navigation.navigate('DoctorHome');
+            // }, 2000)
+            // setTimeout(()=>{
+            //     Snackbar.show({ text: 'Appointment Completed successfully', duration: Snackbar.LENGTH_LONG, backgroundColor: Color.primary });
+            // },500)
            
 
             //this.setState({ CompleteModal: true, modelMessage: 'Appointment Completed' });
@@ -227,10 +227,10 @@ class BillingComplete extends React.Component {
             setTimeout(()=>{
                 Snackbar.show({ text: 'Appointment Completed successfully', duration: Snackbar.LENGTH_LONG, backgroundColor: Color.primary });
             },500)
-            setTimeout(() => {
-                this.printRemotePDF();
-                this.setState({ showHomeBtn: true })
-            }, 1500)
+            // setTimeout(() => {
+            //     this.printRemotePDF();
+            //     this.setState({ showHomeBtn: true })
+            // }, 1500)
             }
         } else if (tag === 'GetDoctorPrivateNoteComplete') {
             if (response) {
@@ -343,11 +343,19 @@ class BillingComplete extends React.Component {
                 }
             }
             //actions.callLogin('V11/FuncForDrAppToCompleteConsultation_V4', 'post', params, signupDetails.accessToken, 'completeConsultation');
-            if(type=='withNotification')
-            actions.callLogin('V13/FuncForDrAppToCompleteConsultWithNotification', 'post', params, signupDetails.accessToken, 'completeConsultationWithNoti');
-            else
-            actions.callLogin('V12/FuncForDrAppToCompleteConsultWithoutNotification', 'post', params, signupDetails.accessToken, 'completeConsultationWithOutNoti');
-        })
+            if(type=='withNotification'){
+                actions.callLogin('V16/FuncForDrAppToCompleteConsultWithNotification', 'post', params, signupDetails.accessToken, 'completeConsultationWithNoti');
+                setTimeout(()=>{
+                    this.props.navigation.navigate('DoctorHome');
+                },500)
+            }
+            else{
+                this.printRemotePDF();
+                this.setState({ showHomeBtn: true })
+                setTimeout(() => {
+                actions.callLogin('V16/FuncForDrAppToCompleteConsultWithoutNotification', 'post', params, signupDetails.accessToken, 'completeConsultationWithOutNoti');
+                }, 300)     
+            }})
         //}
     }
     downloadPdf = async () => {

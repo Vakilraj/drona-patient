@@ -396,8 +396,8 @@ class Consultation extends React.Component {
 			DRONA.setIsConsultationChange(false);
 			actions.callLogin('V14/FuncForDrAppToAddConsultationTabData', 'post', params, signupDetails.accessToken, 'ConsultationPageSave');
 		} else {
-			this.props.nav.navigation.navigate('PreviewRx', { PreviewPdfPath: null, from: 'normalPrescription', consultId: null });
-			//this.callPreviewRx();
+			//this.props.nav.navigation.navigate('PreviewRx', { PreviewPdfPath: null, from: 'normalPrescription', consultId: null });
+			this.callPreviewRx();
 		}
 	}
 	callPreviewRx = async () => {
@@ -764,8 +764,8 @@ class Consultation extends React.Component {
 				if (newProps.responseData.statusCode == '-1' || newProps.responseData.statusCode == '-3') {
 					let data = newProps.responseData.data;
 					setTimeout(() => {
-						this.props.nav.navigation.navigate('PreviewRx', { PreviewPdfPath: null, from: 'normalPrescription', consultId: null });
-						//this.callPreviewRx();
+						//this.props.nav.navigation.navigate('PreviewRx', { PreviewPdfPath: null, from: 'normalPrescription', consultId: null });
+						this.callPreviewRx();
 					}, 200)
 
 					vitalFlag = false;
@@ -2145,29 +2145,34 @@ class Consultation extends React.Component {
 		//this.dismissDialog()
 	}
 	getSelectedMMedicineTxt = (item) => {
+		// let tempStr = '';
+		// if (item.dosages)
+		// 	tempStr = item.dosages + ' ' + item.medicineType;
+
+		// if (item.dosagePattern)
+		// 	tempStr += tempStr ? ', ' + item.dosagePattern : item.dosagePattern;
+		// if (item.medicineTimingFrequency)
+		// 	tempStr += tempStr ? ', ' + item.medicineTimingFrequency : item.medicineTimingFrequency;
+		// if (item.durationType && item.durationValue)
+		// 	tempStr += ', ' + item.durationType + ' ' + item.durationValue;
+		// if (tempStr)
+		// 	tempStr = '(' + tempStr + ')'
+		// tempStr = item.medicineName + ' ' + tempStr
+
 		let tempStr = '';
 		if (item.dosages)
-			tempStr = item.dosages + ' ' + item.medicineType;
+			tempStr = item.medicineType;
 
 		if (item.dosagePattern)
 			tempStr += tempStr ? ', ' + item.dosagePattern : item.dosagePattern;
 		if (item.medicineTimingFrequency)
 			tempStr += tempStr ? ', ' + item.medicineTimingFrequency : item.medicineTimingFrequency;
-		if (item.durationType && item.durationValue)
-			tempStr += ', ' + item.durationType + ' ' + item.durationValue;
+		if (item.durationType)
+			tempStr += ', ' + item.durationType + ' ';
 		if (tempStr)
 			tempStr = '(' + tempStr + ')'
 		tempStr = item.medicineName + ' ' + tempStr
 
-		// let str = item.medicineName;
-		// if (item.strength)
-		// 	str += ' ' + item.strength;
-
-		// if (item.medicineType)
-		// 	str += ' ' + item.medicineType;
-
-		// if (item.dosagePattern)
-		// 	str += ' ' + item.dosagePattern;
 		return tempStr;
 	}
 
@@ -2868,7 +2873,7 @@ class Consultation extends React.Component {
 										{
 											this.state.isSearchStart && this.state.medicineSearchTxt ?
 												<TouchableOpacity onPress={this.addPressClick} style={{ margin: responsiveWidth(3), alignItems: 'center', justifyContent: 'center' }}>
-													<Text style={{ color: Color.primaryBlue, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: CustomFont.fontWeight700 }}> + Add '{this.state.medicineSearchTxt}' as a New Medicine</Text>
+													<Text style={{ color: Color.primaryBlue, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: CustomFont.fontWeight700}}> + Add <Text style={{textTransform: 'capitalize'}}>'{this.state.medicineSearchTxt}'</Text> as a New Medicine</Text>
 												</TouchableOpacity> : null
 										}
 									</View> : null}
@@ -3303,7 +3308,7 @@ class Consultation extends React.Component {
 
 									<View style={{ marginTop: responsiveHeight(2) }}>
 										<Text style={{ color: Color.optiontext, fontFamily: CustomFont.fontName, fontSize: CustomFont.font12 }}>Medicine Name *</Text>
-										<TextInput returnKeyType="done" onChangeText={this.typeMedcineName} value={this.state.medicineSearchTxt} style={{ paddingLeft: 5, borderColor: Color.borderColor, borderRadius: 7, marginTop: 10, height: responsiveHeight(5.5), borderWidth: 1, color: Color.fontColor }} />
+										<TextInput returnKeyType="done" onChangeText={this.typeMedcineName} value={this.state.medicineSearchTxt} style={{ paddingLeft: 5, borderColor: Color.borderColor, borderRadius: 7, marginTop: 10, height: responsiveHeight(5.5), borderWidth: 1, color: Color.fontColor,textTransform:'capitalize' }} />
 									</View>
 									<View style={{ flexDirection: 'row', marginTop: responsiveHeight(2) }}>
 										<View style={{ flex: 1, marginRight: responsiveWidth(2) }}>
@@ -3390,7 +3395,7 @@ class Consultation extends React.Component {
 								<View style={{ margin: responsiveWidth(5) }}>
 									<View style={{ height: responsiveHeight(7), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
 										<View >
-											<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font18, color: Color.black, fontWeight: CustomFont.fontWeight700, }}>{this.state.severityNameHeader}</Text>
+											<Text style={{textTransform:'capitalize', fontFamily: CustomFont.fontName, fontSize: CustomFont.font18, color: Color.black, fontWeight: CustomFont.fontWeight700, }}>{this.state.severityNameHeader}</Text>
 										</View>
 										<TouchableOpacity onPress={() => this.setState({ isModalOpenSeverity: false })}>
 											<Image source={cross_close} style={{ tintColor: Color.primary, height: responsiveFontSize(2.5), width: responsiveFontSize(2.5), margin: 10, resizeMode: 'contain' }} />
@@ -3451,7 +3456,7 @@ class Consultation extends React.Component {
 								<View style={{ margin: responsiveWidth(5) }}>
 									<View style={{ height: responsiveHeight(7), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
 										<View >
-											<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font18, color: Color.black, fontWeight: CustomFont.fontWeight700, }}>{this.state.severityNameHeader}</Text>
+											<Text style={{textTransform:'capitalize', fontFamily: CustomFont.fontName, fontSize: CustomFont.font18, color: Color.black, fontWeight: CustomFont.fontWeight700, }}>{this.state.severityNameHeader}</Text>
 										</View>
 										<TouchableOpacity onPress={() => this.setState({ isModalVisibleInstructionInvest: false })}>
 											<Image source={cross_close} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), marginRight: 10, resizeMode: 'contain' }} />

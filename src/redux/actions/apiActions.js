@@ -83,7 +83,7 @@ export function callLogin(url, apiType, params, token, tagName = null) {
   else {
     baseUrl = 'https://mnkdrona-apim.azure-api.net/DoctorApp/Dev/'  // Dev  Pilot Stag Live
   }
-  //console.log('-------->>>------'+DRONA.getIsServiceVailable())
+  console.log('-------->>>------'+DRONA.getIsServiceVailable())
   if(DRONA.getIsServiceVailable()){
     if (apiType === "get") {
       if(tagName=='getIstTime')

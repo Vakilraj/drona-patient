@@ -21,7 +21,13 @@ import AsyncStorage from '@react-native-community/async-storage';
 import Snackbar from 'react-native-snackbar';
 let flag = 0;
 let consultTypeValue = '';
-let symptomHead = '', findingHead = '', diagionsisHead = '', notes = '', timingAndDur = '', medicine = '', investigationAdvise = '', instructionHead = '', followUpHeadGlobal = '', noteStr = '',procedureHead = '';
+
+let vitalList = '';
+let medicalHistoryList = '';
+
+let symptomHead = '', findingHead = '', diagionsisHead = '', notes = '', timingAndDur = '', medicine = '', investigationAdvise = '', instructionHead = '', followUpHeadGlobal = '', noteStr = '', procedureHead = '', medicalHistoryHead = '', vitalHead = '', Rx = '';
+let selectedConditions = [], selectedMedications = [], selectedAllergies = [], selectedFamilyHistory = [], patientCondition = [];
+
 class PreviewRxButton extends React.Component {
 	constructor(props) {
 		super(props);
@@ -363,23 +369,23 @@ class PreviewRxButton extends React.Component {
 			let temp = []
 			for (var i = 0; i < symptomList.length; i++) {
 				let tempStr = '';
-            if (symptomList[i].severityName)
-                tempStr = symptomList[i].severityName;
-            if (symptomList[i].since)
-                tempStr += tempStr ? ', ' + symptomList[i].since:symptomList[i].since;
-            if (symptomList[i].notes)
-                tempStr += tempStr ? ', ' + symptomList[i].notes:symptomList[i].notes;
-            if (tempStr)
-                tempStr = '(' + tempStr + ')';
+				if (symptomList[i].severityName)
+					tempStr = symptomList[i].severityName;
+				if (symptomList[i].since)
+					tempStr += tempStr ? ', ' + symptomList[i].since : symptomList[i].since;
+				if (symptomList[i].notes)
+					tempStr += tempStr ? ', ' + symptomList[i].notes : symptomList[i].notes;
+				if (tempStr)
+					tempStr = '(' + tempStr + ')';
 
 				const htmlCode = (symptomList[i].symptomName) + ' ' + tempStr;
-					temp.push(htmlCode)
+				temp.push(htmlCode)
 			}
 			const htmlCode = `
 			<table style="width:100%;margin-top: 5px" >
 				<tr>
 					<th style="width:15%;">`+ symptomHead + ` :</th>
-					<td>`+ temp.join(", ") + `</td>
+					<td style= "text-transform: capitalize;">`+ temp.join(", ") + `</td>
 				</tr>
 			</table>
 			`
@@ -396,30 +402,30 @@ class PreviewRxButton extends React.Component {
 			let temp = []
 			for (var i = 0; i < findingList.length; i++) {
 				let tempStr = '';
-            if (findingList[i].severityName)
-                tempStr = findingList[i].severityName;
-            if (findingList[i].since)
-                tempStr += tempStr ? ', ' + findingList[i].since :findingList[i].since;
-            if (findingList[i].notes)
-                tempStr += tempStr ? ', ' + findingList[i].notes:findingList[i].notes;
-            if (tempStr)
-                tempStr = '(' + tempStr + ')'
-				
+				if (findingList[i].severityName)
+					tempStr = findingList[i].severityName;
+				if (findingList[i].since)
+					tempStr += tempStr ? ', ' + findingList[i].since : findingList[i].since;
+				if (findingList[i].notes)
+					tempStr += tempStr ? ', ' + findingList[i].notes : findingList[i].notes;
+				if (tempStr)
+					tempStr = '(' + tempStr + ')'
+
 				// if (i == 0) {
-					//const htmlCode = findingList[i].findingName
-					const htmlCode = (findingList[i].findingName) + ' ' + tempStr;
-					temp.push(htmlCode)
+				//const htmlCode = findingList[i].findingName
+				const htmlCode = (findingList[i].findingName) + ' ' + tempStr;
+				temp.push(htmlCode)
 				// }
 				//else {
-					// const htmlCode = `, ` + findingList[i].findingName
-					// temp.push(htmlCode)
+				// const htmlCode = `, ` + findingList[i].findingName
+				// temp.push(htmlCode)
 				//}
 			}
 			const htmlCode = `
 			<table style="width:100%;margin-top: 5px" >
 	  <tr>
 		<th style="width:15%;">`+ findingHead + ` :</th>
-	   <td>`+ temp.join(", ") + `</td>  
+	   <td style= "text-transform: capitalize;">`+ temp.join(", ") + `</td>  
 	  </tr> 
 	</table> 
 			`
@@ -436,23 +442,23 @@ class PreviewRxButton extends React.Component {
 			let temp = []
 			for (var i = 0; i < diagnosisList.length; i++) {
 				// if (i == 0) {
-					//const htmlCode = diagnosisList[i].diagnosisName ;
-					let tempStr = '';
-            if (diagnosisList[i].diagnosisStatus)
-                tempStr = diagnosisList[i].diagnosisStatus;
-            if (diagnosisList[i].since)
-                tempStr += tempStr ? ', ' + diagnosisList[i].since :diagnosisList[i].since;
-            if (diagnosisList[i].notes)
-                tempStr += tempStr ? ', ' + diagnosisList[i].notes :diagnosisList[i].notes;
-            if (tempStr)
-                tempStr = '(' + tempStr + ')'
-					const htmlCode = (diagnosisList[i].diagnosisName) + ' ' + tempStr;
+				//const htmlCode = diagnosisList[i].diagnosisName ;
+				let tempStr = '';
+				if (diagnosisList[i].diagnosisStatus)
+					tempStr = diagnosisList[i].diagnosisStatus;
+				if (diagnosisList[i].since)
+					tempStr += tempStr ? ', ' + diagnosisList[i].since : diagnosisList[i].since;
+				if (diagnosisList[i].notes)
+					tempStr += tempStr ? ', ' + diagnosisList[i].notes : diagnosisList[i].notes;
+				if (tempStr)
+					tempStr = '(' + tempStr + ')'
+				const htmlCode = (diagnosisList[i].diagnosisName) + ' ' + tempStr;
 				// 	temp.push(htmlCode)
 				// } else {
 				// 	const htmlCode = `
 				// <span">,  `+ diagnosisList[i].diagnosisName + `</span>
 				//  `
-					temp.push(htmlCode)
+				temp.push(htmlCode)
 				//}
 
 
@@ -462,7 +468,7 @@ class PreviewRxButton extends React.Component {
 			<table style="width:100%;margin-top: 5px" >
 		<tr>
 		  <th style="width:15%;">`+ diagionsisHead + ` :</th>
-		 <td>`+ temp.join(", ") + `</td>  
+		 <td style= "text-transform: capitalize;">`+ temp.join(", ") + `</td>  
 		</tr> 
 	  </table>
 			`
@@ -478,12 +484,13 @@ class PreviewRxButton extends React.Component {
 		if (medicineList && medicineList.length > 0) {
 			let temp = []
 			for (var i = 0; i < medicineList.length; i++) {
-
+				let index = i + 1
 				const htmlCode = `
 				 <tr>
-				 <td style="width:35%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;"><b>`+ medicineList[i].medicineName + ` ` + medicineList[i].strength + `</b></br>` + `(<i>` + medicineList[i].medicineDesc + `</i>)` +`</td>
-					<td style="width:40%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;"> `+ (medicineList[i].dosagePattern) + (!medicineList[i].medicineTimingFrequency || medicineList[i].medicineTimingFrequency == 'No Preference' ? '' : ' (' + medicineList[i].medicineTimingFrequency + ')') + ` </br> ` + 'dose: ' + medicineList[i].dosages + `, ` + medicineList[i].durationValue + ` ` + medicineList[i].durationType + ` </td>
-					<td style="width:25%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;">`+ medicineList[i].note + `</td>
+				 <td style="width:8%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;">`+ index + `</td>
+				 <td style="width:35%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;text-transform: capitalize;"><b>`+ medicineList[i].medicineName + ` ` + medicineList[i].strength + `</b></br>` + `(<i>` + medicineList[i].medicineDesc + `</i>)` + `</td>
+					<td style="width:40%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;text-transform: capitalize;"> `+ (medicineList[i].dosagePattern) + (!medicineList[i].medicineTimingFrequency || medicineList[i].medicineTimingFrequency == 'No Preference' ? '' : ' (' + medicineList[i].medicineTimingFrequency + ')') + ` </br> ` + 'dose: ' + medicineList[i].dosages + `, ` + medicineList[i].durationValue + ` ` + medicineList[i].durationType + ` </td>
+					<td style="width:25%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;text-transform: capitalize;">`+ medicineList[i].note + `</td>
 				  </tr>
 				 `
 				temp.push(htmlCode)
@@ -492,6 +499,8 @@ class PreviewRxButton extends React.Component {
 			const htmlCode = `
 			<table style="width:100%;margin-top: 20px" >  
 		<tr style="display: table-row; vertical-align: inherit;border-color: inherit; ">
+			<th width="8%" style="background-color: #14091529;color: #000;text-align: left;font-size: 12px;font-weight: 700;
+		  border-left: 1px solid #f1f1f1; padding: 8px;line-height: 1.42857143;" rowspan="2">`+ Rx + ` :</th>
 			<th width="35%" style="background-color: #14091529;color: #000;text-align: left;font-size: 12px;font-weight: 700;
 		  border-left: 1px solid #f1f1f1; padding: 8px;line-height: 1.42857143;" rowspan="2">`+ medicine + ` :</th>
 			<th width="40%" style="background-color: #14091529;color: #000;text-align: letf;font-size: 12px;font-weight: 700;
@@ -520,14 +529,14 @@ class PreviewRxButton extends React.Component {
 			for (var i = 0; i < investigationList.length; i++) {
 
 				// if (i == 0) {
-					//const htmlCode =  investigationList[i].investigationName;
-					const htmlCode = investigationList[i].investigationName + ' ' + (investigationList[i].notes ? '('+investigationList[i].notes +')': '');
+				//const htmlCode =  investigationList[i].investigationName;
+				const htmlCode = investigationList[i].investigationName + ' ' + (investigationList[i].notes ? '(' + investigationList[i].notes + ')' : '');
 				// 	temp.push(htmlCode)
 				// } else {
 				// 	const htmlCode = `
 				// <span">,  `+ investigationList[i].investigationName + `</span>
 				//  `
-					temp.push(htmlCode)
+				temp.push(htmlCode)
 				//}
 
 			}
@@ -535,7 +544,7 @@ class PreviewRxButton extends React.Component {
 			<table style="width:100%;margin-top: 5px" >
 			<tr>
 			  <th style="width:15%;vertical-align:text-top">`+ investigationAdvise + `:</th>
-			 <td style="vertical-align:text-top">`+ temp.join(", ") + `</td>  
+			 <td style="vertical-align:text-top; text-transform: capitalize;">`+ temp.join(", ") + `</td>  
 			</tr> 
 		  </table>
 			`
@@ -553,13 +562,13 @@ class PreviewRxButton extends React.Component {
 			for (var i = 0; i < instructionsList.length; i++) {
 
 				// if (i == 0) {
-					const htmlCode = instructionsList[i].instructionsName ;
+				const htmlCode = instructionsList[i].instructionsName;
 				// 	temp.push(htmlCode)
 				// } else {
 				// 	const htmlCode = `
 				// <span">,  `+ instructionsList[i].instructionsName + `</span>
-				 //`
-					temp.push(htmlCode)
+				//`
+				temp.push(htmlCode)
 				//}
 
 
@@ -570,7 +579,7 @@ class PreviewRxButton extends React.Component {
 			<table style="width:100%;margin-top: 5px" >
 			<tr>
 			  <th style="width:15%;vertical-align:top">`+ instructionHead + ` :</th>
-			 <td style="vertical-align:text">`+ temp.join(", ") + `</td>  
+			 <td style="vertical-align:text; text-transform: capitalize;">`+ temp.join(", ") + `</td>  
 			</tr> 
 		  </table>
 			`
@@ -586,14 +595,14 @@ class PreviewRxButton extends React.Component {
 		if (procedureList && procedureList.length > 0) {
 			let temp = []
 			for (var i = 0; i < procedureList.length; i++) {
-					const htmlCode = procedureList[i].procedureName
-					temp.push(htmlCode)
+				const htmlCode = procedureList[i].procedureName
+				temp.push(htmlCode)
 			}
 			const htmlCode = `
 			<table style="width:100%;margin-top: 5px" >
 				<tr>
 					<th style="width:15%;">`+ procedureHead + ` :</th>
-					<td>`+ temp.join(", ") + `</td>
+					<td style= "text-transform: capitalize;">`+ temp.join(", ") + `</td>
 				</tr>
 			</table>
 			`
@@ -605,6 +614,74 @@ class PreviewRxButton extends React.Component {
 
 	}
 
+	vitalViewList = (vitalList) => {
+		if (vitalList && vitalList.length > 0) {
+			let temp = []
+			for (var i = 0; i < vitalList.length; i++) {
+				const htmlCode = vitalList[i].vitalName + ': ' + vitalList[i].vitalValue;
+				temp.push(htmlCode)
+			}
+			const htmlCode = `
+			<table style="width:100%;margin-top: 5px" >
+				<tr>
+					<th style="width:15%;">`+ vitalHead + ` :</th>
+					<td style="text-transform: capitalize;">`+ temp.join(", ") + `</td>
+				</tr>
+			</table>
+			`
+			return htmlCode
+		}
+		else {
+			return ''
+		}
+
+	}
+	selectedList = (selectedConditions, selectedMedications, selectedAllergies, selectedFamilyHistory) => {
+		let temp = []
+		let selectedConditionName, selectedMedicationsName, selectedAllergiesName
+		const selCondition = selectedConditions
+		for (var i = 0; i < selCondition.length; i++) {
+			selectedConditionName = selCondition[i].conditionName
+			const htmlCode = ' ' + selectedConditionName + ",";
+			temp.push(htmlCode)
+		}
+		const selMedication = selectedMedications
+		for (var i = 0; i < selMedication.length; i++) {
+			selectedMedicationsName = selMedication[i].medicineName
+			const htmlCode = ' ' + selectedMedicationsName + ",";
+			temp.push(htmlCode)
+		}
+		const selAllergies = selectedAllergies
+		for (var i = 0; i < selAllergies.length; i++) {
+			selectedAllergiesName = selAllergies[i].allergyName
+			const htmlCode = " " + selectedAllergiesName + ",";
+			temp.push(htmlCode)
+		}
+
+		let tempVar
+		const selFamilyHistory = selectedFamilyHistory
+		for (var i = 0; i < selFamilyHistory.length; i++) {
+			const htmlCode = selFamilyHistory[i].familyHistoryName;
+			const htmlSecCode = selFamilyHistory[i].patientCondition
+			let tempVarOne = '';
+			for (var j = 0; j < htmlSecCode.length; j++) {
+				tempVar = htmlSecCode[j].conditionName
+				tempVarOne = tempVarOne + tempVar + ', '
+			}
+			temp.push(htmlCode + ': ' + tempVarOne)
+		}
+
+		const htmlCode = `
+			<table style="width:100%;margin-top: 5px" >
+				<tr>
+					<th style="width:15%;">`+ medicalHistoryHead + ` :</th>
+					<td style= "text-transform: capitalize;">`+ temp.join(" ") + `</td>
+				</tr>
+			</table>
+			`
+		return htmlCode
+
+	}
 	showfollowUpViewList = (followUpItem) => {
 		// alert(JSON.stringify(followUpItem))
 		if (followUpItem) {
@@ -651,7 +728,8 @@ class PreviewRxButton extends React.Component {
 		var month = new Date().getMonth() + 1;
 		month = month < 10 ? '0' + month : '' + month
 		var year = new Date().getFullYear();
-
+		vitalList = prescriptionDataFullArray.vitalList != null ? prescriptionDataFullArray.vitalList : [];
+		medicalHistoryList = prescriptionDataFullArray != null ? prescriptionDataFullArray : [];
 		let clinicInfo = prescriptionDataFullArray.clinicInfo != null ? prescriptionDataFullArray.clinicInfo : []
 		let doctorInfo = prescriptionDataFullArray.doctorInfo != null ? prescriptionDataFullArray.doctorInfo : []
 		let patientInfo = prescriptionDataFullArray.patientInfo != null ? prescriptionDataFullArray.patientInfo : []
@@ -679,8 +757,17 @@ class PreviewRxButton extends React.Component {
 		procedureHead = Language.language.procedures;
 		notes = Language.language.notes;
 		medicine = Language.language.medicine;
+		Rx = Language.language.Rx;
 		timingAndDur = Language.language.timingandduration;
 		noteStr = Language.language.note;
+		vitalHead = Language.language.vital;
+		medicalHistoryHead = Language.language.medicalHistory;
+
+		selectedConditions = medicalHistoryList.selectedConditions
+		selectedMedications = medicalHistoryList.selectedCurrentMedicationList
+		selectedAllergies = medicalHistoryList.selectedAllergies
+		selectedFamilyHistory = medicalHistoryList.selectedFamilyHistory
+
 
 		{/* <p>Clinic Ph. No: `+ this.showOriginalValueView(clinicInfo.clinicNumber) + `</p> */ }
 
@@ -728,7 +815,7 @@ class PreviewRxButton extends React.Component {
 		<h1>`+ prescriptionHeading + `</h1>
 		<table style="width:100%">
 		<tr>
-				<td width="20%">
+				<td max-width="20%">
 					 <img width="100" height="100" src=`+ clinicInfo.clinicImageUrl + ` />		  
 				</td>
 				<td width="50%" style="vertical-align:top; ">			
@@ -767,7 +854,8 @@ class PreviewRxButton extends React.Component {
 	
 		 <hr style="height:3px"/>
 	
-		
+		 `+ this.vitalViewList(vitalList) + `
+		  `+ this.selectedList(selectedConditions, selectedMedications, selectedAllergies, selectedFamilyHistory) + `
 		  `+ this.showSymptomList(symptomList) + `
 		  `+ this.showfindingViewList(findingList) + `
 		  `+ this.showdiagnosisViewList(diagnosisList) + `
@@ -793,7 +881,7 @@ class PreviewRxButton extends React.Component {
 	  <tr>  
 	  <td width="80%"/>
 	  <td width="20%">
-	  Dr. `+ this.showOriginalValueView(doctorInfo.firstName) + ` ` + this.showOriginalValueView(doctorInfo.lastName) + ` 
+	  Dr. `+ this.showOriginalValueView(doctorInfo.firstName) + ` ` + this.showOriginalValueView(doctorInfo.lastName) + ` ` + this.doctorSpeciality(doctorInfo) + ` ` + this.doctorEducationView(doctorInfo) + `<p>Reg no. : ` + registrationNumber + `</p>
 	  </td>
 	  </tr>
 	  </table>
@@ -830,7 +918,7 @@ class PreviewRxButton extends React.Component {
 				let data = newProps.responseData.data
 				let billingDetailsFullArray = data.billingDetails;
 				let prescriptionDataFullArray = data.prescriptionData;
-				
+
 				this.setState({
 					prescriptionDataFullArray: prescriptionDataFullArray,
 					billingDetailsFullArray: billingDetailsFullArray

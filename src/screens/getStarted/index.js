@@ -31,6 +31,7 @@ import Modal from 'react-native-modal';
 import AsyncStorage from 'react-native-encrypted-storage';
 import CryptoJS from "react-native-crypto-js";
 let profile_complete=''
+import Snackbar from 'react-native-snackbar';
 class GetStarted extends React.Component {
 	constructor(props) {
 		super(props);
@@ -196,6 +197,16 @@ class GetStarted extends React.Component {
 
 
 
+			}else if(tagname=='completeConsultationWithNoti'){
+				if (newProps.responseData.statusCode == "0") {
+					//console.log('-------fired--------');
+					DRONA.setShowAppoinmentCompleteMsg(1);
+					DRONA.getSubjectSebscription().next('update')
+					//DeviceEventEmitter.emit('isComingFromPatient', {});
+				}else{
+					Snackbar.show({ text: 'Sorry, appointment can not be completed. Please try again', duration: Snackbar.LENGTH_LONG, backgroundColor: Color.primary });
+				}
+				
 			}
 		}
 

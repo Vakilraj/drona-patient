@@ -32,7 +32,9 @@ let strings = new LocalizedStrings({
    medicine : 'Medicines',
    timingandduration : 'Timing & Duration',
    note : 'Note',
-
+   medicalHistory: "Patient History",
+   Rx: 'Rx',
+   vital: 'Vitals',
 
  },
  be: {

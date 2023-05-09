@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   crossSearch: {tintColor:Color.primary, height: responsiveHeight(2), width: responsiveHeight(2), borderRadius: responsiveHeight(1), alignSelf: 'center', marginEnd: 10 },
   selectedView: { flexDirection: 'row', margin: responsiveWidth(1.6), borderRadius: 5, borderWidth:.7,  backgroundColor: Color.selectedBgSymptom, borderColor:Color.primary  },
   unSelectView: { flexDirection: 'row', margin: responsiveWidth(1.6), height: responsiveWidth(10), borderRadius: 5, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: Color.borderColor, },
-  txtSelect: { margin: responsiveWidth(3), fontSize: CustomFont.font14, color: Color.optiontext,fontWeight:CustomFont.fontWeight500,fontFamily:CustomFont.fontName },
+  txtSelect: { margin: responsiveWidth(3), fontSize: CustomFont.font14, color: Color.optiontext,fontWeight:CustomFont.fontWeight500,fontFamily:CustomFont.fontName,textTransform: 'capitalize' , },
   txtSelectMed: { marginLeft: responsiveWidth(2.5), marginRight: responsiveWidth(2.5), fontSize: CustomFont.font16, marginLeft: responsiveWidth(4), marginRight: responsiveWidth(4) },
   crossSelected: {
     alignItems: 'center', justifyContent: 'center',
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
   unselectView: {
     flexDirection: 'row', margin: responsiveWidth(1.6), height: responsiveFontSize(5), borderRadius: 5, justifyContent: 'center', alignItems: 'center', borderColor: Color.createInputBorder, borderWidth: .7
   },
-  unselectTxtColor: { marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), fontSize: CustomFont.font14, color: Color.optiontext ,fontWeight:CustomFont.fontWeight400, fontFamily:CustomFont.fontName},
+  unselectTxtColor: {textTransform: 'capitalize' , marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), fontSize: CustomFont.font14, color: Color.optiontext ,fontWeight:CustomFont.fontWeight400, fontFamily:CustomFont.fontName},
   doaseView: { width: responsiveWidth(13), borderWidth: 1, borderRadius: 5, borderColor: Color.borderColor, height: responsiveWidth(10), color: Color.darkText, fontSize: CustomFont.font12, justifyContent: 'center', alignItems: 'center', marginRight: 10 },
   doaseViewSelect: {width: responsiveWidth(13), borderWidth: 1, borderRadius: 5, borderColor: Color.liveBg, height: responsiveWidth(10), color: Color.darkText, fontSize: CustomFont.font12, justifyContent: 'center', alignItems: 'center', marginRight: 10,backgroundColor:Color.genderSelection },
   //doaseViewSelect: { width: responsiveWidth(13), borderRadius: 5, height: responsiveWidth(10), fontSize: CustomFont.font13, justifyContent: 'center', alignItems: 'center', marginRight: 10, backgroundColor: Color.primaryBlue },

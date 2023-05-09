@@ -446,7 +446,7 @@ class AboutYourselfStep1 extends React.Component {
 											if (registrationNumber.length > 0) {
 												this.setState({ registarationAlert: '' })
 											}
-										}} maxLength={30} value={this.state.registrationNumber} />
+										}} maxLength={80} value={this.state.registrationNumber} />
 									{this.state.registarationAlert ? <Text style={{ marginLeft: 5, fontSize: CustomFont.font12, color: Color.red }}>{this.state.registarationAlert}</Text> : null}
 
 

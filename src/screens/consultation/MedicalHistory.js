@@ -38,6 +38,8 @@ let appointmentStatus = null;
 let normalListBackup = [], selectedListBackup = [];
 let conditionFlag = false, currentMedicationFlag = false, alergiesFlag = false, familyHistryFlag, significantHitryFlag = false;
 let selectedFamilyMemberGuild = '', significantNoteBackup = '', isUpdateGlobalStatusBackup = false;
+let medicineFullData = '';
+let medicineTypeFullArray = [];
 class medicalHistory extends React.Component {
 
 	constructor(props) {
@@ -55,6 +57,20 @@ class medicalHistory extends React.Component {
 			currentMedicationSearchTxt: '',
 			currentMedicationArr: [],
 			SelectedcurrentMedicationArr: [],
+			isMedicineModalOpen: false,
+			addMedicinePopup: false,
+			isMedicineTypeSelected: false,
+			genericName: '',
+			strength: '',
+			medicineTypeName: '',
+			medicineTypeArr: [],
+			medicineFoundStatus: '',
+			InpborderColor2: Color.inputdefaultBorder,
+			showStateDosage: false,
+
+
+
+
 
 			isAllergiesModalOpen: false,
 			AllergiesArr: [],
@@ -111,6 +127,13 @@ class medicalHistory extends React.Component {
 			this.setState({ fld4: Color.inputdefaultBorder })
 		}
 	}
+	callIsFucused2 = () => {
+		this.setState({ InpborderColor2: Color.primary, showStateDosage: true })
+	}
+	callIsBlur2 = () => {
+		this.setState({ InpborderColor2: Color.inputdefaultBorder, })
+		//this.dismissDialog()
+	}
 
 	clearArray = () => {
 		ConditionsFullArray = []; currentMedicationFullArray = []; AllergiesFullArray = [];
@@ -124,8 +147,8 @@ class medicalHistory extends React.Component {
 	componentDidMount() {
 		let { signupDetails } = this.props;
 		timeRange = Trace.getTimeRange();
-        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Medical_History_Screen',  signupDetails.firebaseLocation)
-        Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Medical_History_Screen", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
+		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Medical_History_Screen', signupDetails.firebaseLocation)
+		Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Medical_History_Screen", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
 		appoinmentGuid = this.props.data && this.props.data.pastAppointmentGuid ? this.props.data.pastAppointmentGuid : signupDetails.appoinmentGuid;
 		patientGuid = this.props.item && this.props.item.patientGuid ? this.props.item.patientGuid : signupDetails.patientGuid;
 		appointmentStatus = this.props.item && this.props.item.appointmentStatus ? this.props.item.appointmentStatus : '';
@@ -139,19 +162,91 @@ class medicalHistory extends React.Component {
 		let params = {
 			"RoleCode": signupDetails.roleCode,
 			"userGuid": signupDetails.UserGuid,
-			 "DoctorGuid": signupDetails.doctorGuid,
+			"DoctorGuid": signupDetails.doctorGuid,
 			"ClinicGuid": signupDetails.clinicGuid,
 			"PatientGuid": signupDetails.patientGuid,
 			"Version": "",
-			"Data": { "AppointmentGuid": this.props.pastAppointGuid ? this.props.pastAppointGuid: signupDetails.appoinmentGuid }
+			"Data": { "AppointmentGuid": this.props.pastAppointGuid ? this.props.pastAppointGuid : signupDetails.appoinmentGuid }
 		}
 		actions.callLogin('V14/FuncForDrAppToGetPatientConsultationMedicalHistoryData', 'post', params, signupDetails.accessToken, 'GetVisitInfoMedicalHistry');
 
 	}
 
-	componentWillUnmount (){
+	componentWillUnmount() {
 		Trace.stopTrace()
 	}
+
+	addPressClick = () => {
+		this.setState({ isMedicineModalOpen: false, showStateDosage: false })
+		this.callApiToGetMedicineType();
+	}
+	callApiToGetMedicineType = () => {
+		let { actions, signupDetails } = this.props;
+		let params = {
+			"userGuid": signupDetails.UserGuid,
+			"doctorGuid": signupDetails.doctorGuid,
+			"clinicGuid": signupDetails.clinicGuid,
+			"version": "",
+			"Data": null
+		}
+		actions.callLogin('V1/FuncForDrAppToGetMedicineType', 'post', params, signupDetails.accessToken, 'getmedicinetype');
+	}
+
+	addPressed = () => {
+		if (this.state.currentMedicationSearchTxt && this.state.medicineTypeName) {
+			let { actions, signupDetails } = this.props;
+			let params = {
+				"userGuid": signupDetails.UserGuid,
+				"doctorGuid": signupDetails.doctorGuid,
+				"clinicGuid": signupDetails.clinicGuid,
+				"version": "",
+				"Data": {
+					"MedicineName": this.state.currentMedicationSearchTxt,
+					"MedicineDesc": this.state.genericName,
+					"MedicineTypeGuid": this.state.medicineTypeName,
+					"Strength": this.state.strength
+				}
+			}
+			actions.callLogin('V15/FuncForDrAppToAddNewCurrentMedication', 'post', params, signupDetails.accessToken, 'AddMedicine');
+			// medicineFlag = true;
+			DRONA.setIsConsultationChange(true);
+		} else {
+			Snackbar.show({ text: 'Medicine name and type can not be blank', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
+		}
+
+	}
+	typeStregth = (text) => {
+		this.setState({ strength: text });
+	}
+	typeGenericName = (text) => {
+		this.setState({ genericName: text });
+	}
+	typeMedcineName = (text) => {
+		this.setState({ currentMedicationSearchTxt: text });
+		if (text) {
+			if (this.state.medicineTypeName && this.state.medicineTypeName.length > 0)
+				this.setState({ isMedicineTypeSelected: true });
+		} else {
+			this.setState({ isMedicineTypeSelected: false });
+		}
+	}
+	SearchFilterFunctionDosage = (text) => {
+		if (text) {
+			var searchResult = _.filter(medicineTypeFullArray, function (item) {
+				return item.label.toLowerCase().indexOf(text.toLowerCase()) > -1;
+			});
+			this.setState({ medicineTypeArr: searchResult, showStateDosage: true, medicineTypeSearchTxt: text });
+		} else
+			this.setState({ medicineTypeSearchTxt: '', medicineTypeArr: medicineTypeFullArray });
+	}
+
+	clickOnState = (item) => {
+		this.setState({ medicineTypeName: item.value })
+		if (this.state.currentMedicationSearchTxt)
+			this.setState({ isMedicineTypeSelected: true })
+		this.setState({ medicineTypeSearchTxt: item.label, showStateDosage: false })
+	}
+
 	savePage = () => {
 		if (conditionFlag || currentMedicationFlag || alergiesFlag || familyHistryFlag || significantHitryFlag) {
 			let { actions, signupDetails } = this.props;
@@ -258,10 +353,10 @@ class medicalHistory extends React.Component {
 					}
 				} catch (e) { }
 			} else if (tagname === 'MedicalHistryPageSave') {
-				setTimeout(()=>{
+				setTimeout(() => {
 					Snackbar.show({ text: newProps.responseData.statusMessage, duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-				},1000)
-				
+				}, 1000)
+
 				if (newProps.responseData.statusCode == '-1') {
 					conditionFlag = false;
 					currentMedicationFlag = false;
@@ -273,76 +368,141 @@ class medicalHistory extends React.Component {
 				if (newProps.responseData.statusCode == '0') {
 					if (newProps.responseData.data && newProps.responseData.data.length > 0) {
 						let temp = newProps.responseData.data;
-						// temp.push({
-						// 	"conditionGuid": null,
-						// 	"conditionDesc": null,
-						// 	"conditionName": "Add new “" + this.state.conditionsSearchTxt + '”'
-						// })
+						temp.push({
+							"conditionGuid": null,
+							"conditionDesc": null,
+							"conditionName": "Add new “" + this.state.conditionsSearchTxt + '”'
+						})
 						this.setState({ ConditionsArr: temp });
 					}
-
-					// else
-					// 	this.setState({
-					// 		ConditionsArr: [{
-					// 			"conditionGuid": null,
-					// 			"conditionDesc": null,
-					// 			"conditionName": "Add new “" + this.state.conditionsSearchTxt + '”'
-					// 		}]
-					// 	});
+					else
+						this.setState({
+							ConditionsArr: [{
+								"conditionGuid": null,
+								"conditionDesc": null,
+								"conditionName": "Add new “" + this.state.conditionsSearchTxt + '”'
+							}]
+						});
 
 				}
 			} else if (tagname === 'SearchFamilyConditions') {
 				if (newProps.responseData.statusCode == '0') {
 					let temp = newProps.responseData.data;
-					// if (temp) {
-					// 	temp.push({
-					// 		"conditionGuid": null,
-					// 		"conditionDesc": null,
-					// 		"conditionName": "Add new “" + this.state.conditionsSearchTxt + '”'
-					// 	})
-					this.setState({ FamilyConditionsArr: temp });
-					// } else {
-					// 	this.setState({ FamilyConditionsArr: [{
-					// 		"conditionGuid": null,
-					// 		"conditionDesc": null,
-					// 		"conditionName": "Add new “" + this.state.conditionsSearchTxt + '”'
-					// 	}] });
-					// }
+					if (temp) {
+						temp.push({
+							"conditionGuid": null,
+							"conditionDesc": null,
+							"conditionName": "Add new “" + this.state.conditionsSearchTxt + '”'
+						})
+						this.setState({ FamilyConditionsArr: temp });
+					} else {
+						this.setState({
+							FamilyConditionsArr: [{
+								"conditionGuid": null,
+								"conditionDesc": null,
+								"conditionName": "Add new “" + this.state.conditionsSearchTxt + '”'
+							}]
+						});
+					}
 
 				}
 			} else if (tagname === 'SearchForcurrentMedication') {
 				if (newProps.responseData.statusCode == '0') {
 					if (newProps.responseData.data && newProps.responseData.data.length > 0) {
-						this.setState({ currentMedicationArr: newProps.responseData.data });
+						let temp = newProps.responseData.data;
+						temp.push({
+							"medicineTypeGuid": null,
+							"medicineDesc": null,
+							"medicineName": "Add new “" + this.state.currentMedicationSearchTxt + '”'
+						})
+						this.setState({ ConditionsArr: temp });
 					}
 					else
 						this.setState({
-							currentMedicationArr: []
+							currentMedicationArr: [{
+								"medicineTypeGuid": null,
+								"medicineDesc": null,
+								"medicineName": "Add new “" + this.state.currentMedicationSearchTxt + '”'
+							}]
 						});
 				}
 			} else if (tagname === 'SearchFoAllergies') {
 				if (newProps.responseData.statusCode == '0') {
 					if (newProps.responseData.data && newProps.responseData.data.length > 0) {
 						let temp = newProps.responseData.data;
-						// temp.push({
-						// 	"appointmentGuid": null,
-						// 	"allergyGuid": null,
-						// 	"patientAllergyGuId": null,
-						// 	"allergyName": "Add new “" + this.state.AllergiesSearchTxt + '”',
-						// 	"allergyDesc": null
-						// })
+						temp.push({
+							"appointmentGuid": null,
+							"allergyGuid": null,
+							"patientAllergyGuId": null,
+							"allergyName": "Add new “" + this.state.AllergiesSearchTxt + '”',
+							"allergyDesc": null
+						})
 						this.setState({ AllergiesArr: temp });
 					}
-					// else
-					// 	this.setState({
-					// 		AllergiesArr: [{
-					// 			"appointmentGuid": null,
-					// 			"allergyGuid": null,
-					// 			"patientAllergyGuId": null,
-					// 			"allergyName": "Add new “" + this.state.AllergiesSearchTxt + '”',
-					// 			"allergyDesc": null
-					// 		}]
-					// 	});
+					else
+						this.setState({
+							AllergiesArr: [{
+								"appointmentGuid": null,
+								"allergyGuid": null,
+								"patientAllergyGuId": null,
+								"allergyName": "Add new “" + this.state.AllergiesSearchTxt + '”',
+								"allergyDesc": null
+							}]
+						});
+				}
+			}
+			else if (tagname === 'AddConditions') {
+				if (newProps.responseData.statusCode == '0' && newProps.responseData.data) {
+					let conditionGuid = newProps.responseData.data.conditionGuid;
+					let tempArr = [...this.state.SelectedConditionsArr]
+					tempArr[tempArr.length - 1].conditionGuid = conditionGuid
+					this.setState({ SelectedConditionsArr: tempArr });
+				}
+				else {
+					this.setState({ SelectedConditionsArr: tempArr });
+				}
+			}
+			else if (tagname === 'AddAllergies') {
+				if (newProps.responseData.statusCode == '0' && newProps.responseData.data) {
+					let allergyGuid = newProps.responseData.data.allergyGuid;
+					let tempArr = [...this.state.SelectedAllergiesArr]
+					tempArr[tempArr.length - 1].allergyGuid = allergyGuid
+					this.setState({ SelectedAllergiesArr: tempArr });
+				}
+				else {
+					this.setState({ SelectedAllergiesArr: tempArr });
+				}
+			}
+			else if (tagname === 'AddMedicine') {
+				if (newProps.responseData.statusCode == '0' && newProps.responseData.data) {
+					let medicineTypeGuid = newProps.responseData.data.medicineTypeGuid;
+					let tempArr = [...this.state.SelectedcurrentMedicationArr]
+					tempArr[tempArr.length - 1].medicineTypeGuid = medicineTypeGuid
+					this.setState({ SelectedcurrentMedicationArr: tempArr, addMedicinePopup: false });
+					if (!medicineTypeGuid)
+						medicineTypeGuid = this.state.medicineTypeName;
+
+				}
+				else {
+					this.setState({ SelectedcurrentMedicationArr: tempArr });
+				}
+			}
+			else if (tagname === 'getmedicinetype') {
+				if (newProps.responseData.statusCode == '0') {
+					let response = newProps.responseData.data
+					let tempMedicineTypeArr = [];
+
+					for (let i = 0; i < response.length; i++) {
+						let tempObj = {};
+						tempObj.label = response[i].medicineType;
+						tempObj.value = response[i].medicineTypeGuid;
+						tempMedicineTypeArr.push(tempObj)
+					}
+					medicineTypeFullArray = tempMedicineTypeArr;
+					this.setState({ medicineTypeArr: tempMedicineTypeArr })
+					setTimeout(() => {
+						this.setState({ addMedicinePopup: true, genericName: '', strength: '', medicineTypeName: '', isMedicineTypeSelected: false, medicineTypeSearchTxt: '' })
+					}, 300);
 				}
 			}
 		}
@@ -358,35 +518,37 @@ class medicalHistory extends React.Component {
 		let isNameExist = false;
 		try {
 			if (selectedTempserviceArr && selectedTempserviceArr.length > 0)
-			for (let i = 0; i < selectedTempserviceArr.length; i++) {
-				if (selectedTempserviceArr[i].conditionName.toLowerCase() == item.conditionName.toLowerCase()) {
-					isNameExist = true;
-					break;
-				}}
+				for (let i = 0; i < selectedTempserviceArr.length; i++) {
+					if (selectedTempserviceArr[i].conditionName.toLowerCase() == item.conditionName.toLowerCase()) {
+						isNameExist = true;
+						break;
+					}
+				}
 		} catch (error) {
-			
+
 		}
 		if (isNameExist) {
 			Snackbar.show({ text: item.conditionName + ' already added', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 		} else {
-		normalListBackup = [...this.state.FamilyConditionsArr];
-		selectedListBackup = [...this.state.selectedfamilyConditionsArr];
+			normalListBackup = [...this.state.FamilyConditionsArr];
+			selectedListBackup = [...this.state.selectedfamilyConditionsArr];
 
-		
-		selectedTempserviceArr.push(item)
-		tempserviceArr.splice(index, 1);
-		//tempserviceArr = _.differenceBy(tempserviceArr, [item], 'conditionGuid');
-		try {
-			ConditionsFullArray = _.differenceBy(ConditionsFullArray, [item], 'conditionGuid');
-			// selectedFamilyHistoryGlobal.push(item);
-		} catch (error) { }
-		this.setState({ selectedfamilyConditionsArr: selectedTempserviceArr, FamilyConditionsArr: ConditionsFullArray, conditionsSearchTxt: '' })
-		var index2 = _.findIndex(selectedFamilyHistoryGlobal, { familyMemberGuid: selectedFamilyMemberGuild });
-		selectedFamilyHistoryGlobal[index2].patientCondition = selectedTempserviceArr;
-		let { actions, signupDetails } = this.props;
 
-		setLogEvent("medical_history", { "add_family_condition": "click", UserGuid: signupDetails.UserGuid })
-	}}
+			selectedTempserviceArr.push(item)
+			tempserviceArr.splice(index, 1);
+			//tempserviceArr = _.differenceBy(tempserviceArr, [item], 'conditionGuid');
+			try {
+				ConditionsFullArray = _.differenceBy(ConditionsFullArray, [item], 'conditionGuid');
+				// selectedFamilyHistoryGlobal.push(item);
+			} catch (error) { }
+			this.setState({ selectedfamilyConditionsArr: selectedTempserviceArr, FamilyConditionsArr: ConditionsFullArray, conditionsSearchTxt: '' })
+			var index2 = _.findIndex(selectedFamilyHistoryGlobal, { familyMemberGuid: selectedFamilyMemberGuild });
+			selectedFamilyHistoryGlobal[index2].patientCondition = selectedTempserviceArr;
+			let { actions, signupDetails } = this.props;
+
+			setLogEvent("medical_history", { "add_family_condition": "click", UserGuid: signupDetails.UserGuid })
+		}
+	}
 
 	removeSelectedFamilyCondition = (item, index) => {
 		let tempserviceArr = [...this.state.FamilyConditionsArr];
@@ -416,45 +578,46 @@ class medicalHistory extends React.Component {
 		let isNameExist = false;
 		try {
 			if (selectedTempserviceArr && selectedTempserviceArr.length > 0)
-			for (let i = 0; i < selectedTempserviceArr.length; i++) {
-				if (selectedTempserviceArr[i].conditionName.toLowerCase() == item.conditionName.toLowerCase()) {
-					isNameExist = true;
-					break;
-				}}
+				for (let i = 0; i < selectedTempserviceArr.length; i++) {
+					if (selectedTempserviceArr[i].conditionName.toLowerCase() == item.conditionName.toLowerCase()) {
+						isNameExist = true;
+						break;
+					}
+				}
 		} catch (error) {
-			
+
 		}
 		if (isNameExist) {
 			Snackbar.show({ text: item.conditionName + ' already added', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 		} else {
-		normalListBackup = [...this.state.ConditionsArr];
-		selectedListBackup = [...this.state.SelectedConditionsArr];
-		
-		selectedTempserviceArr.push(item)
-		tempserviceArr.splice(index, 1);
-		try {
-			ConditionsFullArray = _.differenceBy(ConditionsFullArray, [item], 'conditionGuid');
-		} catch (error) { }
-		this.setState({ SelectedConditionsArr: selectedTempserviceArr, ConditionsArr: ConditionsFullArray, conditionsSearchTxt: '' })
+			normalListBackup = [...this.state.ConditionsArr];
+			selectedListBackup = [...this.state.SelectedConditionsArr];
 
-		let { actions, signupDetails } = this.props;
-		setLogEvent("medical_history", { "add_condition": "click", UserGuid: signupDetails.UserGuid })
-		if (!item.conditionGuid) {
-			let params = {
-				"userGuid": signupDetails.UserGuid,
-				"DoctorGuid": signupDetails.doctorGuid,
-				"ClinicGuid": signupDetails.clinicGuid,
-				"Version": "",
-				"Data": {
-					"AppointmentGuid": appoinmentGuid, // item.appointmentGuid,
-					"ConditionGuid": item.conditionGuid,
-					"ConditionName": item.conditionName,
-					"ConditionDesc": item.conditionDesc,
+			selectedTempserviceArr.push(item)
+			tempserviceArr.splice(index, 1);
+			try {
+				ConditionsFullArray = _.differenceBy(ConditionsFullArray, [item], 'conditionGuid');
+			} catch (error) { }
+			this.setState({ SelectedConditionsArr: selectedTempserviceArr, ConditionsArr: ConditionsFullArray, conditionsSearchTxt: '' })
+
+			let { actions, signupDetails } = this.props;
+			setLogEvent("medical_history", { "add_condition": "click", UserGuid: signupDetails.UserGuid })
+			if (!item.conditionGuid) {
+				let params = {
+					"userGuid": signupDetails.UserGuid,
+					"DoctorGuid": signupDetails.doctorGuid,
+					"ClinicGuid": signupDetails.clinicGuid,
+					"Version": "",
+					"Data": {
+						"AppointmentGuid": appoinmentGuid, // item.appointmentGuid,
+						"ConditionGuid": item.conditionGuid,//conditionGuidForCustom
+						"ConditionName": item.conditionName,
+						"ConditionDesc": item.conditionDesc,
+					}
 				}
+				actions.callLogin('V15/FuncForDrAppToAddPatientCondition', 'post', params, signupDetails.accessToken, 'AddConditions');
 			}
-			actions.callLogin('V1/FuncForDrAppToAddPatientCondition', 'post', params, signupDetails.accessToken, 'AddConditions');
 		}
-	}
 	}
 	removeSelectedConditions = (item, index) => {
 		let tempserviceArr = [...this.state.ConditionsArr];
@@ -518,36 +681,41 @@ class medicalHistory extends React.Component {
 		DRONA.setIsConsultationChange(true);
 		let tempserviceArr = [...this.state.currentMedicationArr];
 		let selectedTempserviceArr = [...this.state.SelectedcurrentMedicationArr];
-		item.medicineName = item.medicineName.replace("Add new “", "").replace('”', "")
+		if (!item.medicineTypeGuid) {
+			item.medicineName = item.medicineName.replace("Add new “", "").replace('”', "")
+			this.addPressClick(item)
+
+		}
 		let isNameExist = false;
 		try {
 			if (selectedTempserviceArr && selectedTempserviceArr.length > 0)
-			for (let i = 0; i < selectedTempserviceArr.length; i++) {
-				if (selectedTempserviceArr[i].medicineName.toLowerCase() == item.medicineName.toLowerCase()) {
-					isNameExist = true;
-					break;
-				}}
+				for (let i = 0; i < selectedTempserviceArr.length; i++) {
+					if (selectedTempserviceArr[i].medicineName.toLowerCase() == item.medicineName.toLowerCase()) {
+						isNameExist = true;
+						break;
+					}
+				}
 		} catch (error) {
-			
+
 		}
 		if (isNameExist) {
 			Snackbar.show({ text: item.medicineName + ' already added', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 		} else {
-		normalListBackup = [...this.state.currentMedicationArr];
-		selectedListBackup = [...this.state.SelectedcurrentMedicationArr];
+			normalListBackup = [...this.state.currentMedicationArr];
+			selectedListBackup = [...this.state.SelectedcurrentMedicationArr];
 
-		
-		selectedTempserviceArr.push(item)
-		tempserviceArr.splice(index, 1);
-		try {
-			currentMedicationFullArray = _.differenceBy(currentMedicationFullArray, [item], 'medicineGuid');
-		} catch (error) { }
 
-		this.setState({ SelectedcurrentMedicationArr: selectedTempserviceArr, currentMedicationArr: currentMedicationFullArray, currentMedicationSearchTxt: '' })
+			selectedTempserviceArr.push(item)
+			tempserviceArr.splice(index, 1);
+			try {
+				currentMedicationFullArray = _.differenceBy(currentMedicationFullArray, [item], 'medicineGuid');
+			} catch (error) { }
 
-		let { actions, signupDetails } = this.props;
-		setLogEvent("medical_history", { "add_medication": "click", UserGuid: signupDetails.UserGuid })
-	}
+			this.setState({ SelectedcurrentMedicationArr: selectedTempserviceArr, currentMedicationArr: currentMedicationFullArray, currentMedicationSearchTxt: '' })
+
+			let { actions, signupDetails } = this.props;
+			setLogEvent("medical_history", { "add_medication": "click", UserGuid: signupDetails.UserGuid })
+		}
 	}
 
 	removeSelectedcurrentMedication = (item, index) => {
@@ -569,15 +737,15 @@ class medicalHistory extends React.Component {
 		var searchResult = _.filter(currentMedicationFullArray, function (item) {
 			return item.medicineName.toLowerCase().indexOf(text.toLowerCase()) > -1;
 		});
-		// if (searchResult.length == 0) {
-		// 	searchResult.push({
-		// 		"appointmentGuid": null,
-		// 		"medicineGuid": null,
-		// 		"patientAppointmentMedicineGuId": null,
-		// 		"medicineName": "Add new “" + text + '”',
-		// 		"medicineDesc": null
-		// 	})
-		// }
+		if (searchResult.length == 0) {
+			searchResult.push({
+				"appointmentGuid": null,
+				"medicineGuid": null,
+				"patientAppointmentMedicineGuId": null,
+				"medicineName": "Add new “" + text + '”',
+				"medicineDesc": null
+			})
+		}
 		this.setState({
 			currentMedicationArr: searchResult, currentMedicationSearchTxt: text
 		});
@@ -608,30 +776,47 @@ class medicalHistory extends React.Component {
 		let isNameExist = false;
 		try {
 			if (selectedTempserviceArr && selectedTempserviceArr.length > 0)
-			for (let i = 0; i < selectedTempserviceArr.length; i++) {
-				if (selectedTempserviceArr[i].allergyName.toLowerCase() == item.allergyName.toLowerCase()) {
-					isNameExist = true;
-					break;
-				}}
+				for (let i = 0; i < selectedTempserviceArr.length; i++) {
+					if (selectedTempserviceArr[i].allergyName.toLowerCase() == item.allergyName.toLowerCase()) {
+						isNameExist = true;
+						break;
+					}
+				}
 		} catch (error) {
-			
+
 		}
 		if (isNameExist) {
 			Snackbar.show({ text: item.allergyName + ' already added', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 		} else {
-		normalListBackup = [...this.state.AllergiesArr];
-		selectedListBackup = [...this.state.SelectedAllergiesArr];
-		
-		selectedTempserviceArr.push(item)
-		tempserviceArr.splice(index, 1);
-		try {
-			AllergiesFullArray = _.differenceBy(AllergiesFullArray, [item], 'allergyGuid');
-		} catch (error) { }
-		this.setState({ SelectedAllergiesArr: selectedTempserviceArr, AllergiesArr: AllergiesFullArray, AllergiesSearchTxt: '' })
+			normalListBackup = [...this.state.AllergiesArr];
+			selectedListBackup = [...this.state.SelectedAllergiesArr];
 
-		let { actions, signupDetails } = this.props;
-		setLogEvent("medical_history", { "add_allergies": "click", UserGuid: signupDetails.UserGuid })
-	}}
+			selectedTempserviceArr.push(item)
+			tempserviceArr.splice(index, 1);
+			try {
+				AllergiesFullArray = _.differenceBy(AllergiesFullArray, [item], 'allergyGuid');
+			} catch (error) { }
+			this.setState({ SelectedAllergiesArr: selectedTempserviceArr, AllergiesArr: AllergiesFullArray, AllergiesSearchTxt: '' })
+
+			let { actions, signupDetails } = this.props;
+			setLogEvent("medical_history", { "add_allergies": "click", UserGuid: signupDetails.UserGuid })
+			if (!item.allergyGuid) {
+				let params = {
+					"userGuid": signupDetails.UserGuid,
+					"DoctorGuid": signupDetails.doctorGuid,
+					"ClinicGuid": signupDetails.clinicGuid,
+					"Version": "",
+					"Data": {
+						"AppointmentGuid": appoinmentGuid, // item.appointmentGuid,
+						"AllergyGuid": item.allergyGuid,
+						"AllergyName": item.allergyName,
+						"AllergyDesc": item.allergyDesc,
+					}
+				}
+				actions.callLogin('V15/FuncForDrAppToAddNewAllergiesV15', 'post', params, signupDetails.accessToken, 'AddAllergies');
+			}
+		}
+	}
 	removeSelectedAllergies = (item, index) => {
 		let tempserviceArr = [...this.state.AllergiesArr];
 		let selectedTempserviceArr = [...this.state.SelectedAllergiesArr];
@@ -787,10 +972,10 @@ class medicalHistory extends React.Component {
 						<View>
 
 							<TouchableOpacity onPress={() => {
-								let {signupDetails} = this.props;
+								let { signupDetails } = this.props;
 								timeRange = Trace.getTimeRange();
-								Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Conditions_Popup',  signupDetails.firebaseLocation)
-								Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Conditions_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
+								Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Conditions_Popup', signupDetails.firebaseLocation)
+								Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Conditions_Popup", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
 								this.setState({
 									isConditionsModalOpen: true
 								});
@@ -801,10 +986,10 @@ class medicalHistory extends React.Component {
 										<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
 											<Text style={{ fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, color: Color.yrColor, fontFamily: CustomFont.fontName }}>Conditions</Text>
 											<TouchableOpacity onPress={() => {
-												let {signupDetails} = this.props;
+												let { signupDetails } = this.props;
 												timeRange = Trace.getTimeRange();
-												Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Conditions_Popup',  signupDetails.firebaseLocation)
-												Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Conditions_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
+												Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Conditions_Popup', signupDetails.firebaseLocation)
+												Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Conditions_Popup", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
 												this.setState({
 													isConditionsModalOpen: true
 												});
@@ -822,8 +1007,8 @@ class medicalHistory extends React.Component {
 							<TouchableOpacity onPress={() => {
 								let { signupDetails } = this.props;
 								timeRange = Trace.getTimeRange();
-								Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Current_Medication_Popup',  signupDetails.firebaseLocation)
-								Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Current_Medication_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
+								Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Current_Medication_Popup', signupDetails.firebaseLocation)
+								Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Current_Medication_Popup", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
 								this.setState({
 									iscurrentMedicationModalOpen: true
 								});
@@ -836,8 +1021,8 @@ class medicalHistory extends React.Component {
 											<TouchableOpacity onPress={() => {
 												let { signupDetails } = this.props;
 												timeRange = Trace.getTimeRange();
-												Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Current_Medication_Popup',  signupDetails.firebaseLocation)
-												Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Current_Medication_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
+												Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Current_Medication_Popup', signupDetails.firebaseLocation)
+												Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Current_Medication_Popup", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
 												this.setState({
 													iscurrentMedicationModalOpen: true
 												});
@@ -854,8 +1039,8 @@ class medicalHistory extends React.Component {
 							<TouchableOpacity onPress={() => {
 								let { signupDetails } = this.props;
 								timeRange = Trace.getTimeRange();
-								Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Allergies_Popup',  signupDetails.firebaseLocation)
-								Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Allergies_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
+								Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Allergies_Popup', signupDetails.firebaseLocation)
+								Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Allergies_Popup", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
 								this.setState({
 									isAllergiesModalOpen: true
 								});
@@ -867,9 +1052,9 @@ class medicalHistory extends React.Component {
 											<TouchableOpacity onPress={() => {
 												let { signupDetails } = this.props;
 												timeRange = Trace.getTimeRange();
-												Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Allergies_Popup',  signupDetails.firebaseLocation)
-												Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Allergies_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
-												
+												Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Allergies_Popup', signupDetails.firebaseLocation)
+												Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Allergies_Popup", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+
 												this.setState({
 													isAllergiesModalOpen: true
 												});
@@ -913,10 +1098,10 @@ class medicalHistory extends React.Component {
 							</TouchableOpacity>
 
 							<TouchableOpacity onPress={() => {
-									let { signupDetails } = this.props;
-									timeRange = Trace.getTimeRange();
-									Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Significant_History_Popup',  signupDetails.firebaseLocation)
-									Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Significant_History_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
+								let { signupDetails } = this.props;
+								timeRange = Trace.getTimeRange();
+								Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Significant_History_Popup', signupDetails.firebaseLocation)
+								Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Significant_History_Popup", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
 								isUpdateGlobalStatusBackup = DRONA.getIsConsultationChange();
 								DRONA.setIsConsultationChange(false)
 								this.setState({ isModalVisibleSignificant: true, })
@@ -975,19 +1160,20 @@ class medicalHistory extends React.Component {
 					<View style={[styles.modelViewMessage]}>
 						<View style={{ margin: responsiveWidth(3), marginBottom: responsiveHeight(10) }}>
 							<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-								<TouchableOpacity style={{ padding: 10 }} onPress={() =>
-								  {
+								<TouchableOpacity style={{ padding: 10 }} onPress={() => {
 									Trace.stopTrace()
-									 this.setState({ fld1: Color.inputdefaultBorder, isConditionsModalOpen: false, conditionsSearchTxt: '' 
-									 })
+									this.setState({
+										fld1: Color.inputdefaultBorder, isConditionsModalOpen: false, conditionsSearchTxt: ''
+									})
 								}}>
 									<Image source={cross_new} style={{ height: responsiveWidth(5), width: responsiveWidth(6), marginRight: 10 }} />
 								</TouchableOpacity>
 								<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font16, color: Color.darkText, opacity: 0.8, fontWeight: 'bold' }}>Conditions</Text>
-								<TouchableOpacity style={{ padding: 10 }} onPress={() =>{
+								<TouchableOpacity style={{ padding: 10 }} onPress={() => {
 									Trace.stopTrace()
-									 this.setState({ fld1: Color.inputdefaultBorder, isConditionsModalOpen: false, conditionsSearchTxt: '' }
-									 )}}>
+									this.setState({ fld1: Color.inputdefaultBorder, isConditionsModalOpen: false, conditionsSearchTxt: '' }
+									)
+								}}>
 									<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font14, color: Color.primary }}>Done</Text>
 								</TouchableOpacity>
 							</View>
@@ -1039,19 +1225,19 @@ class medicalHistory extends React.Component {
 							<View >
 								<View style={{ margin: responsiveWidth(3), marginBottom: responsiveHeight(10) }}>
 									<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-										<TouchableOpacity style={{ padding: 10 }} onPress={() =>
-										   {
+										<TouchableOpacity style={{ padding: 10 }} onPress={() => {
 											Trace.stopTrace()
-											 this.setState({ fld2: Color.inputdefaultBorder, iscurrentMedicationModalOpen: false, currentMedicationSearchTxt: '' 
-											 })
-											}}>
+											this.setState({
+												fld2: Color.inputdefaultBorder, iscurrentMedicationModalOpen: false, currentMedicationSearchTxt: ''
+											})
+										}}>
 											<Image source={cross_new} style={{ height: responsiveWidth(5), width: responsiveWidth(6), marginRight: 10 }} />
 										</TouchableOpacity>
 										<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font16, color: Color.fontColor, fontWeight: 'bold', opacity: 0.8 }}>Medicines</Text>
-										<TouchableOpacity style={{ padding: 10 }} onPress={() => 
-										{
+										<TouchableOpacity style={{ padding: 10 }} onPress={() => {
 											Trace.stopTrace()
-											this.setState({ fld2: Color.inputdefaultBorder, iscurrentMedicationModalOpen: false, currentMedicationSearchTxt: '' 
+											this.setState({
+												fld2: Color.inputdefaultBorder, iscurrentMedicationModalOpen: false, currentMedicationSearchTxt: ''
 											})
 										}}>
 											<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font16, color: Color.primary }}>Done</Text>
@@ -1100,24 +1286,117 @@ class medicalHistory extends React.Component {
 					</View>
 				</Modal>
 
+				{/* ----------------- Add New Medicine modal------------- */}
+				<Modal isVisible={this.state.addMedicinePopup}>
+					<View style={[styles.modelViewMessageMedicine]}>
+						<ScrollView keyboardShouldPersistTaps='always'>
+							<View style={{ flex: 1, borderTopLeftRadius: 20, borderTopRightRadius: 20, backgroundColor: Color.white }}>
+								<View style={{ marginTop: responsiveHeight(2), marginLeft: responsiveWidth(7), marginRight: responsiveWidth(7) }}>
+									<View style={{ flexDirection: 'row', alignItems: 'center' }} >
+										<Text style={{ flex: 1, fontSize: CustomFont.font18, fontFamily: CustomFont.fontName, fontWeight: CustomFont.fontWeight500, color: Color.fontColor }} onPress={() => this.props.navigation.goBack()}>Add New Medicine</Text>
+										<TouchableOpacity onPress={() => this.setState({ addMedicinePopup: false })} style={{ flex: 1, alignItems: 'flex-end' }}>
+											<Image style={{ resizeMode: 'contain', height: responsiveHeight(4), width: responsiveWidth(4) }} source={cross_new} />
+										</TouchableOpacity>
+									</View>
+
+									<View style={{ marginTop: responsiveHeight(2) }}>
+										<Text style={{ color: Color.optiontext, fontFamily: CustomFont.fontName, fontSize: CustomFont.font12 }}>Medicine Name *</Text>
+										<TextInput returnKeyType="done" onChangeText={this.typeMedcineName} value={this.state.currentMedicationSearchTxt} style={{ paddingLeft: 5, borderColor: Color.borderColor, borderRadius: 7, marginTop: 10, height: responsiveHeight(5.5), borderWidth: 1, color: Color.fontColor, textTransform: 'capitalize' }} />
+									</View>
+									<View style={{ flexDirection: 'row', marginTop: responsiveHeight(2) }}>
+										<View style={{ flex: 1, marginRight: responsiveWidth(2) }}>
+											<Text style={{ color: Color.optiontext, fontFamily: CustomFont.fontName, fontSize: CustomFont.font12 }}>Generic Name</Text>
+											<TextInput returnKeyType="done" onChangeText={this.typeGenericName} value={this.state.genericName} placeholderTextColor={Color.textGrey} placeholder="Enter Name" style={{ paddingLeft: 5, borderColor: Color.borderColor, borderRadius: 7, marginTop: 10, height: responsiveHeight(5.5), borderWidth: 1, color: Color.fontColor }} />
+										</View>
+										<View style={{ flex: 1, marginLeft: responsiveWidth(2) }}>
+											<Text style={{ color: Color.optiontext, fontFamily: CustomFont.fontName, fontSize: CustomFont.font12 }}>Strength</Text>
+											<TextInput returnKeyType="done" onChangeText={this.typeStregth} value={this.state.strength} placeholderTextColor={Color.textGrey} placeholder="Enter strength" style={{ paddingLeft: 5, borderColor: Color.borderColor, borderRadius: 7, marginTop: 10, height: responsiveHeight(5.5), borderWidth: 1, color: Color.fontColor }} />
+										</View>
+									</View>
+									<View style={{ marginTop: responsiveHeight(2) }}>
+										<Text style={{ color: Color.optiontext, fontFamily: CustomFont.fontName, fontSize: CustomFont.font12 }}>Medicine Type *</Text>
+										<TextInput onBlur={this.callIsBlur2} onFocus={this.callIsFucused2} style={[styles.createInputStyle, { borderColor: this.state.InpborderColor2 }]} placeholder="Search/Choose type" placeholderTextColor={Color.placeHolderColor} value={this.state.medicineTypeSearchTxt} onChangeText={(medicineTypeSearchTxt) => { return this.SearchFilterFunctionDosage(medicineTypeSearchTxt); }} maxLength={15} />
+
+										<View style={{ flex: 1 }}>
+											{this.state.showStateDosage ?
+												<View style={{
+													borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,
+													borderBottomColor: Color.createInputBorder, borderTopColor: Color.white, marginTop: responsiveHeight(-.8)
+												}}>
+													{this.state.medicineTypeArr && this.state.medicineTypeArr.length > 0 ? <FlatList style={{ backgroundColor: '#fafafa', height: responsiveHeight(32) }}
+														data={this.state.medicineTypeArr}
+														renderItem={({ item, index }) => (
+															<TouchableOpacity style={{ height: responsiveHeight(7), justifyContent: 'flex-start' }}
+																onPress={() => this.clickOnState(item)}>
+																<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }}>{item.label}</Text>
+															</TouchableOpacity>
+														)}
+														keyExtractor={(item, index) => index.toString()}
+													/> : null}
+
+												</View> : null}
+										</View>
+
+										{/* <DropDownPicker zIndex={999}
+										items={this.state.medicineTypeArr}
+										containerStyle={{ height: responsiveHeight(6.5) }}
+										style={{ backgroundColor: '#FFF', marginTop: 10 }}
+										itemStyle={{
+											justifyContent: 'flex-start', height: responsiveHeight(5)
+										}}
+										dropDownStyle={{ backgroundColor: '#FFF', zIndex: 4 }}
+										onChangeItem={item => {
+											this.setState({ medicineTypeName: item.value })
+											if (this.state.currentMedicationSearchTxt)
+												this.setState({ isMedicineTypeSelected: true })
+										}}
+										globalTextStyle={{ color: Color.fontColor }}
+										placeholder="Search/Choose type"
+										placeholderTextColor={Color.textGrey}
+										labelStyle={{
+											color: Color.text1, marginLeft: 5, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName
+										}}
+									/> */}
+									</View>
+
+
+									<TouchableOpacity style={{
+										marginTop: this.state.showStateDosage ? responsiveHeight(3) : responsiveHeight(15), marginBottom: responsiveHeight(4),
+										backgroundColor: this.state.isMedicineTypeSelected ? Color.primary : Color.btnDisable, borderRadius: 10, height: responsiveHeight(6),
+										alignItems: 'center', justifyContent: 'center',
+									}} onPress={this.addPressed}>
+										<Text style={{
+											fontFamily: CustomFont.fontName, color: Color.white,
+											fontSize: CustomFont.font16, fontWeight: CustomFont.fontWeight700
+										}}>Add</Text>
+									</TouchableOpacity>
+								</View>
+
+							</View>
+						</ScrollView>
+
+					</View>
+				</Modal>
+
+
 				{/* -----------------Allergy modal------------- */}
 				<Modal isVisible={this.state.isAllergiesModalOpen} onRequestClose={() => this.setState({ isAllergiesModalOpen: false })}>
 					<View style={[styles.modelViewMessage]}>
 						<View style={{ margin: responsiveWidth(3), marginBottom: responsiveHeight(10) }}>
 							<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-								<TouchableOpacity style={{ padding: 10 }} onPress={() =>
-								{
-									 Trace.stopTrace()
-									 this.setState({ fld3: Color.inputdefaultBorder, isAllergiesModalOpen: false, AllergiesSearchTxt: '' 
-									 })
+								<TouchableOpacity style={{ padding: 10 }} onPress={() => {
+									Trace.stopTrace()
+									this.setState({
+										fld3: Color.inputdefaultBorder, isAllergiesModalOpen: false, AllergiesSearchTxt: ''
+									})
 								}}>
 									<Image source={cross_new} style={{ height: responsiveWidth(5), width: responsiveWidth(6), marginRight: 10 }} />
 								</TouchableOpacity>
 								<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font16, color: Color.fontColor, fontWeight: 'bold' }}>Allergies</Text>
-								<TouchableOpacity style={{ padding: 10 }} onPress={() => 
-								{
+								<TouchableOpacity style={{ padding: 10 }} onPress={() => {
 									Trace.stopTrace()
-									this.setState({ fld3: Color.inputdefaultBorder, isAllergiesModalOpen: false, AllergiesSearchTxt: '' 
+									this.setState({
+										fld3: Color.inputdefaultBorder, isAllergiesModalOpen: false, AllergiesSearchTxt: ''
 									})
 								}}>
 									<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font16, color: Color.primary }}>Done</Text>
@@ -1169,19 +1448,21 @@ class medicalHistory extends React.Component {
 					<View style={[styles.modelViewMessage]}>
 						<View style={{ margin: responsiveWidth(3), marginBottom: responsiveHeight(10) }}>
 							<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-								<TouchableOpacity style={{ padding: 10 }} onPress={() =>
-								   {
-									 Trace.stopTrace()
-									 this.setState({ isFamilyMemberModalOpen: false, medicineSearchTxt: '', FamilyHistoryArr: this.state.FamilyHistoryArr 
-									})}}>
+								<TouchableOpacity style={{ padding: 10 }} onPress={() => {
+									Trace.stopTrace()
+									this.setState({
+										isFamilyMemberModalOpen: false, currentMedicationSearchTxt: '', FamilyHistoryArr: this.state.FamilyHistoryArr
+									})
+								}}>
 									<Image source={cross_new} style={{ height: responsiveWidth(5), width: responsiveWidth(6), marginRight: 10 }} />
 								</TouchableOpacity>
 								<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font16, color: Color.fontColor, fontWeight: 'bold', opacity: 0.8 }}>Family History</Text>
-								<TouchableOpacity style={{ padding: 10 }} onPress={() => 
-								 {
+								<TouchableOpacity style={{ padding: 10 }} onPress={() => {
 									Trace.stopTrace()
-									this.setState({ isFamilyMemberModalOpen: false, medicineSearchTxt: '', FamilyHistoryArr: this.state.FamilyHistoryArr 
-									})}}>
+									this.setState({
+										isFamilyMemberModalOpen: false, currentMedicationSearchTxt: '', FamilyHistoryArr: this.state.FamilyHistoryArr
+									})
+								}}>
 									<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font16, color: Color.primary }}>Close</Text>
 								</TouchableOpacity>
 							</View>
@@ -1236,11 +1517,11 @@ class medicalHistory extends React.Component {
 										//this.getAdditionalInfo();
 										let { signupDetails } = this.props;
 										timeRange = Trace.getTimeRange();
-										Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Family_History_Popup',  signupDetails.firebaseLocation)
-										Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Family_History_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
+										Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Family_History_Popup', signupDetails.firebaseLocation)
+										Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Family_History_Popup", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
 										let tmpArr = [...this.state.FamilyHistoryArr];
 										setTimeout(() => {
-											this.setState({ isFamilyDetailsModalOpen: false, isFamilyMemberModalOpen: true, medicineSearchTxt: '', FamilyHistoryArr: tmpArr })
+											this.setState({ isFamilyDetailsModalOpen: false, isFamilyMemberModalOpen: true, currentMedicationSearchTxt: '', FamilyHistoryArr: tmpArr })
 										}, 1000)
 									}}>
 										<Image source={arrow_grey} style={{ height: responsiveWidth(5), width: responsiveWidth(6), marginRight: 10 }} />
@@ -1248,11 +1529,11 @@ class medicalHistory extends React.Component {
 									<TouchableOpacity style={{ padding: 10 }} onPress={() => {
 										let { signupDetails } = this.props;
 										timeRange = Trace.getTimeRange();
-										Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Family_History_Popup',  signupDetails.firebaseLocation)
-										Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Family_History_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
+										Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Family_History_Popup', signupDetails.firebaseLocation)
+										Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Family_History_Popup", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
 										let tmpArr = [...this.state.FamilyHistoryArr];
 										setTimeout(() => {
-											this.setState({ isFamilyDetailsModalOpen: false, isFamilyMemberModalOpen: true, medicineSearchTxt: '', FamilyHistoryArr: tmpArr })
+											this.setState({ isFamilyDetailsModalOpen: false, isFamilyMemberModalOpen: true, currentMedicationSearchTxt: '', FamilyHistoryArr: tmpArr })
 										}, 1000)
 									}}>
 										<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font16, color: Color.primary }}>Close</Text>
@@ -1310,60 +1591,60 @@ class medicalHistory extends React.Component {
 
 				<Modal isVisible={this.state.isModalVisibleSignificant} avoidKeyboard={true} onRequestClose={() => this.setState({ isModalVisibleSignificant: false })}>
 					<View style={styles.modelViewSignificant}>
-					<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
-									<Text style={{ marginLeft: responsiveHeight(2), fontFamily: CustomFont.fontName, fontSize: CustomFont.font16, color: Color.fontColor, fontWeight: 'bold', opacity: 0.8 }}>Significant History</Text>
-									<TouchableOpacity style={{ padding: 10 }} onPress={() => {
-										if (isUpdateGlobalStatusBackup) {
-											DRONA.setIsConsultationChange(true)
-										} else if (this.state.notesData != significantNoteBackup) {
-											DRONA.setIsConsultationChange(true)
-										}
-										Trace.stopTrace()
-										this.setState({ fld4: Color.inputdefaultBorder, isModalVisibleSignificant: false })
-									}}>
-										<Image source={cross_new} style={{ height: responsiveWidth(5), width: responsiveWidth(6), marginRight: 5 }} />
-									</TouchableOpacity>
+						<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
+							<Text style={{ marginLeft: responsiveHeight(2), fontFamily: CustomFont.fontName, fontSize: CustomFont.font16, color: Color.fontColor, fontWeight: 'bold', opacity: 0.8 }}>Significant History</Text>
+							<TouchableOpacity style={{ padding: 10 }} onPress={() => {
+								if (isUpdateGlobalStatusBackup) {
+									DRONA.setIsConsultationChange(true)
+								} else if (this.state.notesData != significantNoteBackup) {
+									DRONA.setIsConsultationChange(true)
+								}
+								Trace.stopTrace()
+								this.setState({ fld4: Color.inputdefaultBorder, isModalVisibleSignificant: false })
+							}}>
+								<Image source={cross_new} style={{ height: responsiveWidth(5), width: responsiveWidth(6), marginRight: 5 }} />
+							</TouchableOpacity>
 
-								</View>
-								<KeyboardAvoidingView behavior={"padding"} >
-						<ScrollView keyboardShouldPersistTaps='always'>
-							<View style={{ margin: responsiveWidth(2), flex: 1, marginBottom: responsiveHeight(23) }}>
-								
-								<View style={{ flex: 1 }}>
-									{/* <Text style={{ fontSize: CustomFont.font12, color: Color.fontColor, marginLeft: responsiveHeight(3), marginTop: 20 }}>Significant History</Text> */}
-									<TextInput blurOnSubmit={true} returnKeyType="done"
-										onFocus={() => this.callOnFocus('4')}
-										onBlur={() => this.callOnBlur('4')}
-										placeholderTextColor={Color.placeHolderColor}
-										style={{ borderWidth: 1, borderColor: this.state.fld4, padding: 7, height: responsiveHeight(30), fontSize: CustomFont.font14, borderRadius: 5, marginLeft: responsiveHeight(2), marginRight: responsiveHeight(2), textAlignVertical: 'top', color: Color.fontColor, opacity: .8, marginTop: 10 }}
-										placeholder="eg. any past surgeries or hospitalisations" multiline={true} value={this.state.notesData} onChangeText={notesData => {
-											this.setState({ notesData });
-											significantNoteBackup = notesData;
-											significantHitryFlag = true;
-											DRONA.setIsConsultationChange(true);
-										}} maxLength={2000} />
-									<View style={{ alignItems: 'flex-end' }}>
-										<Text style={{ fontSize: CustomFont.font10, color: Color.fontColor, marginRight: responsiveHeight(3), marginTop: 5, opacity: .4 }}>{this.state.notesData.length} / 2000</Text>
+						</View>
+						<KeyboardAvoidingView behavior={"padding"} >
+							<ScrollView keyboardShouldPersistTaps='always'>
+								<View style={{ margin: responsiveWidth(2), flex: 1, marginBottom: responsiveHeight(23) }}>
 
+									<View style={{ flex: 1 }}>
+										{/* <Text style={{ fontSize: CustomFont.font12, color: Color.fontColor, marginLeft: responsiveHeight(3), marginTop: 20 }}>Significant History</Text> */}
+										<TextInput blurOnSubmit={true} returnKeyType="done"
+											onFocus={() => this.callOnFocus('4')}
+											onBlur={() => this.callOnBlur('4')}
+											placeholderTextColor={Color.placeHolderColor}
+											style={{ borderWidth: 1, borderColor: this.state.fld4, padding: 7, height: responsiveHeight(30), fontSize: CustomFont.font14, borderRadius: 5, marginLeft: responsiveHeight(2), marginRight: responsiveHeight(2), textAlignVertical: 'top', color: Color.fontColor, opacity: .8, marginTop: 10 }}
+											placeholder="eg. any past surgeries or hospitalisations" multiline={true} value={this.state.notesData} onChangeText={notesData => {
+												this.setState({ notesData });
+												significantNoteBackup = notesData;
+												significantHitryFlag = true;
+												DRONA.setIsConsultationChange(true);
+											}} maxLength={2000} />
+										<View style={{ alignItems: 'flex-end' }}>
+											<Text style={{ fontSize: CustomFont.font10, color: Color.fontColor, marginRight: responsiveHeight(3), marginTop: 5, opacity: .4 }}>{this.state.notesData.length} / 2000</Text>
+
+										</View>
+										<TouchableOpacity onPress={() => {
+											if (isUpdateGlobalStatusBackup) {
+												DRONA.setIsConsultationChange(true)
+											} else if (this.state.notesData != significantNoteBackup) {
+												DRONA.setIsConsultationChange(true)
+											}
+											Trace.stopTrace()
+											this.setState({ fld4: Color.inputdefaultBorder, isModalVisibleSignificant: false })
+										}} style={{
+											marginLeft: responsiveWidth(4), marginRight: responsiveWidth(4),
+											backgroundColor: Color.primary, borderRadius: 10, marginTop: responsiveHeight(3), height: responsiveHeight(5.8), justifyContent: 'center', alignItems: 'center'
+										}}>
+											<Text style={{ fontSize: CustomFont.font16, color: Color.white, fontFamily: CustomFont.fontName }}>Save</Text>
+										</TouchableOpacity>
 									</View>
-									<TouchableOpacity onPress={() => {
-										if (isUpdateGlobalStatusBackup) {
-											DRONA.setIsConsultationChange(true)
-										} else if (this.state.notesData != significantNoteBackup) {
-											DRONA.setIsConsultationChange(true)
-										}
-										Trace.stopTrace()
-										this.setState({ fld4: Color.inputdefaultBorder, isModalVisibleSignificant: false })
-									}} style={{
-										marginLeft: responsiveWidth(4), marginRight: responsiveWidth(4),
-										backgroundColor: Color.primary, borderRadius: 10, marginTop: responsiveHeight(3), height: responsiveHeight(5.8), justifyContent: 'center', alignItems: 'center'
-									}}>
-										<Text style={{ fontSize: CustomFont.font16, color: Color.white, fontFamily: CustomFont.fontName }}>Save</Text>
-									</TouchableOpacity>
-								</View>
 
-							</View>
-						</ScrollView>
+								</View>
+							</ScrollView>
 						</KeyboardAvoidingView>
 					</View>
 				</Modal>

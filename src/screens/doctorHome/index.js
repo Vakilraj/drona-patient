@@ -28,6 +28,7 @@ let appVersion = Platform.OS == 'android' ? 'V_20230407' : 'V_20230407';
 let timeRange = '', age = '';
 let assistantAdded = '';
 let cityName = '';
+import { BehaviorSubject } from 'rxjs'
 
 class DoctorHome extends React.Component {
 	constructor(props) {
@@ -63,7 +64,8 @@ class DoctorHome extends React.Component {
 		Linking.addEventListener('url', this.handleNavigation);
 		this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)
 
-
+		const nameSubject = new BehaviorSubject('init');
+		DRONA.setSubjectSebscription(nameSubject);
 	}
 
 

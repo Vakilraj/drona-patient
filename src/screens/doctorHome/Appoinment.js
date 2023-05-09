@@ -67,6 +67,13 @@ class Appoinment extends React.Component {
 	}
 	
 	componentDidMount() {
+		const subscription = DRONA.getSubjectSebscription().subscribe(value => {
+			//console.log(value+'---received--'+DRONA.getShowAppoinmentCompleteMsg());
+			if(value=='update' && DRONA.getShowAppoinmentCompleteMsg() == 1){
+				//console.log('---received inner--');
+				this.getAppoinmentedList();
+			}
+			});
 		let { actions, signupDetails } = this.props;
 
 		let timeRange = Trace.getTimeRange();

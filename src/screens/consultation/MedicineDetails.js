@@ -21,13 +21,36 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import Snackbar from 'react-native-snackbar';
 import { setLogEvent } from '../../service/Analytics';
 import Validator from '../../components/Validator';
-let prevIndexTimings = 0, prevIndexDoase = 0, prevIndexDuration = 1, medicineType = '', medicineTypeGuid = '', DurationType = 'days', DurationTypeValue = '5', MedicineDoasesGuId = '', doasestype = '', Dosages = '', TimingTypeGuid = '', dosagePattern = '';
+let prevIndexTimings = 0, prevIndexDoase = 0, prevIndexDuration = 1, medicineType = '', medicineTypeGuid = '', DurationType = '', DurationTypeValue = '5', MedicineDoasesGuId = '', doasestype = '', Dosages = '', TimingTypeGuid = '', dosagePattern = '';
 let doasagesPatterArr = [{ label: '1-0-0', value: '1-0-0', isSelect: true }, { label: '0-1-0', value: '0-1-0', isSelect: false }, { label: '0-0-1', value: '0-0-1', isSelect: false }, { label: '1-1-0', value: '1-1-0', isSelect: false }, { label: '0-1-1', value: '0-1-1', isSelect: false }, { label: '1-0-1', value: '1-0-1', isSelect: false }, { label: '1-1-1', value: '1-1-1', isSelect: false }, { label: '6 Hourly', value: '6 Hourly', isSelect: false }, { label: 'Alternate Day', value: 'Alternate Day', isSelect: false }, { label: 'Weekly', value: 'Weekly', isSelect: false }, { label: 'Monthly', value: 'Monthly', isSelect: false }, { label: 'SOS', value: 'SOS', isSelect: false }]
 let clickFlag = 0, isEdit = false, prvLength = -1, InputTxtLengthDosage = 5, InputTxtLengthDuration = 5, InputTxtLengthUnit = 5;
 import Trace from '../../service/Trace'
 import _ from 'lodash';
 let medicineTimingFrequency = '',fullArrayUnit=[];
+let whenToTakeData = [
+	{ label: 'Before Food', value: 'Before Food' }, 
+	{ label: 'After Food', value: 'After Food' }, 
+	{ label: 'No Preference', value: 'No Preference' },
+	{ label: 'Before Breakfast', value: 'Before Breakfast' },
+	{ label: 'After Breakfast', value: 'After Breakfast' },
+	{ label: 'Before Lunch', value: 'Before Lunch' },
+	{ label: 'After Lunch', value: 'After Lunch' },
+	{ label: 'Before Dinner', value: 'Before Dinner' },
+	{ label: 'After Dinner', value: 'After Dinner' },
+	{ label: 'Empty Stomach', value: 'Empty Stomach' }, 
+	{ label: 'Bed Time', value: 'Bed Time' },
+	{ label: 'SOS', value: 'SOS' }, 
+]
 
+let durationData = [
+	{label: 'Daily', value:'Daily'},
+	{label: 'Alternate Day', value:'Alternate Day'},
+	{label: 'Fort Night', value:'Fort Night'},
+	{label: 'Hourly', value:'Hourly'},
+	{label: 'Monthly', value:'Monthly'},
+	{label: 'SOS', value:'SOS'},
+	{label: 'Weekly', value:'Weekly'},
+]
 class MedicineDetails extends React.Component {
 	constructor(props) {
 		super(props);
@@ -40,12 +63,12 @@ class MedicineDetails extends React.Component {
 			InpborderColorDuration: Color.inputdefaultBorder,
 			InpborderColorUnit: Color.inputdefaultBorder,
 			CustomInput: false,
-			whenToTakeArr: [{ label: 'Empty Stomach', value: 'Empty Stomach' }, { label: 'Before Food', value: 'Before Food' }, { label: 'After Food', value: 'After Food' }, { label: 'No Preference', value: 'No Preference' }],
+			whenToTakeArr: whenToTakeData,
 			showDurationDropDown: false,
 			showUnitDropDown: false,
 			dutaionTxt: '',
 			unitTxt: '',
-			DurationDropdownArr: [],
+			DurationDropdownArr: durationData,
 			UnitDropdownArr: props.navigation.state.params.item.medicineDosasesType,
 
 
@@ -92,7 +115,7 @@ class MedicineDetails extends React.Component {
 			try {
 
 				Dosages = item.dosages ? item.dosages : 1;
-				DurationType = item.durationType ? item.durationType : 'days';
+				DurationType = item.durationType ? item.durationType : '';
 				if (item.durationValue)
 					DurationTypeValue = item.durationValue;
 				if (item.medicineTimingFrequency)
@@ -108,13 +131,13 @@ class MedicineDetails extends React.Component {
 					}
 					this.setState({ dosageSearchTxt: dosagePattern })
 				}
-				let durationRefileedTxt = DurationTypeValue + ' ' + DurationType;
+				let durationRefileedTxt = DurationType;
 				InputTxtLengthDuration = durationRefileedTxt.length;
 
 				// let unitRefileedTxt = Dosages + ' ' + doasestype;
 				// InputTxtLengthUnit = unitRefileedTxt.length;
 
-				this.setState({ dutaionTxt: durationRefileedTxt, unitTxt: this.state.UnitDropdownArr[0].doasestype })
+				this.setState({ dutaionTxt: durationRefileedTxt, unitTxt: this.state.UnitDropdownArr[0].doasestype})
 
 			} catch (e) { }
 
@@ -138,7 +161,7 @@ class MedicineDetails extends React.Component {
 			medicineTypeGuid: medicineTypeGuid,
 			medicineType: medicineType,
 			durationType: DurationType,
-			durationValue: DurationTypeValue,
+			// durationValue: DurationTypeValue,
 			yellowFlag: true,
 			timingTypeGuid: TimingTypeGuid,
 			medicineTimingShift: null,
@@ -171,10 +194,10 @@ class MedicineDetails extends React.Component {
 		this.setState({ showStateDosage: false });
 	}
 	callIsFucusedDuration = () => {
-		this.setState({ InpborderColorDuration: Color.primary })
+		this.setState({ InpborderColorDuration: Color.primary, showDurationDropDown: true })
 	}
 	callIsBlurDuration = () => {
-		this.setState({ InpborderColorDuration: Color.inputdefaultBorder, });
+		this.setState({ InpborderColorDuration: Color.inputdefaultBorder});
 	}
 
 	callIsFucusedUnit = () => {
@@ -272,33 +295,38 @@ class MedicineDetails extends React.Component {
 	}
 
 	handleDurationData = (text) => {
-		let duationTypeArr = [{ label: 'day' }, { label: 'week' }, { label: 'month' }, { label: 'year' },];
-		if (text && Validator.isMobileValidate(text)) {
-			for (i = 0; i < duationTypeArr.length; i++) {
-				if (text == 1)
-					duationTypeArr[i].label = text + ' ' + duationTypeArr[i].label;
-				else
-					duationTypeArr[i].label = text + ' ' + duationTypeArr[i].label + 's';
-			}
-			this.setState({ DurationDropdownArr: duationTypeArr, showDurationDropDown: true })
+		// let duationTypeArr = [{ label: 'day' }, { label: 'week' }, { label: 'month' }, { label: 'year' },];
+		// if (text && VaduationTypeArrlidator.isMobileValidate(text)) {
+		// 	for (let i = 0; i < duationTypeArr.length; i++) {
+		// 		if (text == 1)
+		// 			duationTypeArr[i].label = text + ' ' + duationTypeArr[i].label;
+		// 		else
+		// 			duationTypeArr[i].label = text + ' ' + duationTypeArr[i].label + 's';
+		// 	}
+		// 	this.setState({ DurationDropdownArr: duationTypeArr, showDurationDropDown: true })
+		// }
+		// this.setState({ dutaionTxt: text });
+		let ans = [];
+		if(text){
+			ans = durationData.filter((val) => val.label.toLowerCase().includes(text.toLowerCase()))
 		}
-		this.setState({ dutaionTxt: text });
+		this.setState({dutaionTxt: text, DurationDropdownArr: text.length === 0 ? durationData :ans, showDurationDropDown: true })
 	}
 
 	clickOnDuration = (item) => {
-		if (item.label) {
-			let str = item.label.split(' ');
-			DurationType = str[1];
-			DurationTypeValue = str[0];
-			InputTxtLengthDuration = item.label.length;
-		}
+		// if (item.label) {
+		// 	let str = item.label.split(' ');
+		// 	DurationType = str[1];
+		// 	DurationTypeValue = str[0];
+		// 	InputTxtLengthDuration = item.label.length;
+		// }
 
-
+		DurationType = item.label;
 		this.setState({ dutaionTxt: item.label, showDurationDropDown: false })
 	}
 
 	handleUnitData = (text) => {
-		if(text && Validator.isMobileValidate(text)){
+		if(text){
 			var searchResult = _.filter(fullArrayUnit, function (item) {
 				return item.doasestype.toLowerCase().indexOf(text.toLowerCase()) > -1;
 			});
@@ -358,7 +386,8 @@ class MedicineDetails extends React.Component {
 							</View>
 							{/* ------- Unit------- */}
 							<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>Units</Text>
-							<TextInput onBlur={this.callIsBlurUnit} onFocus={this.callIsFucusedUnit} keyboardType={'phone-pad'} style={[styles.createInputStyle, { borderColor: this.state.InpborderColorUnit }]} placeholder={'Enter Unit'} placeholderTextColor={Color.placeHolderColor} value={this.state.unitTxt} maxLength={InputTxtLengthUnit}
+							<TextInput onBlur={this.callIsBlurUnit} onFocus={this.callIsFucusedUnit}  style={[styles.createInputStyle, { borderColor: this.state.InpborderColorUnit }]} placeholder={'Enter Unit'} placeholderTextColor={Color.placeHolderColor} value={this.state.unitTxt}
+							//  maxLength={InputTxtLengthUnit}
 								onChangeText={(text) => this.handleUnitData(text)} ref='search' returnKeyType='done' />
 
 							{this.state.showUnitDropDown && this.state.UnitDropdownArr && this.state.UnitDropdownArr.length>0?
@@ -422,18 +451,19 @@ class MedicineDetails extends React.Component {
 								placeholderStyle={{ color: Color.placeHolderColor, fontSize: CustomFont.font16 }}
 							/>
 							{/* ------- Duration------- */}
-							<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>Duration</Text>
-							<TextInput onBlur={this.callIsBlurDuration} onFocus={this.callIsFucusedDuration} keyboardType={'phone-pad'} style={[styles.createInputStyle, { borderColor: this.state.InpborderColorDuration }]} placeholder={'Enter duration'} placeholderTextColor={Color.placeHolderColor} value={this.state.dutaionTxt} maxLength={InputTxtLengthDuration}
+							<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>Frequency</Text>
+							<TextInput onBlur={this.callIsBlurDuration} onFocus={this.callIsFucusedDuration}  style={[styles.createInputStyle, { borderColor: this.state.InpborderColorDuration }]} placeholder={'Enter frequency'} placeholderTextColor={Color.placeHolderColor} value={this.state.dutaionTxt} 
+							// maxLength={InputTxtLengthDuration}
 								onChangeText={(text) => this.handleDurationData(text)} ref='search' returnKeyType='done' />
 
-							{this.state.dutaionTxt && this.state.showDurationDropDown ?
+							{this.state.showDurationDropDown ?
 								<View style={{
 									borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,
 									borderBottomColor: Color.createInputBorder, borderTopColor: Color.white, marginTop: responsiveHeight(-.8)
 								}}><FlatList style={{ backgroundColor: '#fafafa' }}
 									data={this.state.DurationDropdownArr}
 									renderItem={({ item, index }) => (
-										<TouchableOpacity style={{ zIndex: 999, height: responsiveHeight(7), justifyContent: 'flex-start', }} onPress={() => this.clickOnDuration(item)}>
+										<TouchableOpacity key={index} style={{ zIndex: 999, height: responsiveHeight(7), justifyContent: 'flex-start', }} onPress={() => this.clickOnDuration(item)}>
 											<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }} >{item.label}</Text>
 										</TouchableOpacity>
 									)}

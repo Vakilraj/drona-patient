@@ -30,10 +30,11 @@ let medicineTimingFrequency = 'Empty Stomach';
 let medicineDosasesType;
 let fromDaysData = [{ value: 'days' }, { value: 'weeks' }, { value: 'months' }, { value: 'years' }]
 let fullArrayUnit = [];
+let doctorNotes = [];
 class MedicineDetails extends React.Component {
 	constructor(props) {
 		super(props);
-        if(Array.isArray(props.navigation.state.params.item)){
+		if (Array.isArray(props.navigation.state.params.item)) {
 			medicineDosasesType = props.navigation.state.params.item[0].medicineDosasesType
 		} else {
 			medicineDosasesType = props.navigation.state.params.item.medicineDosasesType
@@ -61,7 +62,11 @@ class MedicineDetails extends React.Component {
 			fromDaysTxt: '',
 			showFromDayTxtDropDown: false,
 			fromDaysDataArr: fromDaysData,
-			showToDayTxtDropDown: false
+			showToDayTxtDropDown: false,
+			showDoctorNotesdropDown: false,
+			doctorNoteTxt: '',
+			// noteDatas: temp,
+			doctorNotesDataArr: [],
 
 
 
@@ -97,6 +102,9 @@ class MedicineDetails extends React.Component {
 			tempArr.push(item);
 			this.setState({ taperedData: tempArr })
 		}
+		doctorNotes = this.props.navigation.state.params.doctorNotes;
+		console.log('===== doctorNotes =====', JSON.stringify(doctorNotes))
+		this.setState({ doctorNotesDataArr: doctorNotes })
 		medicineTypeGuid = item.medicineTypeGuid;
 		medicineType = item.medicineType;
 
@@ -108,8 +116,8 @@ class MedicineDetails extends React.Component {
 			medicineTypeGuid = item.medicineDosasesType[0].medicineTypeGuid;
 			MedicineDoasesGuId = item.medicineDosasesType[0].medicineDoasesGuId;
 			doasestype = item.medicineDosasesType[0].doasestype;
-			fullArrayUnit=item.medicineDosasesType;
-			console.log('----'+JSON.stringify(fullArrayUnit))
+			fullArrayUnit = item.medicineDosasesType;
+			console.log('----' + JSON.stringify(fullArrayUnit))
 			//this.setState({ DosageTitleArr: tempDoaseArr });
 			// if (doasestype === 'Tablet') {
 			// 	let tmpArr = [{ label: '1/2', value: '1/2', isSelect: false }, { label: '3/4', value: '3/4', isSelect: false }, { label: '1', value: '1', isSelect: true }, { label: '2', value: '2', isSelect: false }];
@@ -304,6 +312,14 @@ class MedicineDetails extends React.Component {
 
 	}
 
+	clickOnDoctorNotes = (item, index) => {
+		console.log('======= item ======', JSON.stringify(item), index)
+		const tempData = this.state.taperedData
+		// this.setState({ noteData });
+		tempData[index].noteValue = item.note;
+		this.setState({ noteData: item.note, showDoctorNotesdropDown: false })
+	}
+
 	callIsFucused2 = (index) => {
 		this.setState({ InpborderColor2: Color.primary, selectedIndex: index });
 		if (!this.state.CustomInput)
@@ -456,19 +472,19 @@ class MedicineDetails extends React.Component {
 		// 	this.setState({ unitTxt: text, showUnitDropDown: true });
 		// } else
 		// 	this.setState({ unitTxt: text, showUnitDropDown: false });
-		if(text){
+		if (text) {
 			var searchResult = _.filter(fullArrayUnit, function (item) {
 				return item.doasestype.toLowerCase().indexOf(text.toLowerCase()) > -1;
 			});
 			this.setState({
 				UnitDropdownArr: searchResult
 			});
-		}else{
+		} else {
 			this.setState({
 				UnitDropdownArr: fullArrayUnit
 			});
 		}
-		
+
 		this.setState({ unitTxt: text });
 
 	}
@@ -566,7 +582,7 @@ class MedicineDetails extends React.Component {
 					// maxLength={InputTxtLengthUnit}
 					onChangeText={(text) => this.handleUnitData(text, index)}
 					ref='search' returnKeyType='done' />
-				{ this.state.showUnitDropDown && this.state.selectedIndex == index ?
+				{this.state.showUnitDropDown && this.state.selectedIndex == index ?
 					<View style={{
 						borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,
 						borderBottomColor: Color.createInputBorder, borderTopColor: Color.white, marginTop: responsiveHeight(-.8)
@@ -705,7 +721,7 @@ class MedicineDetails extends React.Component {
 							)}
 							keyExtractor={(item, index) => index.toString()}
 							/>
-						</View> : <View style={{ flex: 1,marginRight: responsiveWidth(2)}}></View>}
+						</View> : <View style={{ flex: 1, marginRight: responsiveWidth(2) }}></View>}
 					{this.state.toDaysTxt && this.state.showToDayTxtDropDown && this.state.selectedIndex == index ?
 						<View style={{
 							borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,
@@ -725,19 +741,65 @@ class MedicineDetails extends React.Component {
 				{/* ------------------- NOTE  ---------------*/}
 
 				<Text style={{ marginTop: responsiveHeight(3), color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName }}>Note</Text>
-				<TextInput returnKeyType="done" style={{ marginBottom: responsiveHeight(3), borderWidth: 1, borderColor: Color.borderColor, padding: 10, height: responsiveHeight(12), fontSize: CustomFont.font14, borderRadius: 5, textAlignVertical: 'top', color: Color.fontColor, opacity: .8, marginTop: 10 }}
+				{/* <TextInput returnKeyType="done" style={{ marginBottom: responsiveHeight(1), borderWidth: 1, borderColor: Color.borderColor, padding: 10, height: responsiveHeight(12), fontSize: CustomFont.font14, borderRadius: 5, textAlignVertical: 'top', color: Color.fontColor, opacity: .8, marginTop: 10 }}
 					placeholder="Add comments"
+					onFocus={() => this.setState({ showDoctorNotesdropDown: true })}
 					placeholderTextColor={Color.placeHolderColor}
 					multiline={true}
-					value={item?.noteValue ? item?.noteData : ''}
+					defaultValue={item?.noteValue ? item?.noteData : ''}
 					onChangeText={noteData => {
 						const tempData = this.state.taperedData
-						this.setState({ selectedIndex: index })
-						this.setState({ noteData });
+						// this.setState({ selectedIndex: index })
+						// this.setState({ noteData });
 						tempData[index].noteValue = noteData;
+						this.setState({ selectedIndex: index })
+						if (noteData) {
+							let temps = [...doctorNotes];
+							let notesData = temps.filter((val) => {
+								return val.note.toLocaleLowerCase().includes(noteData.toLocaleLowerCase());
+							})
+							this.setState({ doctorNotesDataArr: notesData })
+						}
+						let { signupDetails } = this.props;
+						setLogEvent("medicine", { "add_note": "click", UserGuid: signupDetails.UserGuid })
+					}} maxLength={100} blurOnSubmit /> */}
+				<TextInput returnKeyType="done" style={{ marginBottom: responsiveHeight(1), borderWidth: 1, borderColor: Color.borderColor, padding: 10, height: responsiveHeight(6), fontSize: CustomFont.font14, borderRadius: 5, textAlignVertical: 'top', color: Color.fontColor, opacity: .8, marginTop: 10 }}
+					onFocus={() => this.setState({ showDoctorNotesdropDown: true })}
+					placeholder="Add comments"
+					placeholderTextColor={Color.placeHolderColor}
+					multiline={true} value={item.noteValue}
+					onChangeText={noteData => {
+						const tempData = this.state.taperedData
+						tempData[index].noteValue = noteData
+						this.setState({ selectedIndex: index })
+						if (noteData) {
+							let temps = [...doctorNotes];
+							let notesData = temps.filter((val) => {
+								return val.note.toLocaleLowerCase().includes(noteData.toLocaleLowerCase());
+							})
+							this.setState({ doctorNotesDataArr: notesData })
+						}
+						this.setState({ noteData });
 						let { signupDetails } = this.props;
 						setLogEvent("medicine", { "add_note": "click", UserGuid: signupDetails.UserGuid })
 					}} maxLength={100} blurOnSubmit />
+
+				{
+					this.state.showDoctorNotesdropDown && doctorNotes?.length > 0 && this.state.selectedIndex === index ? <View style={{
+						borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,
+						borderBottomColor: Color.createInputBorder, borderTopColor: Color.white, marginTop: responsiveHeight(-.8)
+					}}><FlatList style={{ backgroundColor: '#fafafa' }}
+						data={this.state.doctorNotesDataArr}
+						renderItem={({ item, _index }) => (
+							<TouchableOpacity key={_index} style={{ zIndex: 999, height: responsiveHeight(7), justifyContent: 'flex-start', }} onPress={() => this.clickOnDoctorNotes(item, index)}>
+								<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }} >{item.note}</Text>
+							</TouchableOpacity>
+						)}
+						keyExtractor={(item, index) => index.toString()}
+						/>
+					</View> : null
+				}
+
 			</View>
 		)
 	}

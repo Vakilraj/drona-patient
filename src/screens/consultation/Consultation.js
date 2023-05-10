@@ -53,6 +53,7 @@ let sinceDataPatternArr = [{ label: '1 day', value: '1 day', isSelect: true }, {
 let selectedSeverityGuid = null, selectedSeverityName = null, sincePattern = null, selectedInputTxtLength = 5;
 let severityArrySymptFind = [], severityArryDiagnostic = [];
 let clickItemIndex = 0, clickItemName = '', clickType = '';
+let doctorNotes = [];
 class Consultation extends React.Component {
 	constructor(props) {
 		super(props);
@@ -275,6 +276,7 @@ class Consultation extends React.Component {
 	}
 	setValueFromResponse = (data) => {
 		let patientConsultation = data;
+		console.log('=====patientConsultation====', JSON.stringify(patientConsultation))
 		SymptomFullArray = patientConsultation.symptomList
 		findingFullArray = patientConsultation.findingList
 		diagnosticFullArray = patientConsultation.diagnosisList
@@ -291,6 +293,7 @@ class Consultation extends React.Component {
 		let selectedMedicines = patientConsultation.selectedMedicines ? patientConsultation.selectedMedicines : []
 		let selectedProcedure = patientConsultation.selectedProcedure && patientConsultation.selectedProcedure.length > 0 ? patientConsultation.selectedProcedure : []
 		noteGuid = patientConsultation.prescriptionNote ? patientConsultation.prescriptionNote.prescriptionNoteGuid : ''
+		doctorNotes = patientConsultation.doctorNotes ? patientConsultation.doctorNotes : [];
 		this.setState({
 			SymptomArr: SymptomFullArray, FindingArr: findingFullArray, DiagnosticArr: diagnosticFullArray, MedicineArr: medicineFullArray, InvestigationArray: InvestigationeFullArray, InstructionArray: InstructionFullArray,
 			notesData: NotesData, followupData: data.followUp, showFollowUpModal: false, ProcedureArr: ProcedureFullArray,
@@ -2975,7 +2978,7 @@ class Consultation extends React.Component {
 															this.setState({ isMedicineModalOpen: false })
 															// medicineIndex = index;
 															medicineAddUpdateFlag = 'update';
-															this.props.nav.navigation.navigate('MedicineDetails', { medicineUnitVal: medicineUnitVal, item: val?.values, medTiming: medTiming, Refresh: this.RefreshData });
+															this.props.nav.navigation.navigate('MedicineDetails', { doctorNotes: doctorNotes, medicineUnitVal: medicineUnitVal, item: val?.values, medTiming: medTiming, Refresh: this.RefreshData });
 														}}
 													>
 														{val?.values?.map((item, index) => {
@@ -3023,7 +3026,7 @@ class Consultation extends React.Component {
 													this.setState({ isMedicineModalOpen: false })
 													medicineIndex = index;
 													medicineAddUpdateFlag = 'add';
-													this.props.nav.navigation.navigate('MedicineDetails', { item: item, medTiming: medTiming, Refresh: this.RefreshData });
+													this.props.nav.navigation.navigate('MedicineDetails', { item: item, medTiming: medTiming, doctorNotes: doctorNotes, Refresh: this.RefreshData });
 													// this.clickOnMedicine(item, index)
 												}} >
 													<Text style={[styles.unselectTxtColor, { marginRight: responsiveWidth(1) }]}>{item.medicineName + ' ' + item.strength}</Text>

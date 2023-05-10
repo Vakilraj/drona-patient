@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
 	ScrollView,
 	View,
-	Text, TextInput, Image, TouchableOpacity, FlatList, Platform, PermissionsAndroid, Alert,KeyboardAvoidingView,
+	Text, TextInput, Image, TouchableOpacity, FlatList, Platform, PermissionsAndroid, Alert,
 } from 'react-native';
 import styles from './style';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
@@ -53,10 +53,6 @@ let sinceDataPatternArr = [{ label: '1 day', value: '1 day', isSelect: true }, {
 let selectedSeverityGuid = null, selectedSeverityName = null, sincePattern = null, selectedInputTxtLength = 5;
 let severityArrySymptFind = [], severityArryDiagnostic = [];
 let clickItemIndex = 0, clickItemName = '', clickType = '';
-let doctorNotes = [];
-
-
-
 class Consultation extends React.Component {
 	constructor(props) {
 		super(props);
@@ -89,6 +85,8 @@ class Consultation extends React.Component {
 			MedicineArr: [],
 			SelectedMedicineArr: [],
 			medicineSearchTxt: '',
+			selectedNewMedicineArr: [],
+			backupMedicineData: [],
 
 			investigationSearchTxt: '',
 			isModalVisibleInvestigations: false,
@@ -239,8 +237,8 @@ class Consultation extends React.Component {
 		this.setState({ selectedIndex: tempIndex == null ? 0 : tempIndex });
 		let { signupDetails } = this.props;
 		timeRange = Trace.getTimeRange();
-		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Patient_Consultation_Journey', signupDetails.firebaseLocation)
-		Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Patient_Consultation_Journey", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Patient_Consultation_Journey', signupDetails.firebaseLocation)
+		Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Patient_Consultation_Journey", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 		//
 		appoinmentGuid = this.props.data && this.props.data.pastAppointmentGuid ? this.props.data.pastAppointmentGuid : signupDetails.appoinmentGuid;
 
@@ -293,7 +291,6 @@ class Consultation extends React.Component {
 		let selectedMedicines = patientConsultation.selectedMedicines ? patientConsultation.selectedMedicines : []
 		let selectedProcedure = patientConsultation.selectedProcedure && patientConsultation.selectedProcedure.length > 0 ? patientConsultation.selectedProcedure : []
 		noteGuid = patientConsultation.prescriptionNote ? patientConsultation.prescriptionNote.prescriptionNoteGuid : ''
-		doctorNotes = patientConsultation.doctorNotes ? patientConsultation.doctorNotes : [];
 		this.setState({
 			SymptomArr: SymptomFullArray, FindingArr: findingFullArray, DiagnosticArr: diagnosticFullArray, MedicineArr: medicineFullArray, InvestigationArray: InvestigationeFullArray, InstructionArray: InstructionFullArray,
 			notesData: NotesData, followupData: data.followUp, showFollowUpModal: false, ProcedureArr: ProcedureFullArray,
@@ -341,7 +338,7 @@ class Consultation extends React.Component {
 				instructionFlag = true;
 
 			if (selectedProcedure)
-				procedureFlag = true;				
+				procedureFlag = true;
 
 		}
 		severityArrySymptFind = patientConsultation.severityMaster;
@@ -358,16 +355,16 @@ class Consultation extends React.Component {
 		if (symptomFlag || findingFlag || diagnosticFlag || medicineFlag || instructionFlag || investigationFlag || notesFlag || procedureFlag) {
 			let { actions, signupDetails } = this.props;
 			let tmpMedicineArr = [...this.state.SelectedMedicineArr];
-			//console.log('-----tmpMedicineArr---' + JSON.stringify(tmpMedicineArr));
+			console.log('-----tmpMedicineArr---' + JSON.stringify(tmpMedicineArr));
 			let tmpArr = []
 			for (let i = 0; i < tmpMedicineArr.length; i++) {
 				let doaseArr = tmpMedicineArr[i].medicineDosasesType;
-				let tempObj = Object.assign({ medicineDosasesTypeGuid: doaseArr[0].medicineDoasesGuId, }, tmpMedicineArr[i]); // medicineDosasesType: doaseArr[0].doasestype 
-				tempObj.medicineDosasesType = doaseArr[0].doasestype;
+				let tempObj = Object.assign({ medicineDosasesTypeGuid: doaseArr[0]?.medicineDoasesGuId, }, tmpMedicineArr[i]); // medicineDosasesType: doaseArr[0].doasestype 
+				tempObj.medicineDosasesType = doaseArr[0]?.doasestype;
 				tempObj.medicineTimingShift = null;
 				tmpArr.push(tempObj);
 			}
-			//console.log('-----tmpArr---' + JSON.stringify(tmpArr));
+			console.log('-----tmpArr---' + JSON.stringify(tmpArr));
 			let params = {
 				"UserGuid": signupDetails.UserGuid,
 				"DoctorGuid": signupDetails.doctorGuid,
@@ -401,7 +398,6 @@ class Consultation extends React.Component {
 			DRONA.setIsConsultationChange(false);
 			actions.callLogin('V14/FuncForDrAppToAddConsultationTabData', 'post', params, signupDetails.accessToken, 'ConsultationPageSave');
 		} else {
-			//this.props.nav.navigation.navigate('PreviewRx', { PreviewPdfPath: null, from: 'normalPrescription', consultId: null });
 			this.callPreviewRx();
 		}
 	}
@@ -440,17 +436,60 @@ class Consultation extends React.Component {
 
 	}
 
+	// RefreshData = (val) => {
+	// 	if (val.isEdit) {
+	// 		let tmpARr = this.state.SelectedMedicineArr ? [...this.state.SelectedMedicineArr] : [];
+	// 		if (medicineAddUpdateFlag == 'add') {
+	// 			tmpARr.push(val.data);
+	// 		} else {
+	// 			tmpARr.splice(medicineIndex, 1, val.data);
+	// 		}
+	// 		medicineFlag = true;
+	// 		this.setState({ SelectedMedicineArr: tmpARr })
+	// 		DRONA.setIsConsultationChange(true);
+	// 	} else {
+	// 		medicineFlag = val.isEdit;
+	// 	}
+
+	// }
 	RefreshData = (val) => {
+		let tmpARr = [];
+		let ans = [];
 		if (val.isEdit) {
-			let tmpARr = this.state.SelectedMedicineArr ? [...this.state.SelectedMedicineArr] : [];
-			if (medicineAddUpdateFlag == 'add') {
-				tmpARr.push(val.data);
+			if (medicineAddUpdateFlag == 'update') {
+				let temp = [...this.state.selectedNewMedicineArr];
+				temp.forEach((ele) => {
+					if (ele.medicineName == val.data[0].medicineName) {
+						ele.values = val.data
+					}
+				})
+
+				this.setState({ selectedNewMedicineArr: temp })
 			} else {
-				tmpARr.splice(medicineIndex, 1, val.data);
+				ans = val.data;
+				let tmp = this.state.SelectedMedicineArr;
+				if (medicineAddUpdateFlag == 'add') {
+					if (tmp.length > 0) {
+						tmp.forEach((val) => {
+							ans.push(val)
+						})
+					}
+				} else {
+					tmpARr.splice(medicineIndex, 1, val.data);
+				}
+				let dividedData = Object.values(ans.reduce((acc, obj) => {
+					const key = obj.medicineName.trim();
+					if (!acc[key]) {
+						acc[key] = { medicineName: key, values: [] };
+					}
+					acc[key].values.push(obj);
+					return acc;
+				}, {}));
+
+				medicineFlag = true;
+				this.setState({ SelectedMedicineArr: ans.length > 0 ? ans : val.data, selectedNewMedicineArr: dividedData })
+				DRONA.setIsConsultationChange(true);
 			}
-			medicineFlag = true;
-			this.setState({ SelectedMedicineArr: tmpARr })
-			DRONA.setIsConsultationChange(true);
 		} else {
 			medicineFlag = val.isEdit;
 		}
@@ -462,7 +501,15 @@ class Consultation extends React.Component {
 		if (newProps.responseData && newProps.responseData.tag) {
 			let tagname = newProps.responseData.tag;
 			let { actions, signupDetails, } = this.props;
-			if (tagname === 'SearchForSymptom') {
+			if (tagname === 'GetVisitInfo') {
+				try {
+					if (newProps.responseData.statusCode == '0') {
+						//let data = newProps.responseData.data.patientConsultation;
+
+						//this.setValueFromResponse(data);
+					}
+				} catch (e) { }
+			} else if (tagname === 'SearchForSymptom') {
 				if (newProps.responseData.statusCode == '0') {
 					if (newProps.responseData.data && newProps.responseData.data.length > 0) {
 						let temp = newProps.responseData.data;
@@ -612,6 +659,36 @@ class Consultation extends React.Component {
 					}
 				}
 			}
+			// else if (tagname === 'SearchForInvestigation') {
+			// 	if (newProps.responseData.statusCode == '0') {
+			// 		if (newProps.responseData.data && newProps.responseData.data.length > 0) {
+			// 			//console.log('invest----'+JSON.stringify(InvestigationeFullArray));
+			// 			if (this.state.investigationSearchTxt) {
+			// 				let tmpArr = newProps.responseData.data;
+			// 				for (let i = 0; i < tmpArr.length; i++) {
+			// 					if (tmpArr[i].investigationGuid) {
+			// 						let selArr = _.find(InvestigationeFullArray, { investigationGuid: tmpArr[i].investigationGuid })
+			// 						if (selArr && selArr.isSelected) {
+			// 							tmpArr[i].isSelected = true;
+			// 						}
+			// 					}
+
+			// 				}
+
+			// 				this.setState({ InvestigationArray: tmpArr });
+			// 			}
+			// 			else
+			// 				this.setState({ InvestigationArray: InvestigationeFullArray });
+			// 		} else {
+			// 			let temp = [];
+			// 			if (this.state.investigationSearchTxt)
+			// 				temp.push({ "appointmentGuid": null, "doctorGuid": "", "investigationGuid": null, "investigationName": "Add new “" + this.state.investigationSearchTxt + '”', "investigationDesc": null, "patientAppointmentInvestigationGuId": null, "isSelected": false }
+			// 				)
+			// 			this.setState({ InvestigationArray: temp });
+			// 		}
+			// 	}
+			// } 
+
 			else if (tagname === 'SearchForInvestigation') {
 				if (newProps.responseData.statusCode == '0') {
 					if (newProps.responseData.data && newProps.responseData.data.length > 0) {
@@ -655,6 +732,44 @@ class Consultation extends React.Component {
 					this.setState({ InvestigationArray: normalListBackup, SelectedInvestigationArr: selectedListBackup });
 				}
 			}
+
+
+
+			// else if (tagname === 'SearchForInstructions') {
+			// 	if (newProps.responseData.statusCode == '0') {
+			// 		if (newProps.responseData.data && newProps.responseData.data.length > 0) {
+			// 			if (this.state.instructionSearchTxt) {
+			// 				let tmpArr = newProps.responseData.data;
+			// 				for (let i = 0; i < tmpArr.length; i++) {
+			// 					if (tmpArr[i].instructionsGuid) {
+			// 						let selArr = _.find(InstructionFullArray, { instructionsGuid: tmpArr[i].instructionsGuid })
+			// 						if (selArr && selArr.isSelected) {
+			// 							tmpArr[i].isSelected = true;
+			// 						}
+			// 					}
+
+			// 				}
+
+			// 				this.setState({ InstructionArray: tmpArr });
+
+
+			// 			}
+			// 			else
+			// 				this.setState({ InstructionArray: InstructionFullArray });
+			// 		}
+
+			// 		else {
+			// 			let temp = [];
+			// 			if (this.state.instructionSearchTxt)
+			// 				temp.push({ "appointmentGuid": null, "doctorGuid": "", "instructionsGuid": null, "instructionsName": "Add new “" + this.state.instructionSearchTxt + '”', "instructionsDesc": null, "patientAppointmentInstructionGuId": null, "isSelected": false }
+			// 				)
+			// 			this.setState({ InstructionArray: temp });
+			// 			//InstructionFullArray.push({"appointmentGuid": null, "doctorGuid": "", "instructionsGuid": null, "instructionsName": this.state.instructionSearchTxt, "instructionsDesc": null, "patientAppointmentInstructionGuId": null, "isSelected": false})
+			// 		}
+			// 	}
+			// }
+
+
 			else if (tagname === 'SearchForInstructions') {
 				if (newProps.responseData.statusCode == '0') {
 					if (newProps.responseData.data && newProps.responseData.data.length > 0) {
@@ -756,20 +871,14 @@ class Consultation extends React.Component {
 					this.setState({ addMedicinePopup: false })
 					Snackbar.show({ text: newProps.responseData.statusMessage, duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 					//  console.log('Response ' + JSON.stringify(response))
-					if(!response.medicineTypeGuid)
-					response.medicineTypeGuid=this.state.medicineTypeName;
-					// if(!response.medicineDosasesType)
-					// response.medicineDosasesType=[{
-					// 	doasestype: this.state.medicineTypeSearchTxt, medicineTypeGuid:this.state.medicineTypeName,medicineDoasesGuId:null
-					// }]
-					this.props.nav.navigation.navigate('MedicineDetails', { item: response, medTiming: medTiming, Refresh: this.RefreshData,doctorNotes: doctorNotes,  });
+					//
+					this.props.nav.navigation.navigate('MedicineDetails', { item: response, medTiming: medTiming, Refresh: this.RefreshData });
 				}
 
 			} else if (tagname === 'ConsultationPageSave') {
 				if (newProps.responseData.statusCode == '-1' || newProps.responseData.statusCode == '-3') {
 					let data = newProps.responseData.data;
 					setTimeout(() => {
-						//this.props.nav.navigation.navigate('PreviewRx', { PreviewPdfPath: null, from: 'normalPrescription', consultId: null });
 						this.callPreviewRx();
 					}, 200)
 
@@ -1245,14 +1354,24 @@ class Consultation extends React.Component {
 
 	}
 	removeSelectedMedicine = (item, index) => {
+		// let tempserviceArr = [...this.state.MedicineArr];
+		// let selectedTempserviceArr = [...this.state.SelectedMedicineArr];
+		// normalListBackup = [...this.state.MedicineArr];
+		// selectedListBackup = [...this.state.SelectedMedicineArr];
+
+		// tempserviceArr.push(item)
+		// selectedTempserviceArr.splice(index, 1);
+		// this.setState({ SelectedMedicineArr: selectedTempserviceArr, MedicineArr: tempserviceArr })
+		// medicineFullArray.push(item)
+		// medicineFlag = true;
 		let tempserviceArr = [...this.state.MedicineArr];
-		let selectedTempserviceArr = [...this.state.SelectedMedicineArr];
 		normalListBackup = [...this.state.MedicineArr];
-		selectedListBackup = [...this.state.SelectedMedicineArr];
+		let tempServiceArr = [...this.state.selectedNewMedicineArr];
+		selectedListBackup = [...this.state.selectedNewMedicineArr];
 
 		tempserviceArr.push(item)
-		selectedTempserviceArr.splice(index, 1);
-		this.setState({ SelectedMedicineArr: selectedTempserviceArr, MedicineArr: tempserviceArr })
+		tempServiceArr.splice(index, 1);
+		this.setState({ selectedNewMedicineArr: tempServiceArr, MedicineArr: tempserviceArr })
 		medicineFullArray.push(item)
 		medicineFlag = true;
 	}
@@ -1653,7 +1772,7 @@ class Consultation extends React.Component {
 	// 	this.state.InvestigationArray.splice(index, 1);
 	// 	this.setState({ InvestigationArray: this.state.InvestigationArray })
 	// 	setLogEvent("patient_consultation", { "delete_investigation": "click", UserGuid: signupDetails.UserGuid })
-	// 	Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Delete_Investigation", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+	// 	Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Delete_Investigation", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 	// }
 
 
@@ -1662,7 +1781,7 @@ class Consultation extends React.Component {
 	// 	this.state.InstructionArray.splice(index, 1);
 	// 	this.setState({ InstructionArray: this.state.InstructionArray })
 	// 	setLogEvent("patient_consultation", { "delete_instruction": "click", UserGuid: signupDetails.UserGuid })
-	// 	Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Delete_Instruction", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+	// 	Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Delete_Instruction", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 
 	// }
 
@@ -2140,6 +2259,7 @@ class Consultation extends React.Component {
 		this.setState({ medicineTypeName: item.value })
 		if (this.state.medicineSearchTxt)
 			this.setState({ isMedicineTypeSelected: true })
+
 		this.setState({ medicineTypeSearchTxt: item.label, showStateDosage: false })
 	}
 	callIsFucused2 = () => {
@@ -2150,7 +2270,7 @@ class Consultation extends React.Component {
 		//this.dismissDialog()
 	}
 	getSelectedMMedicineTxt = (item) => {
-		// let tempStr = '';
+		let tempStr = '';
 		// if (item.dosages)
 		// 	tempStr = item.dosages + ' ' + item.medicineType;
 
@@ -2164,20 +2284,39 @@ class Consultation extends React.Component {
 		// 	tempStr = '(' + tempStr + ')'
 		// tempStr = item.medicineName + ' ' + tempStr
 
-		let tempStr = '';
-		if (item.dosages)
-			tempStr = item.medicineType;
+		if (item.unitTextValue) {
+			tempStr += item.unitTextValue + ' '
+		}
+		if (item.dosageValue) {
+			tempStr += item.dosageValue + ' '
+		}
+		if(item.medicineTimingFrequency){
+			tempStr += item.medicineTimingFrequency + ' '
+		}
+		if (item.durationValue) {
+			tempStr += item.durationValue + ' '
+		}
 
-		if (item.dosagePattern)
-			tempStr += tempStr ? ', ' + item.dosagePattern : item.dosagePattern;
-		if (item.medicineTimingFrequency)
-			tempStr += tempStr ? ', ' + item.medicineTimingFrequency : item.medicineTimingFrequency;
-		if (item.durationType)
-			tempStr += ', ' + item.durationType + ' ';
+		if (item.fromdaysValue) {
+			tempStr += 'From' + ' ' + item.fromdaysValue + ' '
+		}
+
+		if (item.toDaysValue) {
+			tempStr += 'to' + ' ' + item.toDaysValue + ' '
+		}
 		if (tempStr)
-			tempStr = '(' + tempStr + ')'
+			tempStr = '( ' + tempStr + ' )'
 		tempStr = item.medicineName + ' ' + tempStr
 
+		// let str = item.medicineName;
+		// if (item.strength)
+		// 	str += ' ' + item.strength;
+
+		// if (item.medicineType)
+		// 	str += ' ' + item.medicineType;
+
+		// if (item.dosagePattern)
+		// 	str += ' ' + item.dosagePattern;
 		return tempStr;
 	}
 
@@ -2508,8 +2647,8 @@ class Consultation extends React.Component {
 									{signupDetails.isAssistantUser ? null : <TouchableOpacity onPress={() => {
 										let { signupDetails } = this.props;
 										timeRange = Trace.getTimeRange();
-										Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Symptoms', signupDetails.firebaseLocation)
-										Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Symptoms", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+										Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Symptoms', signupDetails.firebaseLocation)
+										Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Symptoms", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 										this.setState({ isSymptomModalOpen: !this.state.isSymptomModalOpen });
 									}}>
 										<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -2547,7 +2686,7 @@ class Consultation extends React.Component {
 														DRONA.setIsConsultationChange(true);
 														let { signupDetails } = this.props;
 														setLogEvent("delete_symptoms", { UserGuid: signupDetails.UserGuid })
-														Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Delete_Symptoms", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+														Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Delete_Symptoms", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 														this.removeSelectedSymptom(item, index)
 													}}>
 													<Image source={cross_close} style={{ height: responsiveWidth(3), width: responsiveWidth(3), resizeMode: 'contain' }} />
@@ -2569,7 +2708,7 @@ class Consultation extends React.Component {
 													let { signupDetails } = this.props;
 													setLogEvent("patient_consultation", { "search_symptoms": "search", UserGuid: signupDetails.UserGuid, "keyword": symptomSearchTxt })
 
-													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Search_Symptoms", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Search_Symptoms", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 													this.SearchSymptom(symptomSearchTxt)
 													this.SearchSymptom(symptomSearchTxt)
 												}} maxLength={30} />
@@ -2586,7 +2725,7 @@ class Consultation extends React.Component {
 													DRONA.setIsConsultationChange(true);
 													let { signupDetails } = this.props;
 													setLogEvent("add_symptoms", { UserGuid: signupDetails.UserGuid })
-													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Add_Symptoms", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Add_Symptoms", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 
 													if (item.symptomName)
 														this.clickOnSymptom(item, index)
@@ -2612,8 +2751,8 @@ class Consultation extends React.Component {
 									{signupDetails.isAssistantUser ? null : <TouchableOpacity onPress={() => {
 										let { signupDetails } = this.props;
 										timeRange = Trace.getTimeRange();
-										Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Symptoms', signupDetails.firebaseLocation)
-										Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Symptoms", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+										Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Symptoms', signupDetails.firebaseLocation)
+										Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Symptoms", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 										this.setState({ isFindingModalOpen: !this.state.isFindingModalOpen });
 									}}>
 										<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -2704,8 +2843,8 @@ class Consultation extends React.Component {
 										<TouchableOpacity onPress={() => {
 											let { signupDetails } = this.props;
 											timeRange = Trace.getTimeRange();
-											Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Diagnosis', signupDetails.firebaseLocation)
-											Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Diagnosis", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+											Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Diagnosis', signupDetails.firebaseLocation)
+											Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Diagnosis", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 											this.setState({
 												isDiagnosticModalOpen: !this.state.isDiagnosticModalOpen
 											});
@@ -2747,7 +2886,7 @@ class Consultation extends React.Component {
 														DRONA.setIsConsultationChange(true);
 														let { signupDetails } = this.props;
 														setLogEvent("delete_diagnosis", { UserGuid: signupDetails.UserGuid })
-														Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Delete_Diagnosis", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+														Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Delete_Diagnosis", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 														this.removeSelectedDiagnostic(item, index)
 													}}>
 													<Image source={cross_close} style={{ height: responsiveWidth(3), width: responsiveWidth(3), resizeMode: 'contain' }} />
@@ -2764,10 +2903,10 @@ class Consultation extends React.Component {
 												onChangeText={(diagnosticSearchTxt) => {
 													let { signupDetails } = this.props;
 													timeRange = Trace.getTimeRange();
-													Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Diagnosis_Search', signupDetails.firebaseLocation)
-													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Diagnosis_Search", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+													Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Diagnosis_Search', signupDetails.firebaseLocation)
+													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Diagnosis_Search", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 													setLogEvent("patient_consultation", { "search_diagnosis": "search", UserGuid: signupDetails.UserGuid, "keyword": diagnosticSearchTxt })
-													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Search_Diagnosis", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Search_Diagnosis", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 													this.SearchDiagnostic(diagnosticSearchTxt)
 												}} maxLength={30}
 											/>
@@ -2784,7 +2923,7 @@ class Consultation extends React.Component {
 													DRONA.setIsConsultationChange(true);
 													let { signupDetails } = this.props;
 													setLogEvent("add_diagnosis", { UserGuid: signupDetails.UserGuid })
-													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Add_Diagnosis", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Add_Diagnosis", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 													if (item.diagnosisName)
 														this.clickOnDiagnostic(item, index)
 												}} >
@@ -2804,8 +2943,8 @@ class Consultation extends React.Component {
 										<TouchableOpacity onPress={() => {
 											let { signupDetails } = this.props;
 											timeRange = Trace.getTimeRange();
-											Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Medicines', signupDetails.firebaseLocation)
-											Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Medicines", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+											Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Medicines', signupDetails.firebaseLocation)
+											Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Medicines", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 											this.setState({ isSearchStart: false, isMedicineModalOpen: !this.state.isMedicineModalOpen, medTiming: medTiming, medicineSearchTxt: '', MedicineArr: medicineFullArray })
 										}}>
 											<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -2816,33 +2955,51 @@ class Consultation extends React.Component {
 											</View>
 										</TouchableOpacity>}
 
-									<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', marginLeft: responsiveWidth(-1.6) }}>
-										{this.state.SelectedMedicineArr && this.state.SelectedMedicineArr.length > 0 ? this.state.SelectedMedicineArr.map((item, index) => {
-											return (<View style={styles.selectedView} >
-												<TouchableOpacity onPress={() => {
-													let { signupDetails } = this.props;
-													setLogEvent("medicine", { "select_medicine": "click", UserGuid: signupDetails.UserGuid })
-													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Select_Medicine", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
-													this.setState({ isMedicineModalOpen: false })
-													medicineIndex = index;
-													medicineAddUpdateFlag = 'update';
-													this.props.nav.navigation.navigate('MedicineDetails', { item: item, medTiming: medTiming, Refresh: this.RefreshData,doctorNotes: doctorNotes,  });
-												}} style={{maxWidth:responsiveWidth(82) }}>
-													<Text style={styles.txtSelect}>{this.getSelectedMMedicineTxt(item)}</Text>
-												</TouchableOpacity>
-												<TouchableOpacity style={styles.crossSelected}
-													onPress={() => {
-														let { signupDetails } = this.props;
-														setLogEvent("delete_medicine", { UserGuid: signupDetails.UserGuid })
-														Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Delete_Medicine", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
-														this.removeSelectedMedicine(item, index)
-													}}>
-													<Image source={cross_close} style={{ height: responsiveWidth(3), width: responsiveWidth(3), resizeMode: 'contain' }} />
-												</TouchableOpacity></View>);
-										}, this) : null}
-									</View>
+									{
+										this.state.selectedNewMedicineArr.length > 0 && this.state.selectedNewMedicineArr.map((val, index) => {
+											return (
+												<View style={[this.state.selectedNewMedicineArr.length > 0 ? styles.selectedView : null,
+												{
+													flexDirection: 'row',
+													justifyContent: 'space-between',
+													margin: responsiveWidth(1.6),
+													flex: 1,
+												}]}>
+													<TouchableOpacity
+														style={{ flex: 4 }}
+														onPress={() => {
+															let medicineUnitVal = [...this.state.MedicineArr];
+															let { signupDetails } = this.props;
+															setLogEvent("medicine", { "select_medicine": "click", UserGuid: signupDetails.UserGuid })
+															Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Select_Medicine", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+															this.setState({ isMedicineModalOpen: false })
+															// medicineIndex = index;
+															medicineAddUpdateFlag = 'update';
+															this.props.nav.navigation.navigate('MedicineDetails', { medicineUnitVal: medicineUnitVal, item: val?.values, medTiming: medTiming, Refresh: this.RefreshData });
+														}}
+													>
+														{val?.values?.map((item, index) => {
+															return (
+																<View >
+																	<Text style={styles.txtSelect}>{this.getSelectedMMedicineTxt(item)}</Text>
+																</View>);
+														}, this)}
+													</TouchableOpacity>
+													<TouchableOpacity style={styles.crossSelected}
+														onPress={() => {
+															let { signupDetails } = this.props;
+															setLogEvent("delete_medicine", { UserGuid: signupDetails.UserGuid })
+															Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Delete_Medicine", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+															this.removeSelectedMedicine(val, index)
+														}}>
+														<Image source={cross_close} style={{ height: responsiveWidth(3), width: responsiveWidth(3), resizeMode: 'contain' }} />
+													</TouchableOpacity>
+												</View>
+											)
+										})
+									}
 									{this.state.isMedicineModalOpen ? <View>
-										<View style={[styles.searchView, { borderColor: this.state.fld5, borderWidth: 1  }]}>
+										<View style={[styles.searchView, { borderColor: this.state.fld5, borderWidth: 1 }]}>
 											<TextInput returnKeyType="done"
 												onFocus={() => this.callOnFocus('5')}
 												onBlur={() => this.callOnBlur('5')}
@@ -2851,8 +3008,8 @@ class Consultation extends React.Component {
 												onChangeText={(medicineSearchTxt) => {
 													let { signupDetails } = this.props;
 													setLogEvent("patient_consultation", { "search_medicine": "search", UserGuid: signupDetails.UserGuid, "keyword": medicineSearchTxt })
-													Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Medicine_Search', signupDetails.firebaseLocation)
-													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Medicine_Search", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+													Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Medicine_Search', signupDetails.firebaseLocation)
+													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Medicine_Search", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 													this.SearchMedicine(medicineSearchTxt)
 												}} maxLength={30} />
 											{this.state.medicineSearchTxt ? <TouchableOpacity style={{ alignSelf: 'center' }} onPress={() => { this.setState({ medicineSearchTxt: '', MedicineArr: medicineFullArray }); }}>
@@ -2866,7 +3023,7 @@ class Consultation extends React.Component {
 													this.setState({ isMedicineModalOpen: false })
 													medicineIndex = index;
 													medicineAddUpdateFlag = 'add';
-													this.props.nav.navigation.navigate('MedicineDetails', { item: item, medTiming: medTiming, Refresh: this.RefreshData,doctorNotes: doctorNotes,  });
+													this.props.nav.navigation.navigate('MedicineDetails', { item: item, medTiming: medTiming, Refresh: this.RefreshData });
 													// this.clickOnMedicine(item, index)
 												}} >
 													<Text style={[styles.unselectTxtColor, { marginRight: responsiveWidth(1) }]}>{item.medicineName + ' ' + item.strength}</Text>
@@ -2878,7 +3035,7 @@ class Consultation extends React.Component {
 										{
 											this.state.isSearchStart && this.state.medicineSearchTxt ?
 												<TouchableOpacity onPress={this.addPressClick} style={{ margin: responsiveWidth(3), alignItems: 'center', justifyContent: 'center' }}>
-													<Text style={{ color: Color.primaryBlue, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: CustomFont.fontWeight700}}> + Add <Text style={{textTransform: 'capitalize'}}>'{this.state.medicineSearchTxt}'</Text> as a New Medicine</Text>
+													<Text style={{ color: Color.primaryBlue, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: CustomFont.fontWeight700 }}> + Add '{this.state.medicineSearchTxt}' as a New Medicine</Text>
 												</TouchableOpacity> : null
 										}
 									</View> : null}
@@ -2896,8 +3053,8 @@ class Consultation extends React.Component {
 
 											let { signupDetails } = this.props;
 											timeRange = Trace.getTimeRange();
-											Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Investigation', signupDetails.firebaseLocation)
-											Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Investigation", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+											Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Investigation', signupDetails.firebaseLocation)
+											Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Investigation", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 
 											this.setState({
 												// awardsTitle: '',
@@ -2931,7 +3088,7 @@ class Consultation extends React.Component {
 														DRONA.setIsConsultationChange(true);
 														let { signupDetails } = this.props;
 														setLogEvent("delete_Investigation", { UserGuid: signupDetails.UserGuid })
-														Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "delete_Investigation", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+														Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "delete_Investigation", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 														this.removeSelectedInvestigation(item, index)
 													}}>
 													<Image source={cross_close} style={{ height: responsiveWidth(3), width: responsiveWidth(3), resizeMode: 'contain' }} />
@@ -2954,7 +3111,7 @@ class Consultation extends React.Component {
 													//prev
 													setLogEvent("patient_consultation", { "search_investigation": "search", UserGuid: signupDetails.UserGuid, "keyword": investigationSearchTxt })
 
-													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "search_investigation", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "search_investigation", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 													this.SearchInvestigation(investigationSearchTxt)
 													this.SearchInvestigation(investigationSearchTxt)
 												}} maxLength={30} />
@@ -2974,7 +3131,7 @@ class Consultation extends React.Component {
 													DRONA.setIsConsultationChange(true);
 													let { signupDetails } = this.props;
 													setLogEvent("add_investigation", { UserGuid: signupDetails.UserGuid })
-													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "add_investigation", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "add_investigation", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 
 													if (item.investigationName)
 														this.clickOnInvestigation(item, index)
@@ -3001,7 +3158,7 @@ class Consultation extends React.Component {
 											let { signupDetails } = this.props;
 											timeRange = Trace.getTimeRange();
 											Trace.startTrace(timeRange, signupDetails.mobile, signupDetails.age, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Instructions', signupDetails.firebaseLocation)
-											Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Instructions", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+											Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Instructions", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 											this.setState({
 												isModalVisibleInstruction: !this.state.isModalVisibleInstruction,
 												InstructionArray: InstructionFullArray
@@ -3024,7 +3181,7 @@ class Consultation extends React.Component {
 														DRONA.setIsConsultationChange(true);
 														let { signupDetails } = this.props;
 														setLogEvent("delete_Instruction", { UserGuid: signupDetails.UserGuid })
-														Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "delete_Instruction", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+														Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "delete_Instruction", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 														this.removeSelectedInstruction(item, index)
 													}}>
 													<Image source={cross_close} style={{ height: responsiveWidth(3), width: responsiveWidth(3), resizeMode: 'contain' }} />
@@ -3047,7 +3204,7 @@ class Consultation extends React.Component {
 													//prev
 													setLogEvent("patient_consultation", { "search_instruction": "search", UserGuid: signupDetails.UserGuid, "keyword": instructionSearchTxt })
 
-													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "search_instruction", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "search_instruction", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 													this.SearchInstruction(instructionSearchTxt)
 													this.SearchInstruction(instructionSearchTxt)
 												}} maxLength={30} />
@@ -3064,7 +3221,7 @@ class Consultation extends React.Component {
 													DRONA.setIsConsultationChange(true);
 													let { signupDetails } = this.props;
 													setLogEvent("add_instruction", { UserGuid: signupDetails.UserGuid })
-													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "add_instruction", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "add_instruction", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 
 													if (item.instructionsName)
 														this.clickOnInstruction(item, index)
@@ -3088,8 +3245,8 @@ class Consultation extends React.Component {
 									{signupDetails.isAssistantUser ? null : <TouchableOpacity onPress={() => {
 										let { signupDetails } = this.props;
 										timeRange = Trace.getTimeRange();
-										Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Procedure', signupDetails.firebaseLocation)
-										Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Procedure", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+										Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Procedure', signupDetails.firebaseLocation)
+										Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Procedure", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 										this.setState({ isProcedureModalOpen: !this.state.isProcedureModalOpen });
 									}}>
 										<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -3113,7 +3270,7 @@ class Consultation extends React.Component {
 														DRONA.setIsConsultationChange(true);
 														let { signupDetails } = this.props;
 														setLogEvent("delete_Procedure", { UserGuid: signupDetails.UserGuid })
-														Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Delete_Procedure", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+														Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Delete_Procedure", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 														this.removeSelectedProcedure(item, index)
 													}}>
 													<Image source={cross_close} style={{ height: responsiveWidth(3), width: responsiveWidth(3), resizeMode: 'contain' }} />
@@ -3135,8 +3292,9 @@ class Consultation extends React.Component {
 													let { signupDetails } = this.props;
 													setLogEvent("patient_consultation", { "search_Procedure": "search", UserGuid: signupDetails.UserGuid, "keyword": procedureSearchTxt })
 
-													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Search_Procedure", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
-													this.SearchProcedure(procedureSearchTxt);
+													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Search_Procedure", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+													this.SearchProcedure(procedureSearchTxt)
+													this.SearchProcedure(procedureSearchTxt)
 												}} maxLength={30} />
 											{this.state.procedureSearchTxt ? <TouchableOpacity style={{ alignSelf: 'center' }} onPress={() => { this.setState({ procedureSearchTxt: '', ProcedureArr: ProcedureFullArray }); }}>
 												<Image style={{ ...styles.crossSearch }} source={cross_close} />
@@ -3151,7 +3309,7 @@ class Consultation extends React.Component {
 													DRONA.setIsConsultationChange(true);
 													let { signupDetails } = this.props;
 													setLogEvent("add_procedure", { UserGuid: signupDetails.UserGuid })
-													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Add_Procedure", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Add_Procedure", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 
 													if (item.procedureName)
 														this.clickOnProcedure(item, index)
@@ -3173,8 +3331,8 @@ class Consultation extends React.Component {
 									{signupDetails.isAssistantUser ? null :
 										<TouchableOpacity onPress={() => {
 											let timeRange = Trace.getTimeRange();
-											Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + "Consultation_Notes", signupDetails.firebaseLocation);
-											Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Consultation_Notes", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+											Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + "Consultation_Notes", signupDetails.firebaseLocation);
+											Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Consultation_Notes", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 											this.setState({ isModalVisibleAbout: !this.state.isModalVisibleAbout })
 										}}>
 											<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -3185,7 +3343,7 @@ class Consultation extends React.Component {
 											</View>
 										</TouchableOpacity>}
 									{this.state.isModalVisibleAbout ? <View>
-										<TextInput blurOnSubmit={false} 
+										<TextInput blurOnSubmit={false}
 											onFocus={() => this.callOnFocus('8')}
 											onBlur={() => this.callOnBlur('8')}
 											placeholderTextColor={Color.placeHolderColor}
@@ -3208,6 +3366,7 @@ class Consultation extends React.Component {
 
 						</View>
 					</ScrollView>
+
 					{/* -------Save Button --------- */}
 
 					<View style={{ backgroundColor: Color.white, flexDirection: 'row', alignItems: 'center', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 10, justifyContent: 'center' }}>
@@ -3313,7 +3472,7 @@ class Consultation extends React.Component {
 
 									<View style={{ marginTop: responsiveHeight(2) }}>
 										<Text style={{ color: Color.optiontext, fontFamily: CustomFont.fontName, fontSize: CustomFont.font12 }}>Medicine Name *</Text>
-										<TextInput returnKeyType="done" onChangeText={this.typeMedcineName} value={this.state.medicineSearchTxt} style={{ paddingLeft: 5, borderColor: Color.borderColor, borderRadius: 7, marginTop: 10, height: responsiveHeight(5.5), borderWidth: 1, color: Color.fontColor,textTransform:'capitalize' }} />
+										<TextInput returnKeyType="done" onChangeText={this.typeMedcineName} value={this.state.medicineSearchTxt} style={{ paddingLeft: 5, borderColor: Color.borderColor, borderRadius: 7, marginTop: 10, height: responsiveHeight(5.5), borderWidth: 1, color: Color.fontColor }} />
 									</View>
 									<View style={{ flexDirection: 'row', marginTop: responsiveHeight(2) }}>
 										<View style={{ flex: 1, marginRight: responsiveWidth(2) }}>
@@ -3400,7 +3559,7 @@ class Consultation extends React.Component {
 								<View style={{ margin: responsiveWidth(5) }}>
 									<View style={{ height: responsiveHeight(7), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
 										<View >
-											<Text style={{textTransform:'capitalize', fontFamily: CustomFont.fontName, fontSize: CustomFont.font18, color: Color.black, fontWeight: CustomFont.fontWeight700, }}>{this.state.severityNameHeader}</Text>
+											<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font18, color: Color.black, fontWeight: CustomFont.fontWeight700, }}>{this.state.severityNameHeader}</Text>
 										</View>
 										<TouchableOpacity onPress={() => this.setState({ isModalOpenSeverity: false })}>
 											<Image source={cross_close} style={{ tintColor: Color.primary, height: responsiveFontSize(2.5), width: responsiveFontSize(2.5), margin: 10, resizeMode: 'contain' }} />
@@ -3461,7 +3620,7 @@ class Consultation extends React.Component {
 								<View style={{ margin: responsiveWidth(5) }}>
 									<View style={{ height: responsiveHeight(7), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
 										<View >
-											<Text style={{textTransform:'capitalize', fontFamily: CustomFont.fontName, fontSize: CustomFont.font18, color: Color.black, fontWeight: CustomFont.fontWeight700, }}>{this.state.severityNameHeader}</Text>
+											<Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font18, color: Color.black, fontWeight: CustomFont.fontWeight700, }}>{this.state.severityNameHeader}</Text>
 										</View>
 										<TouchableOpacity onPress={() => this.setState({ isModalVisibleInstructionInvest: false })}>
 											<Image source={cross_close} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), marginRight: 10, resizeMode: 'contain' }} />

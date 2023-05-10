@@ -984,7 +984,7 @@ class AddNewPatients extends React.Component {
 									onChangeText={referedName => {
 										referedName = referedName;
 										this.setState({ referedName, showDiscard: true })
-										if (!referedName || Validator.isNameValidate(referedName)) {
+										if (!referedName || Validator.isNameAcceptDot(referedName)) {
 											this.setState({ referedNameAlert: '', fld2: Color.inputErrorBorder })
 										} else {
 											this.setState({ referedNameAlert: 'name should contain only alphabets', fld2: Color.inputErrorBorder })

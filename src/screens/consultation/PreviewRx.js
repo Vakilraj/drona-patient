@@ -425,51 +425,56 @@ class PreviewRx extends React.Component {
         }
         return temp
     }
+     doctorEducationViewWithoutAddress = (doctorInfo) => {
+        let temp = []
+        if (doctorInfo.doctorEducation != null && doctorInfo.doctorEducation.length > 0) {
+            for (var i = 0; i < doctorInfo.doctorEducation.length; i++) {
+                let tmpStr = ''
+                if (doctorInfo.doctorEducation[i].degree) {
+                    tmpStr = '' + doctorInfo.doctorEducation[i].degree;
+                }
+                temp.push(tmpStr)
+            }
+        }
+        return temp && temp.length >0 ? temp.join():'';
+    }
 
     selectedList = (selectedConditions, selectedMedications, selectedAllergies, selectedFamilyHistory) => {
         let temp = []
         let selectedConditionName, selectedMedicationsName, selectedAllergiesName
-        if (selectedConditions && selectedConditions.length > 0) {
-            const selCondition = selectedConditions
-            for (var i = 0; i < selCondition.length; i++) {
-                selectedConditionName = selCondition[i].conditionName
-                const htmlCode = ' ' + selectedConditionName + ",";
-                temp.push(htmlCode)
-            }
+        const selCondition = selectedConditions
+        for (var i = 0; i < selCondition.length; i++) {
+            selectedConditionName = selCondition[i].conditionName
+            const htmlCode = ' ' + selectedConditionName + ",";
+            temp.push(htmlCode)
         }
-        if (selectedMedications && selectedMedications.length > 0) {
-            const selMedication = selectedMedications
-            for (var i = 0; i < selMedication.length; i++) {
-                selectedMedicationsName = selMedication[i].medicineName
-                const htmlCode = ' ' + selectedMedicationsName + ",";
-                temp.push(htmlCode)
-            }
+        const selMedication = selectedMedications
+        for (var i = 0; i < selMedication.length; i++) {
+            selectedMedicationsName = selMedication[i].medicineName
+            const htmlCode = ' ' + selectedMedicationsName + ",";
+            temp.push(htmlCode)
         }
-        if (selectedAllergies && selectedAllergies.length > 0) {
-            const selAllergies = selectedAllergies
-            for (var i = 0; i < selAllergies.length; i++) {
-                selectedAllergiesName = selAllergies[i].allergyName
-                const htmlCode = " " + selectedAllergiesName + ",";
-                temp.push(htmlCode)
-            }
+        const selAllergies = selectedAllergies
+        for (var i = 0; i < selAllergies.length; i++) {
+            selectedAllergiesName = selAllergies[i].allergyName
+            const htmlCode = " " + selectedAllergiesName + ",";
+            temp.push(htmlCode)
         }
-        if (selectedFamilyHistory && selectedFamilyHistory.length > 0) {
 
-            let tempVar
-            const selFamilyHistory = selectedFamilyHistory
-            for (var i = 0; i < selFamilyHistory.length; i++) {
-                const htmlCode = selFamilyHistory[i].familyHistoryName;
-                const htmlSecCode = selFamilyHistory[i].patientCondition
-                let tempVarOne = '';
-                for (var j = 0; j < htmlSecCode.length; j++) {
-                    tempVar = htmlSecCode[j].conditionName
-                    tempVarOne = tempVarOne + tempVar + ', '
-                }
-                temp.push(htmlCode + ': ' + tempVarOne)
+        let tempVar
+        const selFamilyHistory = selectedFamilyHistory
+        for (var i = 0; i < selFamilyHistory.length; i++) {
+            const htmlCode = selFamilyHistory[i].familyHistoryName;
+            const htmlSecCode = selFamilyHistory[i].patientCondition
+            let tempVarOne = '';
+            for (var j = 0; j < htmlSecCode.length; j++) {
+                tempVar = htmlSecCode[j].conditionName
+                tempVarOne = tempVarOne + tempVar + ', '
             }
-            return temp.join("")
-
+            temp.push(htmlCode + ': ' + tempVarOne)
         }
+        return temp.join("")
+
     }
 
     MedicineList = (item, index) => {
@@ -647,7 +652,7 @@ class PreviewRx extends React.Component {
                                         <View style={{ flex: 4 }}>
                                             <Text style={{ color: Color.black, fontSize: CustomFont.font12, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), marginLeft: responsiveWidth(3) }}>Dr. {doctorInfo.firstName ? doctorInfo.firstName + ' ' + doctorInfo.lastName : null}</Text>
                                             <Text style={{ color: Color.black, fontSize: CustomFont.font12, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), marginLeft: responsiveWidth(3) }}>{this.doctorSpeciality(doctorInfo)}</Text>
-                                            <Text style={{ color: Color.black, fontSize: CustomFont.font12, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), marginLeft: responsiveWidth(3) }}>{this.doctorEducationView(doctorInfo)}</Text>
+                                            <Text style={{ color: Color.black, fontSize: CustomFont.font12, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), marginLeft: responsiveWidth(3) }}>{this.doctorEducationViewWithoutAddress(doctorInfo)}</Text>
                                             <Text style={{ color: Color.black, fontSize: CustomFont.font12, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), marginLeft: responsiveWidth(3) }}>Reg no. {registrationNumber}</Text>
                                         </View>
                                     </View>

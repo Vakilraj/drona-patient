@@ -312,7 +312,24 @@ class PreviewRxButton extends React.Component {
 		// return temp.join("")
 	}
 
+	doctorEducationViewWithoutAddress = (doctorInfo) => {
+		let temp = []
+		//let htmlCode=``;
 
+		if (doctorInfo.doctorEducation != null && doctorInfo.doctorEducation.length > 0) {
+
+			for (var i = 0; i < doctorInfo.doctorEducation.length; i++) {
+				let tmpStr = ''
+				if (doctorInfo.doctorEducation[i].degree) {
+					//htmlCode= ' ' + doctorInfo.doctorEducation[i].degree;
+					tmpStr = doctorInfo.doctorEducation[i].degree;
+				}
+				temp.push(tmpStr)
+
+			}
+		}
+		return temp
+    }
 	// medicineListView = (medicineList) => {
 	// 	let temp = []
 	// 	for (var i = 0; i < medicineList.length; i++) {
@@ -639,60 +656,49 @@ class PreviewRxButton extends React.Component {
 	selectedList = (selectedConditions, selectedMedications, selectedAllergies, selectedFamilyHistory) => {
 		let temp = []
 		let selectedConditionName, selectedMedicationsName, selectedAllergiesName
-		if (selectedConditions && selectedConditions.length > 0) {
-			const selCondition = selectedConditions
-			for (var i = 0; i < selCondition.length; i++) {
-				selectedConditionName = selCondition[i].conditionName
-				const htmlCode = ' ' + selectedConditionName + ",";
-				temp.push(htmlCode)
-			}
+		const selCondition = selectedConditions
+		for (var i = 0; i < selCondition.length; i++) {
+			selectedConditionName = selCondition[i].conditionName
+			const htmlCode = ' ' + selectedConditionName + ",";
+			temp.push(htmlCode)
 		}
-		if (selectedMedications && selectedMedications.length > 0) {
-			const selMedication = selectedMedications
-			for (var i = 0; i < selMedication.length; i++) {
-				selectedMedicationsName = selMedication[i].medicineName
-				const htmlCode = ' ' + selectedMedicationsName + ",";
-				temp.push(htmlCode)
-			}
+		const selMedication = selectedMedications
+		for (var i = 0; i < selMedication.length; i++) {
+			selectedMedicationsName = selMedication[i].medicineName
+			const htmlCode = ' ' + selectedMedicationsName + ",";
+			temp.push(htmlCode)
 		}
-		if (selectedAllergies && selectedAllergies.length > 0) {
-			const selAllergies = selectedAllergies
-			for (var i = 0; i < selAllergies.length; i++) {
-				selectedAllergiesName = selAllergies[i].allergyName
-				const htmlCode = " " + selectedAllergiesName + ",";
-				temp.push(htmlCode)
-			}
+		const selAllergies = selectedAllergies
+		for (var i = 0; i < selAllergies.length; i++) {
+			selectedAllergiesName = selAllergies[i].allergyName
+			const htmlCode = " " + selectedAllergiesName + ",";
+			temp.push(htmlCode)
 		}
-		if (selectedFamilyHistory && selectedFamilyHistory.length > 0) {
 
-			let tempVar
-			const selFamilyHistory = selectedFamilyHistory
-			for (var i = 0; i < selFamilyHistory.length; i++) {
-				const htmlCode = selFamilyHistory[i].familyHistoryName;
-				const htmlSecCode = selFamilyHistory[i].patientCondition
-				let tempVarOne = '';
-				for (var j = 0; j < htmlSecCode.length; j++) {
-					tempVar = htmlSecCode[j].conditionName
-					tempVarOne = tempVarOne + tempVar + ', '
-				}
-				temp.push(htmlCode + ': ' + tempVarOne)
+		let tempVar
+		const selFamilyHistory = selectedFamilyHistory
+		for (var i = 0; i < selFamilyHistory.length; i++) {
+			const htmlCode = selFamilyHistory[i].familyHistoryName;
+			const htmlSecCode = selFamilyHistory[i].patientCondition
+			let tempVarOne = '';
+			for (var j = 0; j < htmlSecCode.length; j++) {
+				tempVar = htmlSecCode[j].conditionName
+				tempVarOne = tempVarOne + tempVar + ', '
 			}
-			return temp.join("")
-
+			temp.push(htmlCode + ': ' + tempVarOne)
 		}
+
 		const htmlCode = `
-		<table style="width:100%;margin-top: 5px" >
-			<tr>
-				<th style="width:15%;">`+ medicalHistoryHead + ` :</th>
-				<td style= "text-transform: capitalize;">`+ temp.join(" ") + `</td>
-			</tr>
-		</table>
-		`
+			<table style="width:100%;margin-top: 5px" >
+				<tr>
+					<th style="width:15%;">`+ medicalHistoryHead + ` :</th>
+					<td style= "text-transform: capitalize;">`+ temp.join(" ") + `</td>
+				</tr>
+			</table>
+			`
 		return htmlCode
 
-
 	}
-
 	showfollowUpViewList = (followUpItem) => {
 		// alert(JSON.stringify(followUpItem))
 		if (followUpItem) {
@@ -892,7 +898,7 @@ class PreviewRxButton extends React.Component {
 	  <tr>  
 	  <td width="80%"/>
 	  <td width="20%">
-	  Dr. `+ this.showOriginalValueView(doctorInfo.firstName) + ` ` + this.showOriginalValueView(doctorInfo.lastName) + ` ` + this.doctorSpeciality(doctorInfo) + ` ` + this.doctorEducationView(doctorInfo) + `<p>Reg no. : ` + registrationNumber + `</p>
+	  Dr. `+ this.showOriginalValueView(doctorInfo.firstName) + ` ` + this.showOriginalValueView(doctorInfo.lastName) + ` ` + this.doctorSpeciality(doctorInfo) + ` ` + this.doctorEducationViewWithoutAddress(doctorInfo) + `<p>Reg no. : ` + registrationNumber + `</p>
 	  </td>
 	  </tr>
 	  </table>

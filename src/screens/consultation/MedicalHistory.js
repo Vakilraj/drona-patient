@@ -39,7 +39,7 @@ let normalListBackup = [], selectedListBackup = [];
 let conditionFlag = false, currentMedicationFlag = false, alergiesFlag = false, familyHistryFlag, significantHitryFlag = false;
 let selectedFamilyMemberGuild = '', significantNoteBackup = '', isUpdateGlobalStatusBackup = false;
 let medicineFullData = '';
-let medicineTypeFullArray = [];
+let medicineTypeFullArray = [], customAddMedicationItem = {};
 class medicalHistory extends React.Component {
 
 	constructor(props) {
@@ -89,6 +89,7 @@ class medicalHistory extends React.Component {
 
 			selectedFamily: '',
 			selectedFamilyGuid: '',
+			medicineTypeSearchTxt: '',
 
 			fld1: Color.inputdefaultBorder,
 			fld2: Color.inputdefaultBorder,
@@ -176,11 +177,8 @@ class medicalHistory extends React.Component {
 		Trace.stopTrace()
 	}
 
-	addPressClick = () => {
-		this.setState({ isMedicineModalOpen: false, showStateDosage: false })
-		this.callApiToGetMedicineType();
-	}
-	callApiToGetMedicineType = () => {
+	getMedicineTypeList = () => {
+		this.setState({ iscurrentMedicationModalOpen: false });
 		let { actions, signupDetails } = this.props;
 		let params = {
 			"userGuid": signupDetails.UserGuid,
@@ -189,10 +187,16 @@ class medicalHistory extends React.Component {
 			"version": "",
 			"Data": null
 		}
-		actions.callLogin('V1/FuncForDrAppToGetMedicineType', 'post', params, signupDetails.accessToken, 'getmedicinetype');
-	}
+		actions.callLogin('V1/FuncForDrAppToGetMedicineType', 'post', params, signupDetails.accessToken, 'getmedicinetypeInMedicalHistry');
 
-	addPressed = () => {
+		// this.setState({ isMedicineModalOpen: false, showStateDosage: false })
+		// this.callApiToGetMedicineType();
+	}
+	// callApiToGetMedicineType = () => {
+
+	// }
+
+	AddCustomMedicine = () => {
 		if (this.state.currentMedicationSearchTxt && this.state.medicineTypeName) {
 			let { actions, signupDetails } = this.props;
 			let params = {
@@ -207,7 +211,7 @@ class medicalHistory extends React.Component {
 					"Strength": this.state.strength
 				}
 			}
-			actions.callLogin('V15/FuncForDrAppToAddNewCurrentMedication', 'post', params, signupDetails.accessToken, 'AddMedicine');
+			actions.callLogin('V15/FuncForDrAppToAddNewCurrentMedication', 'post', params, signupDetails.accessToken, 'AddMedicineInMedicalHistry');
 			// medicineFlag = true;
 			DRONA.setIsConsultationChange(true);
 		} else {
@@ -408,23 +412,37 @@ class medicalHistory extends React.Component {
 				}
 			} else if (tagname === 'SearchForcurrentMedication') {
 				if (newProps.responseData.statusCode == '0') {
-					if (newProps.responseData.data && newProps.responseData.data.length > 0) {
-						let temp = newProps.responseData.data;
-						temp.push({
-							"medicineTypeGuid": null,
-							"medicineDesc": null,
-							"medicineName": "Add new “" + this.state.currentMedicationSearchTxt + '”'
-						})
-						this.setState({ ConditionsArr: temp });
+					let tmpObj={
+						"patientCurrentMedicationGuid": null,
+						"patientAppointmentMedicineGuId": null,
+						"medicineGuid": null,
+						"medicineName": "Add new “" + this.state.currentMedicationSearchTxt + '”',
+						"medicineDesc": null,
+						"strength": null,
+						"medicineTypeGuid": null,
+						"medicineType": null,
 					}
-					else
-						this.setState({
-							currentMedicationArr: [{
-								"medicineTypeGuid": null,
-								"medicineDesc": null,
-								"medicineName": "Add new “" + this.state.currentMedicationSearchTxt + '”'
-							}]
-						});
+					let temp = newProps.responseData.data ? newProps.responseData.data:[];
+					temp.push(tmpObj);
+					this.setState({currentMedicationArr:temp});
+console.log('===='+JSON.stringify(temp));
+					// if (newProps.responseData.data && newProps.responseData.data.length > 0) {
+					// 	let temp = newProps.responseData.data;
+					// 	temp.push({
+					// 		"medicineTypeGuid": null,
+					// 		"medicineDesc": null,
+					// 		"medicineName": "Add new “" + this.state.currentMedicationSearchTxt + '”'
+					// 	})
+					// 	this.setState({ ConditionsArr: temp });
+					// }
+					// else
+					// 	this.setState({
+					// 		currentMedicationArr: [{
+					// 			"medicineTypeGuid": null,
+					// 			"medicineDesc": null,
+					// 			"medicineName": "Add new “" + this.state.currentMedicationSearchTxt + '”'
+					// 		}]
+					// 	});
 				}
 			} else if (tagname === 'SearchFoAllergies') {
 				if (newProps.responseData.statusCode == '0') {
@@ -473,21 +491,28 @@ class medicalHistory extends React.Component {
 					this.setState({ SelectedAllergiesArr: tempArr });
 				}
 			}
-			else if (tagname === 'AddMedicine') {
+			else if (tagname === 'AddMedicineInMedicalHistry') {
 				if (newProps.responseData.statusCode == '0' && newProps.responseData.data) {
-					let medicineTypeGuid = newProps.responseData.data.medicineTypeGuid;
-					let tempArr = [...this.state.SelectedcurrentMedicationArr]
-					tempArr[tempArr.length - 1].medicineTypeGuid = medicineTypeGuid
-					this.setState({ SelectedcurrentMedicationArr: tempArr, addMedicinePopup: false });
-					if (!medicineTypeGuid)
-						medicineTypeGuid = this.state.medicineTypeName;
-
+					let medicineGuid = newProps.responseData.data.medicineGuid;
+					let tempArr = [...this.state.SelectedcurrentMedicationArr];
+					customAddMedicationItem.medicineName=newProps.responseData.data.medicineName;
+					customAddMedicationItem.medicineDesc=this.state.genericName;
+					customAddMedicationItem.strength=this.state.strength;
+					customAddMedicationItem.medicineType=this.state.medicineTypeSearchTxt;
+					tempArr.push(customAddMedicationItem);
+					tempArr[tempArr.length - 1].medicineGuid = medicineGuid
+					this.setState({ SelectedcurrentMedicationArr: tempArr });
+					// if (!medicineTypeGuid)
+					// 	medicineTypeGuid = this.state.medicineTypeName;
+					setTimeout(() => {
+						this.setState({ addMedicinePopup: false })
+					}, 300)
 				}
 				else {
-					this.setState({ SelectedcurrentMedicationArr: tempArr });
+					Snackbar.show({ text: newProps.responseData.statusMessage, duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 				}
 			}
-			else if (tagname === 'getmedicinetype') {
+			else if (tagname === 'getmedicinetypeInMedicalHistry') {
 				if (newProps.responseData.statusCode == '0') {
 					let response = newProps.responseData.data
 					let tempMedicineTypeArr = [];
@@ -681,11 +706,7 @@ class medicalHistory extends React.Component {
 		DRONA.setIsConsultationChange(true);
 		let tempserviceArr = [...this.state.currentMedicationArr];
 		let selectedTempserviceArr = [...this.state.SelectedcurrentMedicationArr];
-		if (!item.medicineTypeGuid) {
-			item.medicineName = item.medicineName.replace("Add new “", "").replace('”', "")
-			this.addPressClick(item)
 
-		}
 		let isNameExist = false;
 		try {
 			if (selectedTempserviceArr && selectedTempserviceArr.length > 0)
@@ -701,20 +722,28 @@ class medicalHistory extends React.Component {
 		if (isNameExist) {
 			Snackbar.show({ text: item.medicineName + ' already added', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 		} else {
-			normalListBackup = [...this.state.currentMedicationArr];
-			selectedListBackup = [...this.state.SelectedcurrentMedicationArr];
+			if (!item.medicineGuid) {
+				item.medicineName = item.medicineName.replace("Add new “", "").replace('”', "");
+				customAddMedicationItem = item;
+				this.getMedicineTypeList(item)
+
+			} else {
+				normalListBackup = [...this.state.currentMedicationArr];
+				selectedListBackup = [...this.state.SelectedcurrentMedicationArr];
 
 
-			selectedTempserviceArr.push(item)
-			tempserviceArr.splice(index, 1);
-			try {
-				currentMedicationFullArray = _.differenceBy(currentMedicationFullArray, [item], 'medicineGuid');
-			} catch (error) { }
+				selectedTempserviceArr.push(item)
+				tempserviceArr.splice(index, 1);
+				try {
+					currentMedicationFullArray = _.differenceBy(currentMedicationFullArray, [item], 'medicineGuid');
+				} catch (error) { }
 
-			this.setState({ SelectedcurrentMedicationArr: selectedTempserviceArr, currentMedicationArr: currentMedicationFullArray, currentMedicationSearchTxt: '' })
+				this.setState({ SelectedcurrentMedicationArr: selectedTempserviceArr, currentMedicationArr: currentMedicationFullArray, currentMedicationSearchTxt: '' })
 
-			let { actions, signupDetails } = this.props;
-			setLogEvent("medical_history", { "add_medication": "click", UserGuid: signupDetails.UserGuid })
+				let { actions, signupDetails } = this.props;
+				setLogEvent("medical_history", { "add_medication": "click", UserGuid: signupDetails.UserGuid })
+			}
+
 		}
 	}
 
@@ -739,11 +768,14 @@ class medicalHistory extends React.Component {
 		});
 		if (searchResult.length == 0) {
 			searchResult.push({
-				"appointmentGuid": null,
-				"medicineGuid": null,
+				"patientCurrentMedicationGuid": null,
 				"patientAppointmentMedicineGuId": null,
+				"medicineGuid": null,
 				"medicineName": "Add new “" + text + '”',
-				"medicineDesc": null
+				"medicineDesc": null,
+				"strength": null,
+				"medicineTypeGuid": null,
+				"medicineType": null,
 			})
 		}
 		this.setState({
@@ -1364,7 +1396,7 @@ class medicalHistory extends React.Component {
 										marginTop: this.state.showStateDosage ? responsiveHeight(3) : responsiveHeight(15), marginBottom: responsiveHeight(4),
 										backgroundColor: this.state.isMedicineTypeSelected ? Color.primary : Color.btnDisable, borderRadius: 10, height: responsiveHeight(6),
 										alignItems: 'center', justifyContent: 'center',
-									}} onPress={this.addPressed}>
+									}} onPress={this.AddCustomMedicine}>
 										<Text style={{
 											fontFamily: CustomFont.fontName, color: Color.white,
 											fontSize: CustomFont.font16, fontWeight: CustomFont.fontWeight700

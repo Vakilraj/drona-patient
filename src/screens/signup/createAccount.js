@@ -327,7 +327,7 @@ class RegistrationForm extends React.Component {
 									
 								    fname = fname.trim() 
 									this.setState({ fname })
-									if (!fname || Validator.isNameValidate(fname)) {
+									if (!fname || Validator.isNameAcceptDot(fname)) {
 										this.setState({ fnameAlert: '' })
 									} else {
 										this.setState({ fnameAlert: 'name should contain only alphabets' })

@@ -26,10 +26,17 @@ let doasagesPatterArr = [{ label: '1-0-0', value: '1-0-0', isSelect: true }, { l
 let clickFlag = 0, isEdit = false, prvLength = -1, InputTxtLengthDosage = 5, InputTxtLengthDuration = 5, InputTxtLengthUnit = 5;
 import Trace from '../../service/Trace'
 import _ from 'lodash';
-let medicineTimingFrequency = '',fullArrayUnit=[];
+let medicineTimingFrequency = '', fullArrayUnit = [];
+let doctorNotesArr = [];
+let temp = [
+	{label: 'abc1', value: 'abc'},
+	{label: 'abc2', value: 'abc'},
+	{label: 'abc3', value: 'abc'},
+	{label: 'abc4', value: 'abc'},
+]
 let whenToTakeData = [
-	{ label: 'Before Food', value: 'Before Food' }, 
-	{ label: 'After Food', value: 'After Food' }, 
+	{ label: 'Before Food', value: 'Before Food' },
+	{ label: 'After Food', value: 'After Food' },
 	{ label: 'No Preference', value: 'No Preference' },
 	{ label: 'Before Breakfast', value: 'Before Breakfast' },
 	{ label: 'After Breakfast', value: 'After Breakfast' },
@@ -37,19 +44,19 @@ let whenToTakeData = [
 	{ label: 'After Lunch', value: 'After Lunch' },
 	{ label: 'Before Dinner', value: 'Before Dinner' },
 	{ label: 'After Dinner', value: 'After Dinner' },
-	{ label: 'Empty Stomach', value: 'Empty Stomach' }, 
+	{ label: 'Empty Stomach', value: 'Empty Stomach' },
 	{ label: 'Bed Time', value: 'Bed Time' },
-	{ label: 'SOS', value: 'SOS' }, 
+	{ label: 'SOS', value: 'SOS' },
 ]
 
 let durationData = [
-	{label: 'Daily', value:'Daily'},
-	{label: 'Alternate Day', value:'Alternate Day'},
-	{label: 'Fort Night', value:'Fort Night'},
-	{label: 'Hourly', value:'Hourly'},
-	{label: 'Monthly', value:'Monthly'},
-	{label: 'SOS', value:'SOS'},
-	{label: 'Weekly', value:'Weekly'},
+	{ label: 'Daily', value: 'Daily' },
+	{ label: 'Alternate Day', value: 'Alternate Day' },
+	{ label: 'Fort Night', value: 'Fort Night' },
+	{ label: 'Hourly', value: 'Hourly' },
+	{ label: 'Monthly', value: 'Monthly' },
+	{ label: 'SOS', value: 'SOS' },
+	{ label: 'Weekly', value: 'Weekly' },
 ]
 class MedicineDetails extends React.Component {
 	constructor(props) {
@@ -70,6 +77,10 @@ class MedicineDetails extends React.Component {
 			unitTxt: '',
 			DurationDropdownArr: durationData,
 			UnitDropdownArr: props.navigation.state.params.item.medicineDosasesType,
+			showDoctorNotesdropDown: false,
+			doctorNoteTxt: '',
+			noteDatas: temp,
+			doctorNotesDataArr: props.navigation.state.params.doctorNotes ? props.navigation.state.params.doctorNotes:[],
 
 
 
@@ -89,7 +100,7 @@ class MedicineDetails extends React.Component {
 		medicineTimingFrequency = 'Empty Stomach';
 	}
 	async componentDidMount() {
-		
+
 		clickFlag = 0;
 		this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
 			this.props.navigation.goBack()
@@ -99,7 +110,9 @@ class MedicineDetails extends React.Component {
 			}
 		});
 		let item = this.props.navigation.state.params.item;
-		console.log('item----111---' + JSON.stringify(item))
+		doctorNotesArr = this.props.navigation.state.params.doctorNotes ? this.props.navigation.state.params.doctorNotes :[];
+		//console.log('item----111---' + JSON.stringify(item))
+		//console.log('===== doctorNotesArr ======' + JSON.stringify(doctorNotesArr))
 		medicineTypeGuid = item.medicineTypeGuid;
 		medicineType = item.medicineType;
 
@@ -197,7 +210,7 @@ class MedicineDetails extends React.Component {
 		this.setState({ InpborderColorDuration: Color.primary, showDurationDropDown: true })
 	}
 	callIsBlurDuration = () => {
-		this.setState({ InpborderColorDuration: Color.inputdefaultBorder});
+		this.setState({ InpborderColorDuration: Color.inputdefaultBorder });
 	}
 
 	callIsFucusedUnit = () => {
@@ -325,6 +338,10 @@ class MedicineDetails extends React.Component {
 		this.setState({ dutaionTxt: item.label, showDurationDropDown: false })
 	}
 
+	clickOnDoctorNotes = (item) => {
+		this.setState({noteData: item.note, showDoctorNotesdropDown : false})
+	}
+
 	handleUnitData = (text) => {
 		if(text){
 			var searchResult = _.filter(fullArrayUnit, function (item) {
@@ -386,11 +403,11 @@ class MedicineDetails extends React.Component {
 							</View>
 							{/* ------- Unit------- */}
 							<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>Units</Text>
-							<TextInput onBlur={this.callIsBlurUnit} onFocus={this.callIsFucusedUnit}  style={[styles.createInputStyle, { borderColor: this.state.InpborderColorUnit }]} placeholder={'Enter Unit'} placeholderTextColor={Color.placeHolderColor} value={this.state.unitTxt}
-							//  maxLength={InputTxtLengthUnit}
+							<TextInput onBlur={this.callIsBlurUnit} onFocus={this.callIsFucusedUnit} style={[styles.createInputStyle, { borderColor: this.state.InpborderColorUnit }]} placeholder={'Enter Unit'} placeholderTextColor={Color.placeHolderColor} value={this.state.unitTxt}
+								//  maxLength={InputTxtLengthUnit}
 								onChangeText={(text) => this.handleUnitData(text)} ref='search' returnKeyType='done' />
 
-							{this.state.showUnitDropDown && this.state.UnitDropdownArr && this.state.UnitDropdownArr.length>0?
+							{this.state.showUnitDropDown && this.state.UnitDropdownArr && this.state.UnitDropdownArr.length > 0 ?
 								<View style={{
 									borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,
 									borderBottomColor: Color.createInputBorder, borderTopColor: Color.white, marginTop: responsiveHeight(-.8)
@@ -439,12 +456,12 @@ class MedicineDetails extends React.Component {
 								items={this.state.whenToTakeArr}
 								containerStyle={{ borderRadius: responsiveWidth(2), height: responsiveHeight(6), marginTop: responsiveHeight(1.6) }}
 								style={{ backgroundColor: '#ffffff', color: Color.textGrey }}
-								textStyle={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16}}								itemStyle={{
+								textStyle={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16 }} itemStyle={{
 									justifyContent: 'flex-start'
 								}}
 								dropDownStyle={{ backgroundColor: '#fafafa', zIndex: 4 }}
 								onChangeItem={item => {
-								medicineTimingFrequency = item.value;
+									medicineTimingFrequency = item.value;
 								}}
 								globalTextStyle={{ color: Color.fontColor, fontSize: CustomFont.font16 }}
 								placeholder={medicineTimingFrequency}
@@ -452,8 +469,8 @@ class MedicineDetails extends React.Component {
 							/>
 							{/* ------- Duration------- */}
 							<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>Frequency</Text>
-							<TextInput onBlur={this.callIsBlurDuration} onFocus={this.callIsFucusedDuration}  style={[styles.createInputStyle, { borderColor: this.state.InpborderColorDuration }]} placeholder={'Enter frequency'} placeholderTextColor={Color.placeHolderColor} value={this.state.dutaionTxt} 
-							// maxLength={InputTxtLengthDuration}
+							<TextInput onBlur={this.callIsBlurDuration} onFocus={this.callIsFucusedDuration} style={[styles.createInputStyle, { borderColor: this.state.InpborderColorDuration }]} placeholder={'Enter frequency'} placeholderTextColor={Color.placeHolderColor} value={this.state.dutaionTxt}
+								// maxLength={InputTxtLengthDuration}
 								onChangeText={(text) => this.handleDurationData(text)} ref='search' returnKeyType='done' />
 
 							{this.state.showDurationDropDown ?
@@ -470,17 +487,41 @@ class MedicineDetails extends React.Component {
 									keyExtractor={(item, index) => index.toString()}
 									/>
 								</View> : null}
-
+							{/* ------------------------------------  Note ----------------------------------------------------------*/}
 							<Text style={{ marginTop: responsiveHeight(3), color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName }}>Note</Text>
-							<TextInput returnKeyType="done" style={{ marginBottom: responsiveHeight(3), borderWidth: 1, borderColor: Color.borderColor, padding: 10, height: responsiveHeight(12), fontSize: CustomFont.font14, borderRadius: 5, textAlignVertical: 'top', color: Color.fontColor, opacity: .8, marginTop: 10 }}
+							<TextInput returnKeyType="done" style={{ marginBottom: responsiveHeight(1), borderWidth: 1, borderColor: Color.borderColor, padding: 10, height: responsiveHeight(6), fontSize: CustomFont.font14, borderRadius: 5, textAlignVertical: 'top', color: Color.fontColor, opacity: .8, marginTop: 10 }}
+							    onFocus={() => this.setState({showDoctorNotesdropDown : true})}
 								placeholder="Add comments"
 								placeholderTextColor={Color.placeHolderColor}
 								multiline={true} value={this.state.noteData}
 								onChangeText={noteData => {
+									if(noteData){
+										let temps = [...doctorNotesArr];
+									 let notesData = temps.filter((val) =>{
+											return val.note.toLocaleLowerCase().includes(noteData.toLocaleLowerCase());
+										})
+										this.setState({doctorNotesDataArr: notesData})
+									}
 									this.setState({ noteData });
 									let { signupDetails } = this.props;
 									setLogEvent("medicine", { "add_note": "click", UserGuid: signupDetails.UserGuid })
 								}} maxLength={100} blurOnSubmit />
+
+							{
+								this.state.showDoctorNotesdropDown && doctorNotesArr?.length > 0 ? <View style={{
+									borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,
+									borderBottomColor: Color.createInputBorder, borderTopColor: Color.white, marginTop: responsiveHeight(-.8)
+								}}><FlatList style={{ backgroundColor: '#fafafa' }}
+									data={this.state.doctorNotesDataArr}
+									renderItem={({ item, index }) => (
+										<TouchableOpacity key={index} style={{ zIndex: 999, height: responsiveHeight(7), justifyContent: 'flex-start', }} onPress={() => this.clickOnDoctorNotes(item)}>
+											<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }} >{item.note}</Text>
+										</TouchableOpacity>
+									)}
+									keyExtractor={(item, index) => index.toString()}
+									/>
+								</View> : null
+							}
 
 
 

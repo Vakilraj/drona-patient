@@ -21,14 +21,15 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import Snackbar from 'react-native-snackbar';
 import { setLogEvent } from '../../service/Analytics';
 import Validator from '../../components/Validator';
+import Trace from '../../service/Trace'
+import _ from 'lodash';
 let prevIndexTimings = 0, prevIndexDoase = 0, prevIndexDuration = 1, medicineType = '', medicineTypeGuid = '', DurationType = 'days', DurationTypeValue = '5', MedicineDoasesGuId = '', doasestype = '', Dosages = '', TimingTypeGuid = '', dosagePattern = '';
 let doasagesPatterArr = [{ label: '1-0-0', value: '1-0-0', isSelect: true }, { label: '0-1-0', value: '0-1-0', isSelect: false }, { label: '0-0-1', value: '0-0-1', isSelect: false }, { label: '1-1-0', value: '1-1-0', isSelect: false }, { label: '0-1-1', value: '0-1-1', isSelect: false }, { label: '1-0-1', value: '1-0-1', isSelect: false }, { label: '1-1-1', value: '1-1-1', isSelect: false }, { label: '6 Hourly', value: '6 Hourly', isSelect: false }, { label: 'Alternate Day', value: 'Alternate Day', isSelect: false }, { label: 'Weekly', value: 'Weekly', isSelect: false }, { label: 'Monthly', value: 'Monthly', isSelect: false }, { label: 'SOS', value: 'SOS', isSelect: false }, { label: 'Custom dosage', value: 'Custom dosage', isSelect: false }]
 let clickFlag = 0, isEdit = false, prvLength = -1, InputTxtLengthDosage = 5, InputTxtLengthDuration = 5, InputTxtLengthUnit = 5;
-import Trace from '../../service/Trace'
-import _ from 'lodash';
 let medicineTimingFrequency = 'Empty Stomach';
 let medicineDosasesType;
 let fromDaysData = [{ value: 'days' }, { value: 'weeks' }, { value: 'months' }, { value: 'years' }]
+let fullArrayUnit = [];
 class MedicineDetails extends React.Component {
 	constructor(props) {
 		super(props);
@@ -107,6 +108,8 @@ class MedicineDetails extends React.Component {
 			medicineTypeGuid = item.medicineDosasesType[0].medicineTypeGuid;
 			MedicineDoasesGuId = item.medicineDosasesType[0].medicineDoasesGuId;
 			doasestype = item.medicineDosasesType[0].doasestype;
+			fullArrayUnit=item.medicineDosasesType;
+			console.log('----'+JSON.stringify(fullArrayUnit))
 			//this.setState({ DosageTitleArr: tempDoaseArr });
 			// if (doasestype === 'Tablet') {
 			// 	let tmpArr = [{ label: '1/2', value: '1/2', isSelect: false }, { label: '3/4', value: '3/4', isSelect: false }, { label: '1', value: '1', isSelect: true }, { label: '2', value: '2', isSelect: false }];
@@ -206,56 +209,56 @@ class MedicineDetails extends React.Component {
 		}, 1000)
 	}
 
-	getDurationAndUnit = (item) => {
-		Dosages = item.dosages ? item.dosages : 1;
-		DurationType = item.durationType ? item.durationType : 'days';
-		if (item.durationValue)
-			DurationTypeValue = item.durationValue;
-		if (item.medicineTimingFrequency)
-			medicineTimingFrequency = item.medicineTimingFrequency;
+	// getDurationAndUnit = (item) => {
+	// 	Dosages = item.dosages ? item.dosages : 1;
+	// 	DurationType = item.durationType ? item.durationType : 'days';
+	// 	if (item.durationValue)
+	// 		DurationTypeValue = item.durationValue;
+	// 	if (item.medicineTimingFrequency)
+	// 		medicineTimingFrequency = item.medicineTimingFrequency;
 
-		//this.setState({ noteData: item.note ? item.note : '' })
+	// 	//this.setState({ noteData: item.note ? item.note : '' })
 
-		if (item.dosagePattern) {
-			dosagePattern = item.dosagePattern;
-			InputTxtLengthDosage = dosagePattern.length;
-			if (dosagePattern && dosagePattern.indexOf('.')) {
-				this.setState({ CustomInput: true })
-			}
-			//this.setState({ dosageSearchTxt: dosagePattern })
-		}
-		let durationRefileedTxt = DurationTypeValue + ' ' + DurationType;
-		InputTxtLengthDuration = durationRefileedTxt.length;
+	// 	if (item.dosagePattern) {
+	// 		dosagePattern = item.dosagePattern;
+	// 		InputTxtLengthDosage = dosagePattern.length;
+	// 		if (dosagePattern && dosagePattern.indexOf('.')) {
+	// 			this.setState({ CustomInput: true })
+	// 		}
+	// 		//this.setState({ dosageSearchTxt: dosagePattern })
+	// 	}
+	// 	let durationRefileedTxt = DurationTypeValue + ' ' + DurationType;
+	// 	InputTxtLengthDuration = durationRefileedTxt.length;
 
-		let unitRefileedTxt = Dosages + ' ' + doasestype;
-		InputTxtLengthUnit = unitRefileedTxt.length;
+	// 	let unitRefileedTxt = Dosages + ' ' + doasestype;
+	// 	InputTxtLengthUnit = unitRefileedTxt.length;
 
-		//this.setState({ dutaionTxt: durationRefileedTxt, unitTxt: unitRefileedTxt })
-		return unitRefileedTxt;
-	}
+	// 	//this.setState({ dutaionTxt: durationRefileedTxt, unitTxt: unitRefileedTxt })
+	// 	return unitRefileedTxt;
+	// }
 
-	getDoseValue = (item) => {
-		Dosages = item.dosages ? item.dosages : 1;
-		if (this.state.selectedIndex)
-			if (item.dosagePattern) {
-				dosagePattern = item.dosagePattern;
-				InputTxtLengthDosage = dosagePattern.length;
-				if (dosagePattern && dosagePattern.indexOf('.')) {
-					this.setState({ CustomInput: true })
-				}
-				this.setState({ dosageSearchTxt: dosagePattern })
-			}
-	}
+	// getDoseValue = (item) => {
+	// 	Dosages = item.dosages ? item.dosages : 1;
+	// 	if (this.state.selectedIndex)
+	// 		if (item.dosagePattern) {
+	// 			dosagePattern = item.dosagePattern;
+	// 			InputTxtLengthDosage = dosagePattern.length;
+	// 			if (dosagePattern && dosagePattern.indexOf('.')) {
+	// 				this.setState({ CustomInput: true })
+	// 			}
+	// 			this.setState({ dosageSearchTxt: dosagePattern })
+	// 		}
+	// }
 
-	getDurationValue = (item) => {
-		// let durationRefileedTxt = DurationTypeValue + ' ' + DurationType;
-		// InputTxtLengthDuration = durationRefileedTxt.length;
+	// getDurationValue = (item) => {
+	// 	// let durationRefileedTxt = DurationTypeValue + ' ' + DurationType;
+	// 	// InputTxtLengthDuration = durationRefileedTxt.length;
 
-		// let unitRefileedTxt = Dosages + ' ' + doasestype;
-		// InputTxtLengthUnit = unitRefileedTxt.length;
+	// 	// let unitRefileedTxt = Dosages + ' ' + doasestype;
+	// 	// InputTxtLengthUnit = unitRefileedTxt.length;
 
-		// this.setState({ dutaionTxt: durationRefileedTxt, unitTxt: unitRefileedTxt })
-	}
+	// 	// this.setState({ dutaionTxt: durationRefileedTxt, unitTxt: unitRefileedTxt })
+	// }
 
 	saveData = () => {
 		clickFlag = 1;
@@ -321,7 +324,7 @@ class MedicineDetails extends React.Component {
 	}
 
 	callIsFucusedUnit = (index) => {
-		this.setState({ InpborderColorUnit: Color.primary, selectedIndex: index })
+		this.setState({ InpborderColorUnit: Color.primary, selectedIndex: index, showUnitDropDown: true })
 	}
 	callIsBlurUnit = () => {
 		this.setState({ InpborderColorUnit: Color.inputdefaultBorder, });
@@ -448,24 +451,38 @@ class MedicineDetails extends React.Component {
 
 	handleUnitData = (text, index) => {
 		this.setState({ selectedIndex: index })
-		if (text && Validator.isMobileValidate(text)) {
-			Dosages = text;
-			this.setState({ unitTxt: text, showUnitDropDown: true });
-		} else
-			this.setState({ unitTxt: text, showUnitDropDown: false });
+		// if (text && Validator.isMobileValidate(text)) {
+		// 	Dosages = text;
+		// 	this.setState({ unitTxt: text, showUnitDropDown: true });
+		// } else
+		// 	this.setState({ unitTxt: text, showUnitDropDown: false });
+		if(text){
+			var searchResult = _.filter(fullArrayUnit, function (item) {
+				return item.doasestype.toLowerCase().indexOf(text.toLowerCase()) > -1;
+			});
+			this.setState({
+				UnitDropdownArr: searchResult
+			});
+		}else{
+			this.setState({
+				UnitDropdownArr: fullArrayUnit
+			});
+		}
+		
+		this.setState({ unitTxt: text });
 
 	}
 
 	clickOnUnit = (item, index) => {
 		let tempData = this.state.taperedData;
 		doasestype = item.doasestype;
-		medicineType = item.doasestype;
+		// medicineType = item.doasestype;
 		medicineTypeGuid = item.medicineTypeGuid;
 		MedicineDoasesGuId = item.medicineDoasesGuId;
-		let str = this.state.unitTxt + ' ' + doasestype;
-		InputTxtLengthUnit = str.length;
-		tempData[index].unitTextValue = str
-		this.setState({ unitTxt: str, showUnitDropDown: false })
+		// let str = this.state.unitTxt + ' ' + doasestype;
+		// InputTxtLengthUnit = str.length;
+		tempData[index].unitTextValue = item.doasestype
+		this.setState({ unitTxt: item.doasestype, showUnitDropDown: false })
 	}
 
 	clickOnDosege = (item, index) => {
@@ -549,7 +566,7 @@ class MedicineDetails extends React.Component {
 					// maxLength={InputTxtLengthUnit}
 					onChangeText={(text) => this.handleUnitData(text, index)}
 					ref='search' returnKeyType='done' />
-				{this.state.unitTxt && this.state.showUnitDropDown && this.state.selectedIndex == index ?
+				{ this.state.showUnitDropDown && this.state.selectedIndex == index ?
 					<View style={{
 						borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,
 						borderBottomColor: Color.createInputBorder, borderTopColor: Color.white, marginTop: responsiveHeight(-.8)
@@ -558,7 +575,7 @@ class MedicineDetails extends React.Component {
 							data={this.state.UnitDropdownArr}
 							renderItem={({ item, _index }) => (
 								<TouchableOpacity style={{ zIndex: 999, height: responsiveHeight(7), justifyContent: 'flex-start', }} onPress={() => this.clickOnUnit(item, index)}>
-									<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }} >{this.state.unitTxt} {this.state.unitTxt == 1 ? item.doasestype : item.doasestype}</Text>
+									<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }} >{item.doasestype}</Text>
 								</TouchableOpacity>
 							)}
 							keyExtractor={(item, index) => index.toString()}

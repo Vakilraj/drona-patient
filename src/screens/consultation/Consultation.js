@@ -54,6 +54,8 @@ let selectedSeverityGuid = null, selectedSeverityName = null, sincePattern = nul
 let severityArrySymptFind = [], severityArryDiagnostic = [];
 let clickItemIndex = 0, clickItemName = '', clickType = '';
 let doctorNotes = [];
+let ans = [];
+let medicineSaveData = [];
 class Consultation extends React.Component {
 	constructor(props) {
 		super(props);
@@ -276,7 +278,6 @@ class Consultation extends React.Component {
 	}
 	setValueFromResponse = (data) => {
 		let patientConsultation = data;
-		console.log('=====patientConsultation====', JSON.stringify(patientConsultation))
 		SymptomFullArray = patientConsultation.symptomList
 		findingFullArray = patientConsultation.findingList
 		diagnosticFullArray = patientConsultation.diagnosisList
@@ -353,21 +354,26 @@ class Consultation extends React.Component {
 	}
 
 	savePage = () => {
+		medicineFlag = true
 		Trace.stopTrace()
 		//vitalFlag || 
+		medicineSaveData.forEach((val, index) => {
+			delete medicineSaveData[index].medicineDosasesType
+		})
+		// console.log('======= medicineFlag ======', medicineFlag)
 		if (symptomFlag || findingFlag || diagnosticFlag || medicineFlag || instructionFlag || investigationFlag || notesFlag || procedureFlag) {
 			let { actions, signupDetails } = this.props;
 			let tmpMedicineArr = [...this.state.SelectedMedicineArr];
-			console.log('-----tmpMedicineArr---' + JSON.stringify(tmpMedicineArr));
+			// console.log('-----tmpMedicineArr---' + JSON.stringify(tmpMedicineArr));
 			let tmpArr = []
-			for (let i = 0; i < tmpMedicineArr.length; i++) {
-				let doaseArr = tmpMedicineArr[i].medicineDosasesType;
-				let tempObj = Object.assign({ medicineDosasesTypeGuid: doaseArr[0]?.medicineDoasesGuId, }, tmpMedicineArr[i]); // medicineDosasesType: doaseArr[0].doasestype 
-				tempObj.medicineDosasesType = doaseArr[0]?.doasestype;
-				tempObj.medicineTimingShift = null;
-				tmpArr.push(tempObj);
-			}
-			console.log('-----tmpArr---' + JSON.stringify(tmpArr));
+			// for (let i = 0; i < tmpMedicineArr.length; i++) {
+			// 	let doaseArr = tmpMedicineArr[i].medicineDosasesType;
+			// 	let tempObj = Object.assign({ medicineDosasesTypeGuid: doaseArr[0]?.medicineDoasesGuId, }, tmpMedicineArr[i]); // medicineDosasesType: doaseArr[0].doasestype 
+			// 	tempObj.medicineDosasesType = doaseArr[0]?.doasestype;
+			// 	tempObj.medicineTimingShift = null;
+			// 	tmpArr.push(tempObj);
+			// }
+			// console.log('-----tmpArr---' + JSON.stringify(tmpArr));
 			let params = {
 				"UserGuid": signupDetails.UserGuid,
 				"DoctorGuid": signupDetails.doctorGuid,
@@ -379,7 +385,8 @@ class Consultation extends React.Component {
 						"SymptomList": this.state.SelectedSymptomArr,
 						"FindingList": this.state.SelectedFindingArr,
 						"DiagnosisList": this.state.SelectedDiagnosticArr,
-						"MedicineList": tmpArr,
+						// "MedicineList": tmpArr,
+						"MedicineList": medicineSaveData,
 						"InvestigationList": this.state.SelectedInvestigationArr,
 						"InstructionsList": this.state.SelectedInstructionArr,
 						"ProcedureList": this.state.SelectedProcedureArr,
@@ -399,7 +406,7 @@ class Consultation extends React.Component {
 				}
 			}
 			DRONA.setIsConsultationChange(false);
-			actions.callLogin('V14/FuncForDrAppToAddConsultationTabData', 'post', params, signupDetails.accessToken, 'ConsultationPageSave');
+			actions.callLogin('V1/FuncForDrAppToAddConsultationTabData', 'post', params, signupDetails.accessToken, 'ConsultationPageSave');
 		} else {
 			this.callPreviewRx();
 		}
@@ -456,13 +463,14 @@ class Consultation extends React.Component {
 
 	// }
 	RefreshData = (val) => {
+		// console.log('========== RefreshData selectedNewMedicineArr ========', JSON.stringify(this.state.selectedNewMedicineArr))
+		// console.log('========== RefreshData val ========', JSON.stringify(val))
 		let tmpARr = [];
-		let ans = [];
 		if (val.isEdit) {
 			if (medicineAddUpdateFlag == 'update') {
 				let temp = [...this.state.selectedNewMedicineArr];
-				temp.forEach((ele) => {
-					if (ele.medicineName == val.data[0].medicineName) {
+				temp.forEach((ele, index) => {
+					if (ele.medicineName == val.data[0].medicineName) { // 0 ----> index
 						ele.values = val.data
 					}
 				})
@@ -480,14 +488,29 @@ class Consultation extends React.Component {
 				} else {
 					tmpARr.splice(medicineIndex, 1, val.data);
 				}
-				let dividedData = Object.values(ans.reduce((acc, obj) => {
+
+				if (ans.length > 0) {
+					medicineSaveData = ans;
+				} else {
+					medicineSaveData = val.data;
+				}
+
+                let dividedData = [];
+				let groupedData = Object.values(ans.reduce((acc, obj) => {
 					const key = obj.medicineName.trim();
 					if (!acc[key]) {
+						if(!obj.values){
 						acc[key] = { medicineName: key, values: [] };
+						}
 					}
-					acc[key].values.push(obj);
+					if(!obj.values){
+                    acc[key].values.push(obj);
+					} else{
+						dividedData.push(obj)
+					}
 					return acc;
 				}, {}));
+				dividedData = dividedData.concat(Object.values(groupedData));
 
 				medicineFlag = true;
 				this.setState({ SelectedMedicineArr: ans.length > 0 ? ans : val.data, selectedNewMedicineArr: dividedData })
@@ -1372,9 +1395,21 @@ class Consultation extends React.Component {
 		let tempServiceArr = [...this.state.selectedNewMedicineArr];
 		selectedListBackup = [...this.state.selectedNewMedicineArr];
 
-		tempserviceArr.push(item)
+		// tempserviceArr.push(item)
+
+		/* for unique medicine*/
+		let newTempserviceArr = [];
+		tempserviceArr.forEach((item) => {
+			if (newTempserviceArr.indexOf(item) === -1) {
+				newTempserviceArr.push(item);
+			}
+		});
+
+		tempserviceArr = newTempserviceArr;
+		// console.log('======== newTempserviceArr =======', JSON.stringify(newTempserviceArr))
+		// console.log('======== tempserviceArr =======', JSON.stringify(tempserviceArr))
 		tempServiceArr.splice(index, 1);
-		this.setState({ selectedNewMedicineArr: tempServiceArr, MedicineArr: tempserviceArr })
+		this.setState({ selectedNewMedicineArr: tempServiceArr, MedicineArr: tempserviceArr, SelectedMedicineArr: tempServiceArr })
 		medicineFullArray.push(item)
 		medicineFlag = true;
 	}
@@ -2281,31 +2316,31 @@ class Consultation extends React.Component {
 		// 	tempStr += tempStr ? ', ' + item.dosagePattern : item.dosagePattern;
 		// if (item.medicineTimingFrequency)
 		// 	tempStr += tempStr ? ', ' + item.medicineTimingFrequency : item.medicineTimingFrequency;
-		// if (item.durationType && item.durationValue)
-		// 	tempStr += ', ' + item.durationType + ' ' + item.durationValue;
+		// if (item.durationType && item.DurationType)
+		// 	tempStr += ', ' + item.durationType + ' ' + item.DurationType;
 		// if (tempStr)
 		// 	tempStr = '(' + tempStr + ')'
 		// tempStr = item.medicineName + ' ' + tempStr
 
-		if (item.unitTextValue) {
-			tempStr += item.unitTextValue + ' '
+		if (item.medicineType) {
+			tempStr += item.medicineType + ', '
 		}
-		if (item.dosageValue) {
-			tempStr += item.dosageValue + ' '
+		if (item.dosagePattern) {
+			tempStr += item.dosagePattern + ', '
 		}
-		if(item.medicineTimingFrequency){
-			tempStr += item.medicineTimingFrequency + ' '
+		if (item.medicineTimingFrequency) {
+			tempStr += item.medicineTimingFrequency + ', '
 		}
-		if (item.durationValue) {
-			tempStr += item.durationValue + ' '
-		}
-
-		if (item.fromdaysValue) {
-			tempStr += 'From' + ' ' + item.fromdaysValue + ' '
+		if (item.DurationType) {
+			tempStr += item.DurationType + ', '
 		}
 
-		if (item.toDaysValue) {
-			tempStr += 'to' + ' ' + item.toDaysValue + ' '
+		if (item.startFrom) {
+			tempStr += 'From' + ' ' + item.startFrom + ' '
+		}
+
+		if (item.to) {
+			tempStr += 'to' + ' ' + item.to + ' '
 		}
 		if (tempStr)
 			tempStr = '( ' + tempStr + ' )'
@@ -2325,8 +2360,8 @@ class Consultation extends React.Component {
 
 	ShowMedicineAfterSelect = (item) => {
 		let str = item.dosagePattern ? item.dosagePattern + ', ' : '';
-		if (item.durationValue)
-			str += item.durationValue + ', ';
+		if (item.DurationType)
+			str += item.DurationType + ', ';
 
 		if (item.durationType)
 			str += item.durationType + ' ';
@@ -3023,13 +3058,15 @@ class Consultation extends React.Component {
 										<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', marginLeft: responsiveWidth(-1.6), marginTop: responsiveHeight(1.8) }}>
 											{this.state.MedicineArr && this.state.MedicineArr.length > 0 ? this.state.MedicineArr.map((item, index) => {
 												return (<TouchableOpacity style={styles.unselectView} onPress={() => {
+													let medicineUnitVal = [...this.state.MedicineArr];
 													this.setState({ isMedicineModalOpen: false })
 													medicineIndex = index;
 													medicineAddUpdateFlag = 'add';
-													this.props.nav.navigation.navigate('MedicineDetails', { item: item, medTiming: medTiming, doctorNotes: doctorNotes, Refresh: this.RefreshData });
+													this.props.nav.navigation.navigate('MedicineDetails', { doctorNotes: doctorNotes, medicineUnitVal: medicineUnitVal, item: item.values ? item.values : item, medTiming: medTiming, Refresh: this.RefreshData });
 													// this.clickOnMedicine(item, index)
 												}} >
-													<Text style={[styles.unselectTxtColor, { marginRight: responsiveWidth(1) }]}>{item.medicineName + ' ' + item.strength}</Text>
+													{/* <Text style={[styles.unselectTxtColor, { marginRight: responsiveWidth(1) }]}>{item.medicineName + ' ' + item?.strength}</Text> */}
+													<Text style={[styles.unselectTxtColor, { marginRight: responsiveWidth(1) }]}>{item.medicineName}</Text>
 													<Text style={{ marginRight: responsiveWidth(2), fontSize: CustomFont.font12, color: Color.fontColor, opacity: .6, fontFamily: CustomFont.fontName }}>{item.medicineType && item.medicineType.length > 3 ? item.medicineType.substr(0, 3) : item.medicineType}</Text>
 												</TouchableOpacity>
 												);

@@ -25,7 +25,7 @@ import Trace from '../../service/Trace'
 import _ from 'lodash';
 let prevIndexTimings = 0, prevIndexDoase = 0, prevIndexDuration = 1, medicineType = '', medicineTypeGuid = '', DurationType = 'days', DurationTypeValue = '5', MedicineDoasesGuId = '', doasestype = '', Dosages = '', TimingTypeGuid = '', dosagePattern = '';
 let doasagesPatterArr = [{ label: '1-0-0', value: '1-0-0', isSelect: true }, { label: '0-1-0', value: '0-1-0', isSelect: false }, { label: '0-0-1', value: '0-0-1', isSelect: false }, { label: '1-1-0', value: '1-1-0', isSelect: false }, { label: '0-1-1', value: '0-1-1', isSelect: false }, { label: '1-0-1', value: '1-0-1', isSelect: false }, { label: '1-1-1', value: '1-1-1', isSelect: false }, { label: '6 Hourly', value: '6 Hourly', isSelect: false }, { label: 'Alternate Day', value: 'Alternate Day', isSelect: false }, { label: 'Weekly', value: 'Weekly', isSelect: false }, { label: 'Monthly', value: 'Monthly', isSelect: false }, { label: 'SOS', value: 'SOS', isSelect: false }, { label: 'Custom dosage', value: 'Custom dosage', isSelect: false }]
-let clickFlag = 0, isEdit = false, prvLength = -1, InputTxtLengthDosage = 5, InputTxtLengthDuration = 5, InputTxtLengthUnit = 5;
+let clickFlag = 0, isEdit = false, prvLength = -1, InputTxtLengthDosage = 15, InputTxtLengthDuration = 5, InputTxtLengthUnit = 5;
 let medicineTimingFrequency = 'Empty Stomach';
 let medicineDosasesType;
 let fromDaysData = [{ value: 'days' }, { value: 'weeks' }, { value: 'months' }, { value: 'years' }]
@@ -127,7 +127,6 @@ class MedicineDetails extends React.Component {
 			this.setState({ taperedData: tempArr })
 		}
 		doctorNotes = this.props.navigation.state.params.doctorNotes;
-		console.log('===== doctorNotes =====', JSON.stringify(doctorNotes))
 		this.setState({ doctorNotesDataArr: doctorNotes })
 		medicineTypeGuid = item.medicineTypeGuid;
 		medicineType = item.medicineType;
@@ -193,8 +192,8 @@ class MedicineDetails extends React.Component {
 
 				Dosages = item.dosages ? item.dosages : 1;
 				DurationType = item.durationType ? item.durationType : 'days';
-				if (item.durationValue)
-					DurationTypeValue = item.durationValue;
+				if (item.DurationType)
+					DurationTypeValue = item.DurationType;
 				if (item.medicineTimingFrequency)
 					medicineTimingFrequency = item.medicineTimingFrequency;
 
@@ -216,19 +215,19 @@ class MedicineDetails extends React.Component {
 
 				this.setState({ dutaionTxt: durationRefileedTxt, unitTxt: unitRefileedTxt })
 
-				// let indexDuratuion = this.state.DurationArr.findIndex(x => x.value == item.durationValue);
+				// let indexDuratuion = this.state.DurationArr.findIndex(x => x.value == item.DurationType);
 				// if (indexDuratuion > -1) {
 				// 	this.state.DurationArr[prevIndexDuration].isSelect = false;
 				// 	prevIndexDuration = indexDuratuion;
 				// 	this.state.DurationArr[indexDuratuion].isSelect = true;
 				// 	this.setState({ DurationArr: this.state.DurationArr })
 				// } else {
-				// 	if (item.durationValue && item.durationValue != 0)
+				// 	if (item.DurationType && item.DurationType != 0)
 				// 		this.state.DurationArr[prevIndexDuration].isSelect = false;
-				// 	this.setState({ durationValue: item.durationValue ? item.durationValue + '' : '', DurationArr: this.state.DurationArr })
+				// 	this.setState({ DurationType: item.DurationType ? item.DurationType + '' : '', DurationArr: this.state.DurationArr })
 				// }
-				// if (item.durationValue)
-				// 	DurationTypeValue = item.durationValue;
+				// if (item.DurationType)
+				// 	DurationTypeValue = item.DurationType;
 				//this.setState({ takingTimeIndex: timings == "Empty Stomach" ? 0 : timings == "Before Food" ? 1 : timings == "After Food" ? 2 : timings == "No Preference" ? 3 : 0 });
 
 				//this.setState({ defaultTimingTitle: TimingTypeGuid })
@@ -244,8 +243,8 @@ class MedicineDetails extends React.Component {
 	// getDurationAndUnit = (item) => {
 	// 	Dosages = item.dosages ? item.dosages : 1;
 	// 	DurationType = item.durationType ? item.durationType : 'days';
-	// 	if (item.durationValue)
-	// 		DurationTypeValue = item.durationValue;
+	// 	if (item.DurationType)
+	// 		DurationTypeValue = item.DurationType;
 	// 	if (item.medicineTimingFrequency)
 	// 		medicineTimingFrequency = item.medicineTimingFrequency;
 
@@ -299,12 +298,22 @@ class MedicineDetails extends React.Component {
 		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Medicine_Add', signupDetails.firebaseLocation)
 		Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Medicine_Add", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 		let item = this.props.navigation.state.params.item;
-		let saveData = this.state.taperedData;
+		let saveData = [...this.state.taperedData];
 		let savevalue = {}
 		saveData.forEach((_item, index) => {
+			saveData[index].medicineTypeGuid = saveData[0].medicineTypeGuid;
+			saveData[index].medicineGuid = saveData[0].medicineGuid;
+			saveData[index].yellowFlag = true;
 			saveData[index].appointmentGuid = signupDetails.appoinmentGuid;
-			saveData[index].medicineName = saveData[0].medicineName + saveData[0].strength;
-			saveData[index].medicineTimingShift = null;
+			saveData[index].medicineName = saveData[0].medicineName;
+			saveData[index].medicineIndex = index;
+			saveData[index].MedicineDosasesTypeGuid = 'c7221d1c-8579-11eb-996a-0022486b91c8';
+			saveData[0]?.medicineDosasesType && saveData[0]?.medicineDosasesType.forEach((val) => {
+				if(val.doasestype === _item.medicineType){
+					saveData[index].MedicineDosasesTypeGuid = val.medicineDoasesGuId;
+				}	
+			})
+			// delete saveData[index].medicineDosasesType
 		})
 		let data = {
 			appointmentGuid: signupDetails.appoinmentGuid,
@@ -314,8 +323,8 @@ class MedicineDetails extends React.Component {
 			strength: item.strength,
 			medicineTypeGuid: medicineTypeGuid,
 			medicineType: medicineType,
-			durationType: DurationType,
-			durationValue: DurationTypeValue,
+			// durationType: DurationType,
+			DurationType: DurationTypeValue,
 			yellowFlag: true,
 			timingTypeGuid: TimingTypeGuid,
 			medicineTimingShift: null,
@@ -329,7 +338,6 @@ class MedicineDetails extends React.Component {
 		isEdit = true;
 		const { navigation } = this.props;
 		navigation.goBack();
-		console.log('===== saveData =====', JSON.stringify(saveData));
 		navigation.state.params.Refresh({ isEdit: isEdit, data: saveData });
 		//actions.callLogin('V1/FuncForDrAppToAddUpdateMedicine', 'post', params, signupDetails.accessToken, 'saveMedicine');
 		setLogEvent("patient_consultation", { "save_medicine": "click", UserGuid: signupDetails.UserGuid })
@@ -337,10 +345,9 @@ class MedicineDetails extends React.Component {
 	}
 
 	clickOnDoctorNotes = (item, index) => {
-		console.log('======= item ======', JSON.stringify(item), index)
 		const tempData = this.state.taperedData
 		// this.setState({ noteData });
-		tempData[index].noteValue = item.note;
+		tempData[index].note = item.note;
 		this.setState({ noteData: item.note, showDoctorNotesdropDown: false })
 	}
 
@@ -383,46 +390,46 @@ class MedicineDetails extends React.Component {
 	}
 
 	SearchFilterFunctionDosage = (text, index) => {
+		const tempData = [...this.state.taperedData]
 		this.setState({ selectedIndex: index })
 		if (text && text.length > 0) {
-			if (text.indexOf('.') > -1) {
-				Snackbar.show({ text: 'Please select custom dosage from list ', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-			}
-			let txtWithOutHifen = ''
-			if (text.indexOf('-') > -1) {
-				try {
-					txtWithOutHifen = text.replaceAll('-', '');
-				} catch (error) {
-					txtWithOutHifen = text;
-				}
-			} else {
-				txtWithOutHifen = text;
-			}
+			// if (Validator.isMobileValidate(txtWithOutHifen)) {
+			// 	if (prvLength > text.length) {
+			// 		this.setState({ dosageSearchTxt: text });
+			// 	} else {
+			// 		let str = txtWithOutHifen;
+			// 		if (str.length > 1) {
+			// 			try {
+			// 				var parts = str.split("");
+			// 				text = parts.join("-");
+			// 			} catch (error) {
 
-			if (Validator.isMobileValidate(txtWithOutHifen)) {
-				if (prvLength > text.length) {
+			// 			}
+
+			// 		}
+			// 		this.setState({ dosageSearchTxt: text });
+			// 	}
+			// }
+			// var searchResult = _.filter(doasagesPatterArr, function (item) {
+			// 	return item.label.indexOf(text) > -1;
+			// });
+			// this.setState({ dosageDropdownArr: searchResult, showStateDosage: true });
+
+			// dosagePattern = text;
+			// prvLength = text.length;
+			if (text && text.length > 0) {
+				if (Validator.isNumberHyphanDotSlashValidate(text)) {
 					this.setState({ dosageSearchTxt: text });
-				} else {
-					let str = txtWithOutHifen;
-					if (str.length > 1) {
-						try {
-							var parts = str.split("");
-							text = parts.join("-");
-						} catch (error) {
-
-						}
-
-					}
-					this.setState({ dosageSearchTxt: text });
+					tempData[index].dosagePattern = text;
 				}
-			}
-			var searchResult = _.filter(doasagesPatterArr, function (item) {
-				return item.label.indexOf(text) > -1;
-			});
-			this.setState({ dosageDropdownArr: searchResult, showStateDosage: true });
-
-			dosagePattern = text;
-			prvLength = text.length;
+				var searchResult = _.filter(doasagesPatterArr, function (item) {
+					return item.label.indexOf(text) > -1;
+				});
+				this.setState({ dosageDropdownArr: searchResult, showStateDosage: true });
+		
+				dosagePattern = text;
+				// prvLength = text.length;
+			} 
 		} else
 			this.setState({ dosageSearchTxt: '', dosageDropdownArr: doasagesPatterArr });
 	}
@@ -441,7 +448,7 @@ class MedicineDetails extends React.Component {
 		const tempData = this.state.taperedData
 		if (item.value === 'Custom dosage') {
 			dosagePattern = null;
-			tempData[index].dosageValue = '';
+			tempData[index].dosagePattern = '';
 			this.setState({ dosageSearchTxt: '', showStateDosage: false, CustomInput: true });
 			try {
 				setTimeout(() => {
@@ -455,20 +462,19 @@ class MedicineDetails extends React.Component {
 			dosagePattern = item.value;
 			//if(dosagePattern && dosagePattern.length>4)
 			InputTxtLengthDosage = dosagePattern.length;
-			tempData[index].dosageValue = item.label
+			tempData[index].dosagePattern = item.label
 			this.setState({ dosageSearchTxt: item.label, showStateDosage: false, CustomInput: false })
 		}
 	}
 
 	handleDurationData = (text, index) => {
-		let duationTypeArr = [{ label: 'day' }, { label: 'week' }, { label: 'month' }, { label: 'year' },];
 		this.setState({ selectedIndex: index })
 		let ans = [];
-		let temp = [...durationData]
-		if(text){
+		let temp = [...this.state.DurationDropdownArr]
+		if (text) {
 			ans = temp.filter((val) => val.label.toLowerCase().includes(text.toLowerCase()))
 		}
-		this.setState({dutaionTxt: text, DurationDropdownArr: text.length === 0 ? durationData :ans, showDurationDropDown: true })
+		this.setState({ dutaionTxt: text, DurationDropdownArr: text.length === 0 ? durationData : ans })
 		// if (text && Validator.isMobileValidate(text)) {
 		// 	for (let i = 0; i < duationTypeArr.length; i++) {
 		// 		if (text == 1)
@@ -491,7 +497,7 @@ class MedicineDetails extends React.Component {
 				InputTxtLengthDuration = item.label.length;
 			}
 
-		tempData[index].durationValue = item.label;
+		tempData[index].DurationType = item.label;
 		this.setState({ dutaionTxt: item.label, showDurationDropDown: false })
 	}
 
@@ -528,7 +534,7 @@ class MedicineDetails extends React.Component {
 		MedicineDoasesGuId = item.medicineDoasesGuId;
 		// let str = this.state.unitTxt + ' ' + doasestype;
 		// InputTxtLengthUnit = str.length;
-		tempData[index].unitTextValue = item.doasestype
+		tempData[index].medicineType = item.doasestype
 		this.setState({ unitTxt: item.doasestype, showUnitDropDown: false })
 	}
 
@@ -549,7 +555,7 @@ class MedicineDetails extends React.Component {
 
 	clickOnFromDays = (item, index) => {
 		let tempData = this.state.taperedData;
-		tempData[index].fromdaysValue = item.value
+		tempData[index].startFrom = item.value
 		let temp = [{ value: 'days' }, { value: 'weeks' }, { value: 'months' }, { value: 'years' }]
 		this.setState({ fromDaysTxt: item.value, showFromDayTxtDropDown: false, fromDaysDataArr: temp })
 	}
@@ -566,7 +572,7 @@ class MedicineDetails extends React.Component {
 
 	clickOnToDays = (item, index) => {
 		const tempData = this.state.taperedData;
-		tempData[index].toDaysValue = item.value
+		tempData[index].to = item.value
 		let temp = [{ value: 'days' }, { value: 'weeks' }, { value: 'months' }, { value: 'years' }]
 		this.setState({ toDaysTxt: item.value, showToDayTxtDropDown: false, fromDaysDataArr: temp })
 	}
@@ -605,11 +611,11 @@ class MedicineDetails extends React.Component {
 				</View>
 				{/* ------- Unit------- */}
 				<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>Units</Text>
-				<TextInput onBlur={this.callIsBlurUnit} onFocus={() => this.callIsFucusedUnit(index)} keyboardType={'phone-pad'}
+				<TextInput onBlur={this.callIsBlurUnit} onFocus={() => this.callIsFucusedUnit(index)} 
 					style={[styles.createInputStyle, { borderColor: this.state.selectedIndex === index ? this.state.InpborderColorUnit : Color.inputdefaultBorder }]} placeholder={'Enter Unit'}
 					placeholderTextColor={Color.placeHolderColor}
-					defaultValue={item?.unitTextValue ? item?.unitTextValue : ''}
-					// value={item?.unitTextValue }
+					defaultValue={item?.medicineType ? item?.medicineType : ''}
+					// value={item?.medicineType }
 					// maxLength={InputTxtLengthUnit}
 					onChangeText={(text) => this.handleUnitData(text, index)}
 					ref='search' returnKeyType='done' />
@@ -636,14 +642,10 @@ class MedicineDetails extends React.Component {
 					<TextInput onBlur={this.callIsBlur2} onFocus={() => this.callIsFucused2(index)} keyboardType={'phone-pad'}
 						style={[styles.createInputStyle, { flex: 1, borderColor: this.state.selectedIndex === index ? this.state.InpborderColor2 : Color.inputdefaultBorder }]}
 						placeholder="Enter dosages" placeholderTextColor={Color.placeHolderColor}
-						defaultValue={item?.dosageValue ? item?.dosageValue : ''}
-						onChangeText={(dosageSearchTxt) => { this.state.CustomInput ? this.DoseValidation(dosageSearchTxt, index) : this.SearchFilterFunctionDosage(dosageSearchTxt, index); }}
-						maxLength={this.state.CustomInput ? 14 : InputTxtLengthDosage}
+						defaultValue={item?.dosagePattern ? item?.dosagePattern : ''}
+						onChangeText={(dosageSearchTxt) => { this.SearchFilterFunctionDosage(dosageSearchTxt, index); }}
+						maxLength={ 15}
 						ref='search' returnKeyType='done' />
-					{this.state.CustomInput ? <TouchableOpacity style={{ height: responsiveHeight(6), width: responsiveWidth(15), justifyContent: 'center', alignItems: 'center', marginLeft: 10, borderWidth: 1, borderColor: this.state.InpborderColor2, marginTop: responsiveHeight(1.8), borderRadius: 6 }}
-						onPress={() => this.clickOnDosege(item, index)}>
-						<Image source={downarrow} style={{ height: responsiveFontSize(2.5), width: responsiveFontSize(2.5), resizeMode: 'contain' }} />
-					</TouchableOpacity> : null}
 
 				</View>
 
@@ -676,6 +678,8 @@ class MedicineDetails extends React.Component {
 					dropDownStyle={{ backgroundColor: '#fafafa', zIndex: 4 }}
 					onChangeItem={item => {
 						medicineTimingFrequency = item.value;
+						let temp = [...this.state.taperedData];
+						temp[index].medicineTimingFrequency = item.value
 					}}
 					globalTextStyle={{ color: Color.fontColor, fontSize: CustomFont.font16 }}
 					placeholder="Empty Stomach"
@@ -683,10 +687,10 @@ class MedicineDetails extends React.Component {
 				/>
 				{/* ------- Duration------- */}
 				<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>Frequency</Text>
-				<TextInput onBlur={this.callIsBlurDuration} onFocus={() => this.callIsFucusedDuration(index)} keyboardType={'phone-pad'}
+				<TextInput onBlur={this.callIsBlurDuration} onFocus={() => this.callIsFucusedDuration(index)} 
 					style={[styles.createInputStyle, { borderColor: this.state.selectedIndex === index ? this.state.InpborderColorDuration : Color.inputdefaultBorder }]} placeholder={'Enter duration'} placeholderTextColor={Color.placeHolderColor}
-					defaultValue={item?.durationValue}
-					maxLength={InputTxtLengthDuration}
+					defaultValue={item?.DurationType}
+					// maxLength={InputTxtLengthDuration}
 					onChangeText={(text) => this.handleDurationData(text, index)}
 					ref='search' returnKeyType='done' />
 
@@ -717,7 +721,7 @@ class MedicineDetails extends React.Component {
 									style={[styles.createInputStyle, { borderColor: this.state.selectedIndex === index ? this.state.InpborderColorFrom : Color.inputdefaultBorder, marginRight: responsiveWidth(2) }]}
 									placeholder={'From Days'}
 									placeholderTextColor={Color.placeHolderColor}
-									defaultValue={item?.fromdaysValue}
+									defaultValue={item?.startFrom}
 									onChangeText={(text) => this.handleFromDaysData(text, index)}
 									ref='search' returnKeyType='done' />
 							</View>
@@ -731,7 +735,7 @@ class MedicineDetails extends React.Component {
 									style={[styles.createInputStyle, { borderColor: this.state.selectedIndex === index ? this.state.InpborderColorTo : Color.inputdefaultBorder, marginRight: responsiveWidth(2) }]}
 									placeholder={'To Days'}
 									placeholderTextColor={Color.placeHolderColor}
-									defaultValue={item?.toDaysValue}
+									defaultValue={item?.to}
 									onChangeText={(text) => this.handleToDaysData(text, index)}
 									ref='search' returnKeyType='done' />
 							</View>
@@ -771,18 +775,18 @@ class MedicineDetails extends React.Component {
 
 				{/* ------------------- NOTE  ---------------*/}
 
-				<Text style={{ marginTop: responsiveHeight(3), color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName }}>Note</Text>
+				<Text style={{ marginTop: responsiveHeight(3), color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName }}>note</Text>
 				{/* <TextInput returnKeyType="done" style={{ marginBottom: responsiveHeight(1), borderWidth: 1, borderColor: Color.borderColor, padding: 10, height: responsiveHeight(12), fontSize: CustomFont.font14, borderRadius: 5, textAlignVertical: 'top', color: Color.fontColor, opacity: .8, marginTop: 10 }}
 					placeholder="Add comments"
 					onFocus={() => this.setState({ showDoctorNotesdropDown: true })}
 					placeholderTextColor={Color.placeHolderColor}
 					multiline={true}
-					defaultValue={item?.noteValue ? item?.noteData : ''}
+					defaultValue={item?.note ? item?.noteData : ''}
 					onChangeText={noteData => {
 						const tempData = this.state.taperedData
 						// this.setState({ selectedIndex: index })
 						// this.setState({ noteData });
-						tempData[index].noteValue = noteData;
+						tempData[index].note = noteData;
 						this.setState({ selectedIndex: index })
 						if (noteData) {
 							let temps = [...doctorNotes];
@@ -798,10 +802,10 @@ class MedicineDetails extends React.Component {
 					onFocus={() => this.setState({ showDoctorNotesdropDown: true })}
 					placeholder="Add comments"
 					placeholderTextColor={Color.placeHolderColor}
-					multiline={true} value={item.noteValue}
+					multiline={true} value={item.note}
 					onChangeText={noteData => {
 						const tempData = this.state.taperedData
-						tempData[index].noteValue = noteData
+						tempData[index].note = noteData
 						this.setState({ selectedIndex: index })
 						if (noteData) {
 							let temps = [...doctorNotes];
@@ -841,51 +845,51 @@ class MedicineDetails extends React.Component {
 		return (
 			<SafeAreaView style={{ flex: 1, backgroundColor: Color.white, marginTop: 20, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} onStartShouldSetResponder={() => this.dismissDialog()}>
 				<KeyboardAvoidingView behavior={Platform.OS === "ios" ? 'padding' : null}>
-						<View style={{ margin: responsiveWidth(5) }}>
-							<View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-								<TouchableOpacity onPress={() => {
-									this.props.navigation.goBack();
-									try {
-										this.props.navigation.state.params.Refresh({ isEdit: isEdit, data: null });
-									} catch (error) {
+					<View style={{ margin: responsiveWidth(5) }}>
+						<View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+							<TouchableOpacity onPress={() => {
+								this.props.navigation.goBack();
+								try {
+									this.props.navigation.state.params.Refresh({ isEdit: isEdit, data: null });
+								} catch (error) {
 
-									}
+								}
 
-								}}>
-									<Image source={arrow_grey} style={{ height: responsiveWidth(4.5), width: responsiveWidth(5), margin: 7, marginTop: 10 }} />
-								</TouchableOpacity>
-
-							</View>
-							<FlatList
-							 style={{height:responsiveHeight(73)}}
-								data={this.state.taperedData}
-								renderItem={(item, index) => this.renderTaperedItem(item, index)}
-								extraData={this.state}
-							/>
-							<TouchableOpacity
-								onPress={() => {
-									let tempArr = this.state.taperedData;
-									let tempObj = {};//tempArr[0];
-									tempArr.push(tempObj);
-									this.setState({ taperedData: tempArr });
-								}}>
-								<Text
-									style={{
-										fontSize: CustomFont.font14,
-										fontWeight: CustomFont.fontWeight600,
-										color: Color.primaryBlue,
-										marginBottom: responsiveHeight(4)
-									}}
-								>+ Add Tapered Dose</Text>
-							</TouchableOpacity>
-
-							<TouchableOpacity style={{ alignItems: 'center', marginBottom: responsiveHeight(2.5), justifyContent: 'center', borderRadius: 5, height: responsiveHeight(7), width: '100%', backgroundColor: Color.primary }} onPress={() => {
-								if (clickFlag == 0)
-									this.saveData();
 							}}>
-								<Text style={{ fontFamily: CustomFont.fontName, color: Color.white, fontSize: CustomFont.font16, textAlign: 'center', fontFamily: CustomFont.fontName }}>Add</Text>
+								<Image source={arrow_grey} style={{ height: responsiveWidth(4.5), width: responsiveWidth(5), margin: 7, marginTop: 10 }} />
 							</TouchableOpacity>
+
 						</View>
+						<FlatList
+							style={{ height: responsiveHeight(73) }}
+							data={this.state.taperedData}
+							renderItem={(item, index) => this.renderTaperedItem(item, index)}
+							extraData={this.state}
+						/>
+						<TouchableOpacity
+							onPress={() => {
+								let tempArr = this.state.taperedData;
+								let tempObj = {};//tempArr[0];
+								tempArr.push(tempObj);
+								this.setState({ taperedData: tempArr });
+							}}>
+							<Text
+								style={{
+									fontSize: CustomFont.font14,
+									fontWeight: CustomFont.fontWeight600,
+									color: Color.primaryBlue,
+									marginBottom: responsiveHeight(4)
+								}}
+							>+ Add Tapered Dose</Text>
+						</TouchableOpacity>
+
+						<TouchableOpacity style={{ alignItems: 'center', marginBottom: responsiveHeight(2.5), justifyContent: 'center', borderRadius: 5, height: responsiveHeight(7), width: '100%', backgroundColor: Color.primary }} onPress={() => {
+							if (clickFlag == 0)
+								this.saveData();
+						}}>
+							<Text style={{ fontFamily: CustomFont.fontName, color: Color.white, fontSize: CustomFont.font16, textAlign: 'center', fontFamily: CustomFont.fontName }}>Add</Text>
+						</TouchableOpacity>
+					</View>
 				</KeyboardAvoidingView>
 			</SafeAreaView>
 		);

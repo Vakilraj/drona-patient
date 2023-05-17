@@ -83,8 +83,8 @@ export function callLogin(url, apiType, params, token, tagName = null) {
   else {
     baseUrl = 'https://mnkdrona-apim.azure-api.net/DoctorApp/Dev/'  // Dev  Pilot Stag Live
   }
-  console.log('-------->>>------'+DRONA.getIsServiceVailable())
-  if(DRONA.getIsServiceVailable()){
+  //console.log('-------->>>------'+DRONA.getIsServiceVailable())
+  //if(DRONA.getIsServiceVailable()){
     if (apiType === "get") {
       if(tagName=='getIstTime')
       baseUrl = "https://worldtimeapi.org/api/timezone/Asia/";
@@ -139,7 +139,7 @@ export function callLogin(url, apiType, params, token, tagName = null) {
       console.log("\n\n" + url + " headers- " + JSON.stringify(headersValue))
       
       return (dispatch) => {
-        let str = 'GetCommunityInfo GetFilter viewpost SearchForSymptom SearchForSymptom SearchForFindings SearchForDiagnosis SearchForMedicine SearchForInvestigation SearchForInstructions SearchFamilyConditions SearchForConditions SearchForcurrentMedication SearchFoAllergies sharepostby AddSymptoms getserverDateTime ResentOtpForLogin GetActivationPackages tt GetWeekPasswordList GetWeekPass AddInvestigation AddInstruction ReasonOfVisitList getEditAssistanceDetailsOnBoarding SearchForProcedure Kpidata HomeScreenAnalytics'
+        let str = 'GetCommunityInfo GetFilter viewpost SearchForSymptom SearchForSymptom SearchForFindings SearchForDiagnosis SearchForMedicine SearchForInvestigation SearchForInstructions SearchFamilyConditions SearchForConditions SearchForcurrentMedication SearchFoAllergies sharepostby AddSymptoms getserverDateTime ResentOtpForLogin GetActivationPackages tt GetWeekPasswordList GetWeekPass AddInvestigation AddInstruction ReasonOfVisitList getEditAssistanceDetailsOnBoarding SearchForProcedure Kpidata HomeScreenAnalytics GetMultiClinicList'
         if (str.includes(tagName)) {
           dispatch(removeLoader());
         } else {
@@ -188,22 +188,22 @@ export function callLogin(url, apiType, params, token, tagName = null) {
           });
       };
     }
-  }else{
+  //}else{
   //fetchProductsSuccess({ tag: 'dronaheltherrors' });
-  Alert.alert(
-    'Service not Available',
-    'server down during 12:00AM - 6AM time period.',
-    [
-        {
-            text: 'Ok',
-            onPress: () => {
-              RNExitApp.exitApp();
-            },
-        },
-    ],
-    { cancelable: false },
-);
-  }
+//   Alert.alert(
+//     'Service not Available',
+//     'server down during 12:00AM - 6AM time period.',
+//     [
+//         {
+//             text: 'Ok',
+//             onPress: () => {
+//               RNExitApp.exitApp();
+//             },
+//         },
+//     ],
+//     { cancelable: false },
+// );
+//   }
   
 }
 

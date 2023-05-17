@@ -51,12 +51,12 @@ class ChooseClinic extends React.Component {
 				"FcmToken": ''
 			}
 		};
-		actions.callLogin('V12/FuncForDrAppToGetMultiClinicDetailsInfo', 'post', params, signupDetails.accessToken, 'GetMultiClinicDetailsInfo');
+		actions.callLogin('V12/FuncForDrAppToGetMultiClinicDetailsInfo', 'post', params, signupDetails.accessToken, 'GetMultiClinicList');
 	}
 	async UNSAFE_componentWillReceiveProps(newProps) {
 		if (newProps.responseData && newProps.responseData.tag) {
 			let tagname = newProps.responseData.tag;
-			if (tagname === 'GetMultiClinicDetailsInfo') {
+			if (tagname === 'GetMultiClinicList') {
 				if (newProps.responseData.statusCode == 0) {
 					let tmpArr = newProps.responseData.data && newProps.responseData.data.multiClinicDetailsInfo ? newProps.responseData.data.multiClinicDetailsInfo : [];
 					if (tmpArr && tmpArr.length == 1) {

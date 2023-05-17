@@ -654,49 +654,63 @@ class PreviewRxButton extends React.Component {
 
 	}
 	selectedList = (selectedConditions, selectedMedications, selectedAllergies, selectedFamilyHistory) => {
-		let temp = []
-		let selectedConditionName, selectedMedicationsName, selectedAllergiesName
-		const selCondition = selectedConditions
-		for (var i = 0; i < selCondition.length; i++) {
-			selectedConditionName = selCondition[i].conditionName
-			const htmlCode = ' ' + selectedConditionName + ",";
-			temp.push(htmlCode)
-		}
-		const selMedication = selectedMedications
-		for (var i = 0; i < selMedication.length; i++) {
-			selectedMedicationsName = selMedication[i].medicineName
-			const htmlCode = ' ' + selectedMedicationsName + ",";
-			temp.push(htmlCode)
-		}
-		const selAllergies = selectedAllergies
-		for (var i = 0; i < selAllergies.length; i++) {
-			selectedAllergiesName = selAllergies[i].allergyName
-			const htmlCode = " " + selectedAllergiesName + ",";
-			temp.push(htmlCode)
-		}
+		let temp = []; let selConditionArr = []; let selMedicationArr = []; let selAllergyArr = []; let selFamilyHistoryArr = [];
+        let selectedConditionName, selectedMedicationsName, selectedAllergiesName
+        if (selectedConditions && selectedConditions.length > 0) {
+            for (var i = 0; i < selectedConditions.length; i++) {
+                selectedConditionName = selectedConditions[i].conditionName
+                const htmlCode = ' ' + selectedConditionName;
+                selConditionArr.push(htmlCode)
+            }
+        }
+        if (selectedMedications && selectedMedications.length > 0) {
+            for (var i = 0; i < selectedMedications.length; i++) {
+                selectedMedicationsName = selectedMedications[i].medicineName
+                const htmlCode = ' ' + selectedMedicationsName;
+                selMedicationArr.push(htmlCode)
+            }
+        }
+        if (selectedAllergies && selectedAllergies.length > 0) {
+            for (var i = 0; i < selectedAllergies.length; i++) {
+                selectedAllergiesName = selectedAllergies[i].allergyName
+                const htmlCode = " " + selectedAllergiesName;
+                selAllergyArr.push(htmlCode)
+            }
+        }
+        if (selectedFamilyHistory && selectedFamilyHistory.length > 0) {
+            for (var i = 0; i < selectedFamilyHistory.length; i++) {
+                const parentName = selectedFamilyHistory[i].familyHistoryName;
+                const patientConditionArr = selectedFamilyHistory[i].patientCondition
+                let tempVarOne = '';
+                if(patientConditionArr && patientConditionArr.length>0)
+                for (var j = 0; j < patientConditionArr.length; j++) {
+                    if (j == 0)
+                        tempVarOne = patientConditionArr[j].conditionName;
+                    else
+                        tempVarOne += ', ' + patientConditionArr[j].conditionName;
+                }
+                selFamilyHistoryArr.push(parentName + ': ' + tempVarOne)
+            }
+        }
 
-		let tempVar
-		const selFamilyHistory = selectedFamilyHistory
-		for (var i = 0; i < selFamilyHistory.length; i++) {
-			const htmlCode = selFamilyHistory[i].familyHistoryName;
-			const htmlSecCode = selFamilyHistory[i].patientCondition
-			let tempVarOne = '';
-			for (var j = 0; j < htmlSecCode.length; j++) {
-				tempVar = htmlSecCode[j].conditionName
-				tempVarOne = tempVarOne + tempVar + ', '
-			}
-			temp.push(htmlCode + ': ' + tempVarOne)
-		}
+		if(selConditionArr && selConditionArr.length)
+        temp.push(selConditionArr)
+        if(selMedicationArr && selMedicationArr.length)
+        temp.push(selMedicationArr)
+        if(selAllergyArr && selAllergyArr.length)
+        temp.push(selAllergyArr)
+        if(selFamilyHistoryArr && selFamilyHistoryArr.length)
+        temp.push(selFamilyHistoryArr.join("; "))
 
 		const htmlCode = `
-			<table style="width:100%;margin-top: 5px" >
-				<tr>
-					<th style="width:15%;">`+ medicalHistoryHead + ` :</th>
-					<td style= "text-transform: capitalize;">`+ temp.join(" ") + `</td>
-				</tr>
-			</table>
-			`
-		return htmlCode
+	<table style="width:100%;margin-top: 5px" >
+		<tr>
+			<th style="width:15%;">`+ medicalHistoryHead + ` :</th>
+			<td style= "text-transform: capitalize;">`+ temp.join("; ") + `</td>
+		</tr>
+	</table>
+	`
+return temp && temp.length>0?  htmlCode:'';
 
 	}
 	showfollowUpViewList = (followUpItem) => {

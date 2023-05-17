@@ -28,6 +28,7 @@ import Consultation from './Consultation'
 import MedicalHistory from './MedicalHistory'
 import TreatmentPlanTab from './TreatmentPlanTab'
 import BillingBlankTab from './billing/billingBlankTab'
+import PrescriptionCopyPad from './PrescriptionCopyPad'
 import Files from './files/index'
 import Twilio from '../twilio'
 let item = null, from = '',fromTab=0, pastAppointGuid='';
@@ -157,6 +158,11 @@ class ConsultationTab extends React.Component {
 			//patientAge:val.patientName,
 		})
 	}
+	TabChangeFromRx = (val) => {
+		DRONA.setIsNeedForTabChane(true);
+		this.setState({pageChangeIndex:0,initialPage:0 });
+		//alert(val)
+	}
 	refreshData = (val) => {
 		if (val == 'minimize') {
 			this.setState({ isFullScreenVideo: false, xAxis: responsiveWidth(60), yAxis: responsiveHeight(65) })
@@ -264,7 +270,8 @@ class ConsultationTab extends React.Component {
 									fromTab=res.from;
 								}}
 							>
-								<Consultation showCall={this.state.showCall} responseDataVisitInfo={this.state.responseDataVisitInfo} tabLabel={'Today’s Consultation'} style={{ flex: 1 }} data={this.props.navigation.getParam("data", null)} VitalStatus={this.props.navigation.getParam("vitalMasterStatus")} nav={{ navigation: this.props.navigation }} from={from} item={item} RefreshPatient={this.RefreshPatient} />
+								<Consultation showCall={this.state.showCall} responseDataVisitInfo={this.state.responseDataVisitInfo} tabLabel={'Consultation'} style={{ flex: 1 }} data={this.props.navigation.getParam("data", null)} VitalStatus={this.props.navigation.getParam("vitalMasterStatus")} nav={{ navigation: this.props.navigation }} from={from} item={item} RefreshPatient={this.RefreshPatient} />
+								{!signupDetails.isAssistantUser ? <PrescriptionCopyPad tabLabel={'Past Rx'} style={{ flex: 1 }} data={this.props.navigation.getParam("data", null)} nav={{ navigation: this.props.navigation }} item={item} TabChangeFromRx={this.TabChangeFromRx}/> : null}
 								{!signupDetails.isAssistantUser && (signupDetails.drSpeciality == 'Dentistry' || signupDetails.drSpeciality == 'Pedodontics and Preventive Dentistry'|| signupDetails.drSpeciality == 'Conservative dentistry & endodontics') ? <TreatmentPlanTab tabLabel={'Treatment Plan'} style={{ flex: 1 }} data={this.props.navigation.getParam("data", null)} nav={{ navigation: this.props.navigation }} item={item} RefreshPatient={this.RefreshPatient} /> : null}
 								{signupDetails.isAssistantUser && !signupDetails.isAllowMedicalHistoryAssistant ? null : <MedicalHistory showCall={this.state.showCall} pastAppointGuid={pastAppointGuid} tabLabel={'Medical History'} style={{ flex: 1 }} data={this.props.navigation.getParam("data", null)} nav={{ navigation: this.props.navigation }} item={item} RefreshPatient={this.RefreshPatient} />}
 								{signupDetails.isAssistantUser && !signupDetails.isAllowPatientFilesAssistant ? null : <Files tabLabel={'Files'} style={{ flex: 1 }} data={this.props.navigation.getParam("data", null)} nav={{ navigation: this.props.navigation }} item={item} />}

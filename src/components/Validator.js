@@ -60,4 +60,9 @@ static isNameAcceptDot(name) {
   const reg = /^[A-Za-z. ]*$/;
   return reg.test(name);
 }
+static isSpecialCharValidatorWithHypen(name) {
+  // const reg = /^[A-Za-z. ]*$/;
+  const reg = /^[a-zA-Z0-9 -]+$/;
+  return reg.test(name);
+}
 }

@@ -842,7 +842,7 @@ const Comments = (props) => {
                             cropHeight={responsiveHeight(100)}
                             imageWidth={responsiveWidth(100)}
                             imageHeight={responsiveHeight(100)}
-                            panToMove='y'
+                            panToMove={false}
                             enableSwipeDown='y'
                             pinchToZoom='y'>
                             <Image source={{ uri: selectedImageUrl }} style={{ marginTop: 30, marginBottom: 30, width: responsiveWidth(100), height: responsiveHeight(100), resizeMode: 'contain' }} />

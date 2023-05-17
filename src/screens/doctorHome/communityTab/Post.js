@@ -411,7 +411,6 @@ const Post = (props) => {
                         cropHeight={responsiveHeight(100)}
                         imageWidth={responsiveWidth(100)}
                         imageHeight={responsiveHeight(100)}
-                        panToMove='y'
                         enableSwipeDown='y'
                         pinchToZoom='y'
                         panToMove={false}>

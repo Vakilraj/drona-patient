@@ -559,7 +559,6 @@ class AddPrescription extends React.Component {
 								cropHeight={responsiveHeight(97)}
 								imageWidth={responsiveWidth(97)}
 								imageHeight={responsiveHeight(97)}
-								panToMove='y'
 								enableSwipeDown='y'
 								pinchToZoom='y'
 								panToMove={false}

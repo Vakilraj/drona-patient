@@ -440,51 +440,63 @@ class PreviewRx extends React.Component {
     }
 
     selectedList = (selectedConditions, selectedMedications, selectedAllergies, selectedFamilyHistory) => {
-        let temp = []
+        let temp = []; let selConditionArr = []; let selMedicationArr = []; let selAllergyArr = []; let selFamilyHistoryArr = [];
         let selectedConditionName, selectedMedicationsName, selectedAllergiesName
-        const selCondition = selectedConditions
-        for (var i = 0; i < selCondition.length; i++) {
-            selectedConditionName = selCondition[i].conditionName
-            const htmlCode = ' ' + selectedConditionName + ",";
-            temp.push(htmlCode)
-        }
-        const selMedication = selectedMedications
-        for (var i = 0; i < selMedication.length; i++) {
-            selectedMedicationsName = selMedication[i].medicineName
-            const htmlCode = ' ' + selectedMedicationsName + ",";
-            temp.push(htmlCode)
-        }
-        const selAllergies = selectedAllergies
-        for (var i = 0; i < selAllergies.length; i++) {
-            selectedAllergiesName = selAllergies[i].allergyName
-            const htmlCode = " " + selectedAllergiesName + ",";
-            temp.push(htmlCode)
-        }
-
-        let tempVar
-        const selFamilyHistory = selectedFamilyHistory
-        for (var i = 0; i < selFamilyHistory.length; i++) {
-            const htmlCode = selFamilyHistory[i].familyHistoryName;
-            const htmlSecCode = selFamilyHistory[i].patientCondition
-            let tempVarOne = '';
-            for (var j = 0; j < htmlSecCode.length; j++) {
-                tempVar = htmlSecCode[j].conditionName
-                tempVarOne = tempVarOne + tempVar + ', '
+        if (selectedConditions && selectedConditions.length > 0) {
+            for (var i = 0; i < selectedConditions.length; i++) {
+                selectedConditionName = selectedConditions[i].conditionName
+                const htmlCode = ' ' + selectedConditionName;
+                selConditionArr.push(htmlCode)
             }
-            temp.push(htmlCode + ': ' + tempVarOne)
         }
-        return temp.join("")
-
+        if (selectedMedications && selectedMedications.length > 0) {
+            for (var i = 0; i < selectedMedications.length; i++) {
+                selectedMedicationsName = selectedMedications[i].medicineName
+                const htmlCode = ' ' + selectedMedicationsName;
+                selMedicationArr.push(htmlCode)
+            }
+        }
+        if (selectedAllergies && selectedAllergies.length > 0) {
+            for (var i = 0; i < selectedAllergies.length; i++) {
+                selectedAllergiesName = selectedAllergies[i].allergyName
+                const htmlCode = " " + selectedAllergiesName;
+                selAllergyArr.push(htmlCode)
+            }
+        }
+        if (selectedFamilyHistory && selectedFamilyHistory.length > 0) {
+            for (var i = 0; i < selectedFamilyHistory.length; i++) {
+                const parentName = selectedFamilyHistory[i].familyHistoryName;
+                const patientConditionArr = selectedFamilyHistory[i].patientCondition
+                let tempVarOne = '';
+                if(patientConditionArr && patientConditionArr.length>0)
+                for (var j = 0; j < patientConditionArr.length; j++) {
+                    if (j == 0)
+                        tempVarOne = patientConditionArr[j].conditionName;
+                    else
+                        tempVarOne += ', ' + patientConditionArr[j].conditionName;
+                }
+                selFamilyHistoryArr.push(parentName + ': ' + tempVarOne)
+            }
+        }
+        if(selConditionArr && selConditionArr.length)
+        temp.push(selConditionArr)
+        if(selMedicationArr && selMedicationArr.length)
+        temp.push(selMedicationArr)
+        if(selAllergyArr && selAllergyArr.length)
+        temp.push(selAllergyArr)
+        if(selFamilyHistoryArr && selFamilyHistoryArr.length)
+        temp.push(selFamilyHistoryArr.join("; "))
+        return temp.join("; ")
     }
 
     MedicineList = (item, index) => {
         return (
             <View style={{ flex: 1, flexDirection: 'row' }}>
                 <View style={{ flex: 1, borderColor: '#ddd', borderWidth: 1 }}>
-                    <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, marginRight: responsiveWidth(2) }}><Text style={{ fontWeight: 'bold' }}>{index + 1}</Text></Text>
+                    <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, marginRight: responsiveWidth(2) }}><Text>{index + 1}</Text></Text>
                 </View>
                 <View style={{ flex: 4, borderColor: '#ddd', borderWidth: 1 }}>
-                    <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, marginRight: responsiveWidth(2) }}>• <Text style={{ fontWeight: 'bold' }}>{item.medicineName + ' ' + item.strength + '\n'}</Text> <Text style={{ fontStyle: 'italic' }}>({item.medicineDesc})</Text></Text>
+                    <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, marginRight: responsiveWidth(2) }}><Text style={{ fontWeight: 'bold' }}>{item.medicineName + ' ' + item.strength + '\n'}</Text> <Text style={{ fontStyle: 'italic' }}>({item.medicineDesc})</Text></Text>
                 </View>
                 <View style={{ flex: 3, borderColor: '#ddd', borderWidth: 1 }}>
                     <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(2) }}>{item.dosagePattern} {!item.medicineTimingFrequency || item.medicineTimingFrequency == 'No Preference' ? null : ' (' + item.medicineTimingFrequency + ')'} {'\n' + 'dose: ' + item.dosages + ', ' + item.durationType}</Text>
@@ -546,9 +558,9 @@ class PreviewRx extends React.Component {
                                         <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), marginTop: 0, }}><Text style={{ fontWeight: 'bold' }}>{vitalList && vitalList.length > 0 ? vitalHead : ''}: </Text> {this.vitalView(vitalList)}</Text>
                                     </View>
                                     : null}
-                                {(medicalHistoryList) ?
+                                {(selectedConditions && selectedConditions.length>0) ||  (selectedMedications && selectedMedications.length>0) || (selectedAllergies && selectedAllergies.length>0) || (selectedFamilyHistory && selectedFamilyHistory.length>0) ?
                                     <View>
-                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), marginTop: 0, textTransform: 'capitalize' }}><Text style={{ fontWeight: 'bold' }}>{medicalHistoryList ? medicalHistoryHead : ''}: </Text>{this.selectedList(selectedConditions, selectedMedications, selectedAllergies, selectedFamilyHistory)}</Text>
+                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), marginTop: 0, textTransform: 'capitalize' }}><Text style={{ fontWeight: 'bold' }}>{medicalHistoryHead}: </Text>{this.selectedList(selectedConditions, selectedMedications, selectedAllergies, selectedFamilyHistory)}</Text>
                                     </View>
                                     : null}
 

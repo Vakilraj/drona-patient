@@ -136,10 +136,9 @@ class AboutYourselfStep1 extends React.Component {
 		} else if (this.state.registrationNumber.trim().length < 4) {
 			//this.setState({buttonBorderWidth : 0})
 			this.setState({ registarationAlert: 'Registration number should be minimum 4 digit' })
-		} else if (this.state.registrationNumber.trim().length > 8) {
-			//this.setState({buttonBorderWidth : 0})
-			this.setState({ registarationAlert: 'Registration number should be maximum 8 digit' })
-		} else if (!Validator.isSpecialCharValidate(this.state.registrationNumber)) {
+		} else if (this.state.registrationNumber.trim().length > 50) {
+			this.setState({ registarationAlert: 'Registration number should be maximum 50 digit' })
+		} else if (!Validator.isSpecialCharValidatorWithHypen(this.state.registrationNumber)) {
 			this.setState({ registarationAlert: 'Registration number can not contain any special charecter' })
 		} else {
 			let { actions, signupDetails } = this.props;
@@ -437,7 +436,7 @@ class AboutYourselfStep1 extends React.Component {
 									<TextInput returnKeyType="done" onFocus={this.callIsFucused4}
 										onBlur={this.callIsBlur4} style={[styles.createInputStyle, { borderColor: this.state.InpborderColor4 }]} placeholder="Enter Medical Registration Number" placeholderTextColor={Color.placeHolderColor} onChangeText={registrationNumber => {
 											if(registrationNumber){
-												if (Validator.isSpecialCharValidate(registrationNumber))
+												if (Validator.isSpecialCharValidatorWithHypen(registrationNumber))
 												this.setState({ registrationNumber })
 											}else{
 												this.setState({ registrationNumber })
@@ -446,7 +445,7 @@ class AboutYourselfStep1 extends React.Component {
 											if (registrationNumber.length > 0) {
 												this.setState({ registarationAlert: '' })
 											}
-										}} maxLength={80} value={this.state.registrationNumber} />
+										}} maxLength={50} value={this.state.registrationNumber} />
 									{this.state.registarationAlert ? <Text style={{ marginLeft: 5, fontSize: CustomFont.font12, color: Color.red }}>{this.state.registarationAlert}</Text> : null}
 
 

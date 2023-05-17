@@ -302,7 +302,7 @@ class MedicineDetails extends React.Component {
 		let item = this.props.navigation.state.params.item;
 		let saveData = [...this.state.taperedData];
 		let savevalue = {}
-		let tempArr = [...fullArrayUnit];
+		console.log('========= saveData1 ========', JSON.stringify(saveData))
 		saveData.forEach((_item, index) => {
 			saveData[index].medicineTypeGuid = saveData[0].medicineTypeGuid;
 			saveData[index].medicineGuid = saveData[0].medicineGuid;
@@ -310,15 +310,17 @@ class MedicineDetails extends React.Component {
 			saveData[index].appointmentGuid = signupDetails.appoinmentGuid;
 			saveData[index].medicineName = saveData[0].medicineName;
 			saveData[index].medicineIndex = index;
-			// saveData[index].MedicineDosasesTypeGuid = 'c7221d1c-8579-11eb-996a-0022486b91c8';
+			 //saveData[index].medicineDosasesTypeGuid = 'c7221d1c-8579-11eb-996a-0022486b91c8';
 			saveData[index].durationValue = 0;
 			saveData[index].dosages = null;
 			saveData[index].route = null;
-			tempArr.forEach((val) => {
-				if (val.doasestype === _item.medicineType) {
-					saveData[index].MedicineDosasesTypeGuid = val.medicineDoasesGuId;
-				}
-			})
+
+			// saveData[0]?.medicineDosasesType && saveData[0]?.medicineDosasesType.forEach((val) => {
+			// 	if (val.doasestype === _item.medicineType) {
+			// 		//saveData[index].medicineDosasesType = val.medicineDoasesGuId;
+			// 		saveData[index].medicineDosasesTypeGuid = val.medicineDoasesGuId;
+			// 	}
+			// })
 			// delete saveData[index].medicineDosasesType
 		})
 
@@ -535,6 +537,7 @@ class MedicineDetails extends React.Component {
 	}
 
 	clickOnUnit = (item, index) => {
+		this.state.taperedData[index].medicineDosasesTypeGuid=item.medicineDoasesGuId;
 		let tempData = this.state.taperedData;
 		doasestype = item.doasestype;
 		// medicineType = item.doasestype;

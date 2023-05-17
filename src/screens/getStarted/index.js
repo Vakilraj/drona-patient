@@ -49,7 +49,7 @@ class GetStarted extends React.Component {
 	}
 	async componentDidMount() {
 		let { actions, signupDetails } = this.props;
-		actions.callLogin( 'Kolkata', 'get', 'params', null, 'getIstTime');
+		//actions.callLogin( 'Kolkata', 'get', 'params', null, 'getIstTime');  // service not available after 12 am to 6 am
 
 		profile_complete = await AsyncStorage.getItem('profile_complete');
 		if (profile_complete === 'profile_complete') {
@@ -69,7 +69,7 @@ class GetStarted extends React.Component {
 			signupDetails.doctorGuid =await AsyncStorage.getItem('doctorGuid');
 			signupDetails.roleCode = await AsyncStorage.getItem('roleCode');
 			actions.setSignupDetails(signupDetails);
-			//this.props.navigation.navigate('DoctorHome');
+			this.props.navigation.navigate('DoctorHome'); // need to cmment service not available after 12 am to 6 am
 			this.setState({ showSplash: false })
 		} else {
 			this.setState({ showSplash: false })
@@ -180,23 +180,6 @@ class GetStarted extends React.Component {
 						this.props.navigation.navigate('LoginWithOtp');  //'Login'
 					}
 				}
-			}else if(tagname=='getIstTime'){
-				let data=newProps.responseData;
-				if(data){
-					let time24HrsFormat = Moment(data.datetime).format("HH");
-					if(time24HrsFormat >6){
-						DRONA.setIsServiceVailable(true);
-					}else{
-						DRONA.setIsServiceVailable(false);
-					}
-					//console.log(data.datetime+'---------'+time24HrsFormat);
-				}
-				if (profile_complete === 'profile_complete') {
-					this.props.navigation.navigate('DoctorHome');
-				}
-
-
-
 			}else if(tagname=='completeConsultationWithNoti'){
 				if (newProps.responseData.statusCode == "0") {
 					//console.log('-------fired--------');
@@ -208,6 +191,22 @@ class GetStarted extends React.Component {
 				}
 				
 			}
+			//else if(tagname=='getIstTime'){ // service not available after 12 am to 6 am
+				// let data=newProps.responseData;
+				// if(data){
+				// 	let time24HrsFormat = Moment(data.datetime).format("HH");
+				// 	if(time24HrsFormat >6){
+				// 		DRONA.setIsServiceVailable(true);
+				// 	}else{
+				// 		DRONA.setIsServiceVailable(false);
+				// 	}
+				// 	//console.log(data.datetime+'---------'+time24HrsFormat);
+				// }
+				// if (profile_complete === 'profile_complete') { 
+				// 	this.props.navigation.navigate('DoctorHome');
+				// }
+			//}
+			
 		}
 
 	}

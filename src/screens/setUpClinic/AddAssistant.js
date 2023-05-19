@@ -216,7 +216,7 @@ class AddAssistant extends React.Component {
                 }
             }
             //console.log("finalReq - ",JSON.stringify(params));
-            actions.callLogin('V15/FuncForDrAppToAddUpdateAssistanceDetails', 'post', params, signupDetails.accessToken, 'addUpdateAssistanceDetails');
+            actions.callLogin('V1/FuncForDrAppToAddUpdateAssistanceDetails', 'post', params, signupDetails.accessToken, 'addUpdateAssistanceDetails');
             setLogEvent("add_staff", { "save_update": 'click', "UserGuid": signupDetails.UserGuid̦ })
         }
     }
@@ -233,7 +233,7 @@ class AddAssistant extends React.Component {
                 "AssistanceUserGuid": this.state.assistanceUserGuid
             }
         }
-        actions.callLogin('V15/FuncForDrAppToDeleteAssistanceDetails', 'post', params, signupDetails.accessToken, 'deleteAssistanceDetails');
+        actions.callLogin('V1/FuncForDrAppToDeleteAssistanceDetails', 'post', params, signupDetails.accessToken, 'deleteAssistanceDetails');
         setLogEvent("add_staff", { "delete_staff": 'click', "UserGuid": signupDetails.UserGuid̦ })
     }
 

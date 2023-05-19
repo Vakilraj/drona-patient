@@ -55,8 +55,8 @@ let severityArrySymptFind = [], severityArryDiagnostic = [];
 let clickItemIndex = 0, clickItemName = '', clickType = '';
 let doctorNotes = [];
 import { BehaviorSubject } from 'rxjs'
-
-
+let medicineSaveData = [];
+let selectedMedicinesData = [];
 
 class Consultation extends React.Component {
 	constructor(props) {
@@ -89,6 +89,7 @@ class Consultation extends React.Component {
 			isMedicineModalOpen: false,
 			MedicineArr: [],
 			SelectedMedicineArr: [],
+			selectedNewMedicineArr: [],
 			medicineSearchTxt: '',
 
 			investigationSearchTxt: '',
@@ -377,7 +378,7 @@ class Consultation extends React.Component {
 				for (let i = 0; i < tmpArrMedicine.length; i++) {
 					tmpArrMedicine[i].medicineDosasesType = [{ medicineDoasesGuId: tmpArrMedicine[i].magicTabMedicineDoasesGuId, doasestype: tmpArrMedicine[i].magicTabDoasestype, medicineTypeGuid: tmpArrMedicine[i].magicTabMedicineTypeGuid }]
 					tmpArrMedicine[i].medicineTypeGuid = tmpArrMedicine[i].magicTabMedicineTypeGuid;
-					tmpArrMedicine[i].medicineIndex=0;
+					tmpArrMedicine[i].medicineIndex = 0;
 				}
 				console.log('----' + JSON.stringify(tmpArrMedicine));
 				//Investigation merge from copied
@@ -490,6 +491,50 @@ class Consultation extends React.Component {
 		severityArrySymptFind = patientConsultation.severityMaster;
 		// severityArryDiagnostic = patientConsultation.diagnoisisStatusMaster;
 		severityArryDiagnostic = [patientConsultation.diagnoisisStatusMaster[2], patientConsultation.diagnoisisStatusMaster[1], patientConsultation.diagnoisisStatusMaster[0],];
+
+		try {
+			selectedMedicinesData = this.props?.responseDataVisitInfo.selectedMedicines ? this.props?.responseDataVisitInfo.selectedMedicines : [];
+			if(selectedMedicinesData && selectedMedicinesData.length>0)
+			for(let i=0;i<selectedMedicinesData.length;i++){
+				let doaseArr = selectedMedicinesData[i].medicineDosasesType;
+				if(doaseArr && doaseArr.length>0)
+					for(let j=0;j<doaseArr.length;j++){
+						if(doaseArr[j].doasestype==selectedMedicinesData[i].medicineType){
+							selectedMedicinesData[i].medicineDosasesTypeGuid = doaseArr[j].medicineDoasesGuId;
+						}
+					}
+				
+			}
+			console.log('----before group----', JSON.stringify(selectedMedicinesData))
+			medicineSaveData = selectedMedicinesData;
+			let dividedData = [];
+			let groupedData = Object.values(selectedMedicinesData.reduce((acc, obj, idx) => {
+				const key = obj.medicineName.trim();
+				if (!acc[key]) {
+					if (!obj.values) {
+						acc[key] = { medicineName: key, values: [] };
+					}
+				}
+				if (!obj.values) {
+					if (obj.medicineType) {
+						acc[key].values.push(obj);
+						// obj.medicineDosasesType.forEach((dossesType, index) => {
+						// 	if (dossesType.doasestype === obj.medicineType) {
+						// 		acc[key].values[idx].medicineDosasesTypeGuid = dossesType?.medicineDoasesGuId ? dossesType?.medicineDoasesGuId : null
+						// 	}
+						// })
+					}
+				} else {
+					dividedData.push(obj)
+				}
+				return acc;
+			}, {}));
+			dividedData = dividedData.concat(Object.values(groupedData));
+			console.log('----derive----', JSON.stringify(dividedData))
+			this.setState({ selectedNewMedicineArr: dividedData })
+		} catch (error) {
+
+		}
 	}
 	componentWillUnmount() {
 		Trace.stopTrace()
@@ -504,18 +549,32 @@ class Consultation extends React.Component {
 			//console.log('-----tmpMedicineArr---' + JSON.stringify(tmpMedicineArr));
 			let tmpArr = []
 			try {
-				if (tmpMedicineArr && tmpMedicineArr.length > 0)
-					for (let i = 0; i < tmpMedicineArr.length; i++) {
-						let doaseArr = tmpMedicineArr[i].medicineDosasesType;
-						let tempObj = Object.assign({ medicineDosasesTypeGuid: doaseArr[0].medicineDoasesGuId, }, tmpMedicineArr[i]); // medicineDosasesType: doaseArr[0].doasestype 
-						tempObj.medicineDosasesType = doaseArr[0].doasestype;
-						tempObj.medicineTimingShift = null;
-						tmpArr.push(tempObj);
+				if (medicineSaveData && medicineSaveData.length > 0)
+					for (let i = 0; i < medicineSaveData.length; i++) {
+						if (!medicineSaveData[i].medicineDosasesTypeGuid) {
+							let doaseArr = medicineSaveData[i].medicineDosasesType;
+							medicineSaveData[i].medicineDosasesTypeGuid = doaseArr[0].medicineDoasesGuId;
+							medicineSaveData[i].medicineDosasesType = doaseArr[0].doasestype;
+							medicineSaveData[i].medicineType = doaseArr[0].doasestype;
+						}
 					}
+				// if (tmpMedicineArr && tmpMedicineArr.length > 0)
+				// 	for (let i = 0; i < tmpMedicineArr.length; i++) {
+				// 		let doaseArr = tmpMedicineArr[i].medicineDosasesType;
+				// 		let tempObj = Object.assign({ medicineDosasesTypeGuid: doaseArr[0].medicineDoasesGuId, }, tmpMedicineArr[i]); // medicineDosasesType: doaseArr[0].doasestype 
+				// 		tempObj.medicineDosasesType = doaseArr[0].doasestype;
+				// 		tempObj.medicineTimingShift = null;
+				// 		tmpArr.push(tempObj);
+				// 	}
+
 			} catch (error) {
 
 			}
 
+			if (medicineSaveData && medicineSaveData.length > 0)
+				medicineSaveData.forEach((val, index) => {
+					delete medicineSaveData[index].medicineDosasesType
+				})
 			//console.log('-----tmpArr---' + JSON.stringify(tmpArr));
 			let params = {
 				"UserGuid": signupDetails.UserGuid,
@@ -528,7 +587,7 @@ class Consultation extends React.Component {
 						"SymptomList": this.state.SelectedSymptomArr,
 						"FindingList": this.state.SelectedFindingArr,
 						"DiagnosisList": this.state.SelectedDiagnosticArr,
-						"MedicineList": tmpArr,
+						"MedicineList": medicineSaveData, //tmpArr
 						"InvestigationList": this.state.SelectedInvestigationArr,
 						"InstructionsList": this.state.SelectedInstructionArr,
 						"ProcedureList": this.state.SelectedProcedureArr,
@@ -589,23 +648,80 @@ class Consultation extends React.Component {
 
 	}
 
+	// RefreshData = (val) => {
+	// 	if (val.isEdit) {
+	// 		let tmpARr = this.state.SelectedMedicineArr ? [...this.state.SelectedMedicineArr] : [];
+	// 		if (medicineAddUpdateFlag == 'add') {
+	// 			tmpARr.push(val.data);
+	// 		} else {
+	// 			tmpARr.splice(medicineIndex, 1, val.data);
+	// 		}
+	// 		medicineFlag = true;
+	// 		this.setState({ SelectedMedicineArr: tmpARr })
+	// 		DRONA.setIsConsultationChange(true);
+	// 	} else {
+	// 		medicineFlag = val.isEdit;
+	// 	}
+
+	// }
 	RefreshData = (val) => {
+		let tmpARr = [];
+		let ans = [];
 		if (val.isEdit) {
-			let tmpARr = this.state.SelectedMedicineArr ? [...this.state.SelectedMedicineArr] : [];
-			if (medicineAddUpdateFlag == 'add') {
-				tmpARr.push(val.data);
+			if (medicineAddUpdateFlag == 'update') {
+				let temp = [...this.state.selectedNewMedicineArr];
+				temp.forEach((ele, index) => {
+					if (ele.medicineName == val.data[0].medicineName) { // 0 ----> index
+						ele.values = val.data
+					}
+				})
+
+				this.setState({ selectedNewMedicineArr: temp })
 			} else {
-				tmpARr.splice(medicineIndex, 1, val.data);
+				ans = val.data;
+				let tmp = this.state.SelectedMedicineArr;
+				if (medicineAddUpdateFlag == 'add') {
+					if (tmp.length > 0) {
+						tmp.forEach((val) => {
+							ans.push(val)
+						})
+					}
+				} else {
+					tmpARr.splice(medicineIndexValVal, 1, val.data);
+				}
+
+				if (ans.length > 0) {
+					medicineSaveData = ans;
+				} else {
+					medicineSaveData = val.data;
+				}
+
+				let dividedData = [];
+				let groupedData = Object.values(ans.reduce((acc, obj) => {
+					const key = obj.medicineName.trim();
+					if (!acc[key]) {
+						if (!obj.values) {
+							acc[key] = { medicineName: key, values: [] };
+						}
+					}
+					if (!obj.values) {
+						acc[key].values.push(obj);
+					} else {
+						dividedData.push(obj)
+					}
+					return acc;
+				}, {}));
+				dividedData = dividedData.concat(Object.values(groupedData));
+
+				medicineFlag = true;
+				this.setState({ SelectedMedicineArr: ans.length > 0 ? ans : val.data, selectedNewMedicineArr: dividedData })
+				DRONA.setIsConsultationChange(true);
 			}
-			medicineFlag = true;
-			this.setState({ SelectedMedicineArr: tmpARr })
-			DRONA.setIsConsultationChange(true);
 		} else {
 			medicineFlag = val.isEdit;
 		}
 
 	}
-
 
 	async UNSAFE_componentWillReceiveProps(newProps) {
 		if (newProps.responseData && newProps.responseData.tag) {
@@ -1394,15 +1510,38 @@ class Consultation extends React.Component {
 
 	}
 	removeSelectedMedicine = (item, index) => {
-		let tempserviceArr = [...this.state.MedicineArr];
-		let selectedTempserviceArr = [...this.state.SelectedMedicineArr];
-		normalListBackup = [...this.state.MedicineArr];
-		selectedListBackup = [...this.state.SelectedMedicineArr];
+		// let tempserviceArr = [...this.state.MedicineArr];
+		// let selectedTempserviceArr = [...this.state.SelectedMedicineArr];
+		// normalListBackup = [...this.state.MedicineArr];
+		// selectedListBackup = [...this.state.SelectedMedicineArr];
 
-		tempserviceArr.push(item)
-		selectedTempserviceArr.splice(index, 1);
-		this.setState({ SelectedMedicineArr: selectedTempserviceArr, MedicineArr: tempserviceArr })
-		medicineFullArray.push(item)
+		// tempserviceArr.push(item)
+		// selectedTempserviceArr.splice(index, 1);
+		// this.setState({ SelectedMedicineArr: selectedTempserviceArr, MedicineArr: tempserviceArr })
+		// medicineFullArray.push(item)
+		// medicineFlag = true;
+
+		let tempserviceArr = [...this.state.MedicineArr];
+		normalListBackup = [...this.state.MedicineArr];
+		let tempServiceArr = [...this.state.selectedNewMedicineArr];
+		selectedListBackup = [...this.state.selectedNewMedicineArr];
+
+		// tempserviceArr.push(item)
+
+		/* for unique medicine*/
+		let newTempserviceArr = [];
+		tempserviceArr.forEach((item) => {
+			if (newTempserviceArr.indexOf(item) === -1) {
+				newTempserviceArr.push(item);
+			}
+		});
+
+		tempserviceArr = newTempserviceArr;
+		tempServiceArr.splice(index, 1);
+		this.setState({ selectedNewMedicineArr: tempServiceArr, MedicineArr: tempserviceArr, SelectedMedicineArr: tempServiceArr })
+		if (!medicineFullArray.some(obj => obj.medicineName === item.medicineName)) {
+			medicineFullArray.push({ medicineName: item.medicineName })
+		}
 		medicineFlag = true;
 	}
 
@@ -2953,8 +3092,8 @@ class Consultation extends React.Component {
 										<TouchableOpacity onPress={() => {
 											let { signupDetails } = this.props;
 											timeRange = Trace.getTimeRange();
-											Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Medicines', signupDetails.firebaseLocation)
-											Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Medicines", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+											Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Medicines', signupDetails.firebaseLocation)
+											Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Medicines", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 											this.setState({ isSearchStart: false, isMedicineModalOpen: !this.state.isMedicineModalOpen, medTiming: medTiming, medicineSearchTxt: '', MedicineArr: medicineFullArray })
 										}}>
 											<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -2965,31 +3104,59 @@ class Consultation extends React.Component {
 											</View>
 										</TouchableOpacity>}
 
-									<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', marginLeft: responsiveWidth(-1.6) }}>
-										{this.state.SelectedMedicineArr && this.state.SelectedMedicineArr.length > 0 ? this.state.SelectedMedicineArr.map((item, index) => {
-											return (<View style={styles.selectedView} >
-												<TouchableOpacity onPress={() => {
-													let { signupDetails } = this.props;
-													setLogEvent("medicine", { "select_medicine": "click", UserGuid: signupDetails.UserGuid })
-													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Select_Medicine", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
-													this.setState({ isMedicineModalOpen: false })
-													medicineIndex = index;
-													medicineAddUpdateFlag = 'update';
-													this.props.nav.navigation.navigate('MedicineDetails', { item: item, medTiming: medTiming, Refresh: this.RefreshData, doctorNotes: doctorNotes, });
-												}} style={{ maxWidth: responsiveWidth(82) }}>
-													<Text style={styles.txtSelect}>{this.getSelectedMMedicineTxt(item)}</Text>
-												</TouchableOpacity>
-												<TouchableOpacity style={styles.crossSelected}
-													onPress={() => {
-														let { signupDetails } = this.props;
-														setLogEvent("delete_medicine", { UserGuid: signupDetails.UserGuid })
-														Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Delete_Medicine", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
-														this.removeSelectedMedicine(item, index)
-													}}>
-													<Image source={cross_close} style={{ height: responsiveWidth(3), width: responsiveWidth(3), resizeMode: 'contain' }} />
-												</TouchableOpacity></View>);
-										}, this) : null}
-									</View>
+									{
+										this.state.selectedNewMedicineArr.length > 0 && this.state.selectedNewMedicineArr.map((val, index) => {
+											return (
+												<View style={[this.state.selectedNewMedicineArr.length > 0 ? styles.selectedView : null,
+												{
+													flexDirection: 'row',
+													justifyContent: 'space-between',
+													margin: responsiveWidth(1.6),
+													flex: 1,
+												}]}>
+													<TouchableOpacity
+														style={{ flex: 4 }}
+														onPress={() => {
+															let medicineUnitVal = [...this.state.MedicineArr];
+															let { signupDetails } = this.props;
+															console.log('======= medicineUnitVal ======', JSON.stringify(medicineUnitVal))
+															// console.log('======= val.value ======', JSON.stringify(ele.values))
+															let temp = [...this.state.selectedNewMedicineArr]
+															const tempData = temp.filter((ele, index) => {
+																if (ele.medicineName === val.medicineName) {
+																	return ele
+																}
+															})
+
+															console.log('======= tempData ======', JSON.stringify(tempData))
+															setLogEvent("medicine", { "select_medicine": "click", UserGuid: signupDetails.UserGuid })
+															Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Select_Medicine", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+															this.setState({ isMedicineModalOpen: false })
+															// medicineIndexValVal = index;
+															medicineAddUpdateFlag = 'update';
+															this.props.nav.navigation.navigate('MedicineDetails', { doctorNotes: doctorNotes, medicineUnitVal: medicineUnitVal, item: val?.values, medTiming: medTiming, Refresh: this.RefreshData });
+														}}
+													>
+														{val?.values?.map((item, index) => {
+															return (
+																<View >
+																	<Text style={styles.txtSelect}>{this.getSelectedMMedicineTxt(item)}</Text>
+																</View>);
+														}, this)}
+													</TouchableOpacity>
+													<TouchableOpacity style={styles.crossSelected}
+														onPress={() => {
+															let { signupDetails } = this.props;
+															setLogEvent("delete_medicine", { UserGuid: signupDetails.UserGuid })
+															Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Delete_Medicine", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+															this.removeSelectedMedicine(val, index)
+														}}>
+														<Image source={cross_close} style={{ height: responsiveWidth(3), width: responsiveWidth(3), resizeMode: 'contain' }} />
+													</TouchableOpacity>
+												</View>
+											)
+										})
+									}
 									{this.state.isMedicineModalOpen ? <View>
 										<View style={[styles.searchView, { borderColor: this.state.fld5, borderWidth: 1 }]}>
 											<TextInput returnKeyType="done"
@@ -3000,8 +3167,8 @@ class Consultation extends React.Component {
 												onChangeText={(medicineSearchTxt) => {
 													let { signupDetails } = this.props;
 													setLogEvent("patient_consultation", { "search_medicine": "search", UserGuid: signupDetails.UserGuid, "keyword": medicineSearchTxt })
-													Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Medicine_Search', signupDetails.firebaseLocation)
-													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Medicine_Search", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+													Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Medicine_Search', signupDetails.firebaseLocation)
+													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Medicine_Search", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 													this.SearchMedicine(medicineSearchTxt)
 												}} maxLength={30} />
 											{this.state.medicineSearchTxt ? <TouchableOpacity style={{ alignSelf: 'center' }} onPress={() => { this.setState({ medicineSearchTxt: '', MedicineArr: medicineFullArray }); }}>
@@ -3012,13 +3179,15 @@ class Consultation extends React.Component {
 										<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', marginLeft: responsiveWidth(-1.6), marginTop: responsiveHeight(1.8) }}>
 											{this.state.MedicineArr && this.state.MedicineArr.length > 0 ? this.state.MedicineArr.map((item, index) => {
 												return (<TouchableOpacity style={styles.unselectView} onPress={() => {
+													let medicineUnitVal = [...this.state.MedicineArr];
 													this.setState({ isMedicineModalOpen: false })
-													medicineIndex = index;
+													medicineIndexValVal = index;
 													medicineAddUpdateFlag = 'add';
-													this.props.nav.navigation.navigate('MedicineDetails', { item: item, medTiming: medTiming, Refresh: this.RefreshData, doctorNotes: doctorNotes, });
+													this.props.nav.navigation.navigate('MedicineDetails', { doctorNotes: doctorNotes, medicineUnitVal: medicineUnitVal, item: item.values ? item.values : item, medTiming: medTiming, Refresh: this.RefreshData });
 													// this.clickOnMedicine(item, index)
 												}} >
-													<Text style={[styles.unselectTxtColor, { marginRight: responsiveWidth(1) }]}>{item.medicineName + ' ' + item.strength}</Text>
+													{/* <Text style={[styles.unselectTxtColor, { marginRight: responsiveWidth(1) }]}>{item.medicineName + ' ' + item?.strength}</Text> */}
+													<Text style={[styles.unselectTxtColor, { marginRight: responsiveWidth(1) }]}>{item.medicineName}</Text>
 													<Text style={{ marginRight: responsiveWidth(2), fontSize: CustomFont.font12, color: Color.fontColor, opacity: .6, fontFamily: CustomFont.fontName }}>{item.medicineType && item.medicineType.length > 3 ? item.medicineType.substr(0, 3) : item.medicineType}</Text>
 												</TouchableOpacity>
 												);
@@ -3027,7 +3196,7 @@ class Consultation extends React.Component {
 										{
 											this.state.isSearchStart && this.state.medicineSearchTxt ?
 												<TouchableOpacity onPress={this.addPressClick} style={{ margin: responsiveWidth(3), alignItems: 'center', justifyContent: 'center' }}>
-													<Text style={{ color: Color.primaryBlue, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: CustomFont.fontWeight700 }}> + Add <Text style={{ textTransform: 'capitalize' }}>'{this.state.medicineSearchTxt}'</Text> as a New Medicine</Text>
+													<Text style={{ color: Color.primaryBlue, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: CustomFont.fontWeight700 }}> + Add '{this.state.medicineSearchTxt}' as a New Medicine</Text>
 												</TouchableOpacity> : null
 										}
 									</View> : null}

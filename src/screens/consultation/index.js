@@ -313,7 +313,7 @@ class CN extends React.Component {
 				"Notes": 'test',
 			}
 		}
-		actions.callLogin('V1/FuncForDrAppToPatientBookAppointment_V2_1', 'post', params, signupDetails.accessToken, 'postWalkinConfirmPatient');
+		actions.callLogin('V16/FuncForDrAppToPatientBookAppointment_V2_1', 'post', params, signupDetails.accessToken, 'postWalkinConfirmPatient');
 	}
 	render() {
 		let { signupDetails } = this.props;

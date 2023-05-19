@@ -268,7 +268,7 @@ class confirmAppointment extends React.Component {
                     "Notes": this.state.notes,
                 }
             }
-            actions.callLogin('V1/FuncForDrAppToPatientBookAppointment_V2_1', 'post', params, signupDetails.accessToken, 'postWalkinConfirm');
+            actions.callLogin('V16/FuncForDrAppToPatientBookAppointment_V2_1', 'post', params, signupDetails.accessToken, 'postWalkinConfirm');
         }
         else {
             let params = {
@@ -298,7 +298,7 @@ class confirmAppointment extends React.Component {
                     
                 }
             }
-            actions.callLogin('V1/FuncForDrAppToPatientBookAppointment_V3', 'post', params, signupDetails.accessToken, 'postConfirm');
+            actions.callLogin('V16/FuncForDrAppToPatientBookAppointment_V3', 'post', params, signupDetails.accessToken, 'postConfirm');
         }
         signupDetails.confirmAppoinmentDate=DRONA.getSelectedAppoinDate();
         actions.setSignupDetails(signupDetails);

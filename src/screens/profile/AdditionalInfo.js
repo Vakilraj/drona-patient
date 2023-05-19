@@ -121,8 +121,8 @@ class AdditionalInfo extends React.Component {
 	setValueFromResponse = (data) => {
 		let about = data.aboutDoctor;
 		let education = '', experience = '';
-		// educationList = data.educationDetails;
-		// experienceList = data.experienceDetails;
+		educationList = data.educationDetails;
+		experienceList = data.experienceDetails;
 		if (data.educationDetails && data.educationDetails.length > 0) {
 			for (let i = 0; i < data.educationDetails.length; i++) {
 				if (i == 0)
@@ -365,20 +365,6 @@ class AdditionalInfo extends React.Component {
 		try {
 			fullArraySpeciality = _.differenceBy(fullArraySpeciality, [item], 'specialisationGuid');
 		} catch (error) { }
-
-		if (!item.specialityGuid) {
-			let { actions, signupDetails } = this.props;
-			let params = {
-				"RoleCode": signupDetails.roleCode,
-				"UserGuid": signupDetails.UserGuid,
-				"DoctorGuid": signupDetails.doctorGuid,
-				"ClinicGuid": signupDetails.clinicGuid,
-				"Version": "",
-				"Data": this.state.selectedSpecializationArr
-			}
-
-			actions.callLogin('V1/FuncForDrAppToAddSpecialisation', 'post', params, signupDetails.accessToken, 'AddCustomSpeciality');
-		}
 	}
 	removeSelectedSpecialization = (item, index) => {
 		let tempserviceArr = [...this.state.SpecializationArr];
@@ -395,35 +381,6 @@ class AdditionalInfo extends React.Component {
 		this.setState({
 			SpecializationArr: searchResult, specializationName: text
 		});
-
-		if (searchResult && searchResult.length == 0) {
-
-			this.setState({
-				SpecializationArr: [{
-					"appointmentGuid": null,
-					"specialisationGuid": null,
-					"patientSpecialityGuId": null,
-					"specialisationName": "Add new “" + text + '”',
-					"specialisationDesc": null
-				}],
-			});
-		}
-
-
-		if (text.length > 2) {
-			let { actions, signupDetails } = this.props;
-			let params = {
-				"UserGuid": signupDetails.UserGuid,
-				"DoctorGuid": signupDetails.doctorGuid,
-				"ClinicGuid": signupDetails.clinicGuid,
-				"Version": "",
-				"Data": {
-					"SearchText": text
-				}
-			}
-			//actions.callLogin('V1/FuncForDrAppToSearchSpecialisation', 'post', params, signupDetails.accessToken, 'SearchForSpeciality');
-		}
-
 	}
 
 
@@ -651,17 +608,6 @@ class AdditionalInfo extends React.Component {
 					this.setState({ isModalVisibleSpecialization: false })
 				} else {
 					Snackbar.show({ text: newProps.responseData.statusMessage, duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-				}
-			}else if (tagname === 'AddCustomSpeciality') {
-				if (newProps.responseData.statusCode == '0' && newProps.responseData.data) {
-					let specialityGuid = newProps.responseData.data.specialisationGuid;
-					let tempArr = [...this.state.selectedSpecializationArr]
-					tempArr[tempArr.length - 1].specialityGuid = specialityGuid
-					this.setState({ selectedSpecialityArr: tempArr });
-				}
-				else {
-					let tempArr = [...this.state.selectedSpecializationArr]
-					this.setState({ selectedSpecialityArr: tempArr.splice(tempArr.length - 1,1) });
 				}
 			} else if (tagname == 'saveEducationDetails') {
 				if (newProps.responseData.statusCode == '-1') {

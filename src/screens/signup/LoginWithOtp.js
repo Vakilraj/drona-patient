@@ -153,8 +153,8 @@ class LoginWithOtp extends React.Component {
 						await AsyncStorage.setItem('userGuid', CryptoJS.AES.encrypt(newProps.responseData.data.userGuid, 'MNKU').toString());
 					}
 					await AsyncStorage.setItem('accessToken', CryptoJS.AES.encrypt(newProps.responseData.accessToken, 'MNKU').toString());
-					//this.props.navigation.navigate('DoctorHome');
-					this.props.navigation.navigate(signupDetails.roleCode==10? 'ChooseClinic':'DoctorHome');
+					this.props.navigation.navigate('DoctorHome');
+					//this.props.navigation.navigate(signupDetails.roleCode==10? 'ChooseClinic':'DoctorHome');
 				} else {
 					alert(JSON.stringify(newProps.responseData.statusMessage))
 				}

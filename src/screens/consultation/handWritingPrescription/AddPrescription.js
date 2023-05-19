@@ -475,8 +475,8 @@ class AddPrescription extends React.Component {
                 imagePaths:urlImageArr,
                 name: 'mergepdffile',
                 maxSize: { // optional maximum image dimension - larger images will be resized
-                    width: 600,
-                    height: 800,
+                    width: 2480,
+                    height: 3508,
                 },
                 quality: .7, // optional compression paramter
             };

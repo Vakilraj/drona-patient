@@ -228,7 +228,7 @@ class BankAccountDetails extends React.Component {
 									"ClinicGuid": DRONA.getClinicGuid(),//DRONA.getClinicGuid() signupDetails.clinicGuid
 									"Data": { "upiGuId": upiGuId, "UpiName": upiNameOnModal }
 								};
-								actions.callLogin('V15/FuncForDrAppToAddUpdateUpiDetails', 'post', params, signupDetails.accessToken, 'saveupdateUpi');
+								actions.callLogin('V1/FuncForDrAppToAddUpdateUpiDetails', 'post', params, signupDetails.accessToken, 'saveupdateUpi');
 							} else {
 								alert(data.data.message)
 								that.changeshowProgressOnBtn();
@@ -323,7 +323,7 @@ class BankAccountDetails extends React.Component {
 										"NickName": nickName
 									}
 								};
-								actions.callLogin('V15/FuncForDrAppToAddUpdateBank', 'post', params, signupDetails.accessToken, 'saveupdateBankAccount');
+								actions.callLogin('V1/FuncForDrAppToAddUpdateBank', 'post', params, signupDetails.accessToken, 'saveupdateBankAccount');
 								setTimeout(()=>{
 									AddBankDetailsFlag =0;
 								},2000)

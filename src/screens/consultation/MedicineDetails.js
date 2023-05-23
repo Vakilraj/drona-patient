@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import arrow_grey from '../../../assets/back_blue.png';
 import downarrow from '../../../assets/downarrow.png';
+import upArrow from '../../../assets/uparrow.png';
 import styles from './style';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import Color from '../../components/Colors';
@@ -81,7 +82,7 @@ class MedicineDetails extends React.Component {
 			doctorNoteTxt: '',
 			noteDatas: temp,
 			doctorNotesDataArr: props.navigation.state.params.doctorNotes ? props.navigation.state.params.doctorNotes:[],
-
+			showNoResultText: false,
 
 
 		};
@@ -113,16 +114,20 @@ class MedicineDetails extends React.Component {
 		doctorNotesArr = this.props.navigation.state.params.doctorNotes ? this.props.navigation.state.params.doctorNotes :[];
 		//console.log('item----111---' + JSON.stringify(item))
 		//console.log('===== doctorNotesArr ======' + JSON.stringify(doctorNotesArr))
-		medicineTypeGuid = item.medicineTypeGuid;
-		medicineType = item.medicineType;
 
 		if (item.medicineDosasesType && item.medicineDosasesType.length > 0) {
 			medicineTypeGuid = item.medicineDosasesType[0].medicineTypeGuid;
 			MedicineDoasesGuId = item.medicineDosasesType[0].medicineDoasesGuId;
 			doasestype = item.medicineDosasesType[0].doasestype;
 			fullArrayUnit=item.medicineDosasesType;
-			console.log('----'+JSON.stringify(fullArrayUnit))
+			//console.log('----'+JSON.stringify(fullArrayUnit))
 		}
+		if(item.medicineTypeGuid)
+		medicineTypeGuid = item.medicineTypeGuid;
+		if(item.medicineType)
+		medicineType = item.medicineType;
+		if(item.medicineDosasesTypeGuid)
+		MedicineDoasesGuId = item.medicineDosasesTypeGuid;
 		//prefilled
 		setTimeout(() => {
 			try {
@@ -150,7 +155,7 @@ class MedicineDetails extends React.Component {
 				// let unitRefileedTxt = Dosages + ' ' + doasestype;
 				// InputTxtLengthUnit = unitRefileedTxt.length;
 
-				this.setState({ dutaionTxt: durationRefileedTxt, unitTxt: this.state.UnitDropdownArr[0].doasestype})
+				this.setState({ dutaionTxt: durationRefileedTxt, unitTxt: item.medicineType ? item.medicineType: this.state.UnitDropdownArr[0].doasestype})
 
 			} catch (e) { }
 
@@ -183,7 +188,9 @@ class MedicineDetails extends React.Component {
 			dosagePattern: dosagePattern,
 			note: this.state.noteData,
 			patientAppointmentMedicineGuId: item.patientAppointmentMedicineGuId,
-			medicineDosasesType: [{ medicineDoasesGuId: MedicineDoasesGuId, doasestype: doasestype }] //"medicineTypeGuid":medicineTypeGuid
+			medicineDosasesType:fullArrayUnit,
+			medicineDosasesTypeGuid: MedicineDoasesGuId,
+			//medicineDosasesType: [{ medicineDoasesGuId: MedicineDoasesGuId, doasestype: doasestype }] //"medicineTypeGuid":medicineTypeGuid
 		}
 		console.log('-----data---' + JSON.stringify(data));
 		isEdit = true;
@@ -214,7 +221,7 @@ class MedicineDetails extends React.Component {
 	}
 
 	callIsFucusedUnit = () => {
-		this.setState({ InpborderColorUnit: Color.primary })
+		this.setState({ InpborderColorUnit: Color.primary, showUnitDropDown:true })
 	}
 	callIsBlurUnit = () => {
 		this.setState({ InpborderColorUnit: Color.inputdefaultBorder, });
@@ -350,6 +357,11 @@ class MedicineDetails extends React.Component {
 			this.setState({
 				UnitDropdownArr: searchResult
 			});
+			if (searchResult.length === 0) {
+				this.setState({ showNoResultText: true });
+			} else {
+				this.setState({ showNoResultText: false });
+			}
 		}else{
 			this.setState({
 				UnitDropdownArr: fullArrayUnit
@@ -372,7 +384,7 @@ class MedicineDetails extends React.Component {
 		MedicineDoasesGuId = item.medicineDoasesGuId;
 		// let str = this.state.unitTxt + ' ' + doasestype;
 		// InputTxtLengthUnit = str.length;
-		this.setState({ unitTxt: item.doasestype, showUnitDropDown: false })
+		this.setState({ unitTxt: item.doasestype, showUnitDropDown: false,showNoResultText: false })
 	}
 
 	render() {
@@ -403,9 +415,21 @@ class MedicineDetails extends React.Component {
 							</View>
 							{/* ------- Unit------- */}
 							<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>Units</Text>
+							<View>
 							<TextInput onBlur={this.callIsBlurUnit} onFocus={this.callIsFucusedUnit} style={[styles.createInputStyle, { borderColor: this.state.InpborderColorUnit }]} placeholder={'Enter Unit'} placeholderTextColor={Color.placeHolderColor} value={this.state.unitTxt}
 								//  maxLength={InputTxtLengthUnit}
 								onChangeText={(text) => this.handleUnitData(text)} ref='search' returnKeyType='done' />
+								<Image style={{
+						height: responsiveFontSize(1.3),
+						width: responsiveFontSize(1.3),
+						resizeMode: 'contain',
+						position: 'absolute',
+						marginTop: responsiveHeight(4),
+						right: 15,
+						tintColor: Color.fontColor
+					}}
+						source={this.state.showUnitDropDown ? upArrow : downarrow} />
+							</View>
 
 							{this.state.showUnitDropDown && this.state.UnitDropdownArr && this.state.UnitDropdownArr.length > 0 ?
 								<View style={{
@@ -421,16 +445,31 @@ class MedicineDetails extends React.Component {
 									keyExtractor={(item, index) => index.toString()}
 									/>
 								</View> : null}
-
+								{
+								this.state.showNoResultText ?
+											<Text style={{ fontFamily: CustomFont.fontName, color: Color.red, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }} >{'No record found'}</Text> : null			
+							}
 							{/* ------- Dosage------- */}
 
 							<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>Dosage </Text>
+							<View>
 							<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
 								<TextInput onBlur={this.callIsBlur2} onFocus={this.callIsFucused2} keyboardType={'phone-pad'} style={[styles.createInputStyle, { flex: 1, borderColor: this.state.InpborderColor2 }]} placeholder="Enter dosages" placeholderTextColor={Color.placeHolderColor} value={this.state.dosageSearchTxt} onChangeText={(dosageSearchTxt) => { this.SearchFilterFunctionDosage(dosageSearchTxt) }} maxLength={15} ref='search' returnKeyType='done' />
 								{/* {this.state.CustomInput ? <TouchableOpacity style={{ height: responsiveHeight(6), width: responsiveWidth(15), justifyContent: 'center', alignItems: 'center', marginLeft: 10, borderWidth: 1, borderColor: this.state.InpborderColor2, marginTop: responsiveHeight(1.8), borderRadius: 6 }} onPress={() => this.setState({ dosageSearchTxt: '', CustomInput: !this.state.CustomInput, showStateDosage: true })}>
 									<Image source={downarrow} style={{ height: responsiveFontSize(2.5), width: responsiveFontSize(2.5), resizeMode: 'contain' }} />
 								</TouchableOpacity> : null} */}
 
+							</View>
+							<Image style={{
+						height: responsiveFontSize(1.3),
+						width: responsiveFontSize(1.3),
+						resizeMode: 'contain',
+						position: 'absolute',
+						marginTop: responsiveHeight(4),
+						right: 15,
+						tintColor: Color.fontColor
+					}}
+						source={this.state.showUnitDropDown ? upArrow : downarrow} />
 							</View>
 
 							<View style={{ flex: 1 }}>
@@ -469,11 +508,23 @@ class MedicineDetails extends React.Component {
 							/>
 							{/* ------- Duration------- */}
 							<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>Frequency</Text>
+							<View>
 							<TextInput onBlur={this.callIsBlurDuration} onFocus={this.callIsFucusedDuration} style={[styles.createInputStyle, { borderColor: this.state.InpborderColorDuration }]} placeholder={'Enter frequency'} placeholderTextColor={Color.placeHolderColor} value={this.state.dutaionTxt}
 								// maxLength={InputTxtLengthDuration}
 								onChangeText={(text) => this.handleDurationData(text)} ref='search' returnKeyType='done' />
+								<Image style={{
+						height: responsiveFontSize(1.3),
+						width: responsiveFontSize(1.3),
+						resizeMode: 'contain',
+						position: 'absolute',
+						marginTop: responsiveHeight(4),
+						right: 15,
+						tintColor: Color.fontColor
+					}}
+						source={this.state.showUnitDropDown ? upArrow : downarrow} />
+							</View>
 
-							{this.state.showDurationDropDown ?
+							{this.state.showDurationDropDown && this.state.DurationDropdownArr && this.state.DurationDropdownArr?.length > 0 ?
 								<View style={{
 									borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,
 									borderBottomColor: Color.createInputBorder, borderTopColor: Color.white, marginTop: responsiveHeight(-.8)
@@ -525,7 +576,7 @@ class MedicineDetails extends React.Component {
 
 
 
-							<TouchableOpacity style={{ alignItems: 'center', marginBottom: responsiveHeight(2.5), justifyContent: 'center', borderRadius: 5, height: responsiveHeight(7), width: '100%', backgroundColor: Color.primary }} onPress={() => {
+							<TouchableOpacity disabled={this.state.showNoResultText} style={{ alignItems: 'center', marginBottom: responsiveHeight(2.5), justifyContent: 'center', borderRadius: 5, height: responsiveHeight(7), width: '100%', backgroundColor: this.state.showNoResultText? Color.btnDisable: Color.primary }} onPress={() => {
 								if (clickFlag == 0)
 									this.saveData();
 							}}>

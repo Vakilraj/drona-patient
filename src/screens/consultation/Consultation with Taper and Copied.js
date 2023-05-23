@@ -194,6 +194,7 @@ class Consultation extends React.Component {
 			this.setState({ fld4: Color.primary })
 		}
 		else if (type == '5') {
+			//this.refs._scrollView.scrollTo(1000)
 			this.setState({ fld5: Color.primary })
 		}
 		else if (type == '6') {
@@ -2745,7 +2746,7 @@ class Consultation extends React.Component {
 		return (
 			<View style={{ flex: 1, backgroundColor: Color.lightGrayBg }}>
 				<View style={{ flex: 1 }}>
-					<ScrollView style={{ marginBottom: responsiveHeight(2) }}>
+					<ScrollView style={{ marginBottom: responsiveHeight(2) }} ref='_scrollView'>
 						<View style={{ flex: 1 }}>
 							{/* -----------Upload Hand wtitten prescription Button-------- */}
 							<TouchableOpacity onPress={() => {

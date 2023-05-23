@@ -57,12 +57,16 @@ static isNumberHyphanDotSlashValidate(mobile) {
   return reg.test(mobile);
 }
 static isNameAcceptDot(name) {
-  const reg = /^[A-Za-z. ]*$/;
+  //const reg = /^[A-Za-z. ]*$/;
+  const reg = /^[a-zA-Z0-9. ]+$/;
   return reg.test(name);
 }
 static isSpecialCharValidatorWithHypen(name) {
-  // const reg = /^[A-Za-z. ]*$/;
-  const reg = /^[a-zA-Z0-9 -]+$/;
+  const reg = /^[a-zA-Z0-9-() ]+$/;
+  return reg.test(name);
+}
+static isNameAcceptDotForDoc(name) {
+  const reg = /^[a-zA-Z0-9.\-() ]+$/;
   return reg.test(name);
 }
 }

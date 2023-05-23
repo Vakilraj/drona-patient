@@ -388,7 +388,7 @@ class AddNewPatients extends React.Component {
 			this.refs.fname.focus();
 		}
 		else if (!Validator.isNameAcceptDot(this.state.fname)) {
-			this.setState({ fnameAlert: 'Name should contain only alphabets' });
+			this.setState({ fnameAlert: 'Name should contain only alphabets,number,dot and hyphen' });
 			this.refs.fname.focus();
 		} else if (this.state.fname.length < 1) {
 			this.setState({ fnameAlert: 'First name minimum 1 character' });
@@ -833,7 +833,7 @@ class AddNewPatients extends React.Component {
 											if (!fname || Validator.isNameAcceptDot(fname)) {
 												this.setState({ fnameAlert: '', fld1: Color.inputErrorBorder })
 											} else {
-												this.setState({ fnameAlert: 'Name should contain only alphabets', fld1: Color.inputErrorBorder })
+												this.setState({ fnameAlert: 'Name should contain only alphabets,number,dot and hyphen', fld1: Color.inputErrorBorder })
 											}
 										}} ref='fname' onSubmitEditing={() => this.refs.lname.focus()} value={this.state.fname} onFocus={() => this.setState({ keyboardAvoiding: responsiveHeight(-50), fld1: Color.primary })} />
 									{this.state.fnameAlert ? <Text style={{ marginLeft: 5, fontSize: CustomFont.font12, color: Color.red }}>{this.state.fnameAlert}</Text> : null}
@@ -847,7 +847,7 @@ class AddNewPatients extends React.Component {
 											if (!lname || Validator.isNameAcceptDot(lname)) {
 												this.setState({ lnameAlert: '', fld2: Color.inputErrorBorder })
 											} else {
-												this.setState({ lnameAlert: 'name should contain only alphabets', fld2: Color.inputErrorBorder })
+												this.setState({ lnameAlert: 'Name should contain only alphabets,number,dot and hyphen', fld2: Color.inputErrorBorder })
 											}
 										}} ref='lname' onSubmitEditing={() => this.refs.age.focus()} value={this.state.lname} onFocus={() => this.setState({ keyboardAvoiding: responsiveHeight(-40), fld2: Color.primary })} />
 									{this.state.lnameAlert ? <Text style={{ marginLeft: 5, fontSize: CustomFont.font12, color: Color.red }}>{this.state.lnameAlert}</Text> : null}
@@ -987,7 +987,7 @@ class AddNewPatients extends React.Component {
 										if (!referedName || Validator.isNameAcceptDot(referedName)) {
 											this.setState({ referedNameAlert: '', fld2: Color.inputErrorBorder })
 										} else {
-											this.setState({ referedNameAlert: 'name should contain only alphabets', fld2: Color.inputErrorBorder })
+											this.setState({ referedNameAlert: 'Name should contain only alphabets,number,dot and hyphen', fld2: Color.inputErrorBorder })
 										}
 									}} ref='referedName' onSubmitEditing={() => this.refs.age.focus()} value={this.state.referedName} onFocus={() => this.setState({ keyboardAvoiding: responsiveHeight(-40), fld2: Color.primary })} />
 								{this.state.referedNameAlert ? <Text style={{ marginLeft: 5, fontSize: CustomFont.font12, color: Color.red }}>{this.state.referedNameAlert}</Text> : null}

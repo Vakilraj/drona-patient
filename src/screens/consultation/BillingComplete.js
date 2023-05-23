@@ -459,7 +459,7 @@ class BillingComplete extends React.Component {
 
         Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Print_Rx", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality, })
 
-        base64ImageArr = [];
+        //base64ImageArr = [];
         await RNPrint.print({ filePath: this.state.filePath })
     }
     nameFormat = (name, isDoctor) => {

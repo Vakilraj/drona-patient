@@ -190,8 +190,8 @@ class EditBasicInfo extends React.Component {
 		if (!this.state.fname.trim()) {
 			this.setState({ fnameAlert: 'Please enter first name', fld1: Color.inputErrorBorder });
 			this.refs.fname.focus();
-		} else if (!Validator.isNameAcceptDot(this.state.fname)) {
-			this.setState({ fnameAlert: 'Name should contain only alphabets', fld1: Color.inputErrorBorder });
+		} else if (!Validator.isNameAcceptDotForDoc(this.state.fname)) {
+			this.setState({ fnameAlert: 'Name should contain only alphabets,number,dot and hyphen', fld1: Color.inputErrorBorder });
 			this.refs.fname.focus();
 		} else if (this.state.fname.length < 1) {
 			this.setState({ fnameAlert: 'First name minimum 1 character', fld1: Color.inputErrorBorder });
@@ -202,8 +202,8 @@ class EditBasicInfo extends React.Component {
 		} else if (this.state.lname.length < 1) {
 			this.setState({ lnameAlert: 'Last name minimum 1 character', fld2: Color.inputErrorBorder });
 			this.refs.lname.focus();
-		} else if (!Validator.isNameAcceptDot(this.state.lname)) {
-			this.setState({ lnameAlert: 'Name should contain only alphabets', fld2: Color.inputErrorBorder });
+		} else if (!Validator.isNameAcceptDotForDoc(this.state.lname)) {
+			this.setState({ lnameAlert: 'Name should contain only alphabets,number,dot and hyphen', fld2: Color.inputErrorBorder });
 			this.refs.lname.focus();
 		} else if (!this.state.isMale && !this.state.isFemale && !this.state.isOther) {
 			Snackbar.show({ text: 'Please select gender', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
@@ -428,11 +428,11 @@ class EditBasicInfo extends React.Component {
 									onBlur={() => this.isCallBlur('1')}
 									style={[styles.createInputStylefname, { borderColor: this.state.fld1 }]} placeholder="First Name" placeholderTextColor={Color.placeHolderColor} onChangeText={fname => {
 										this.setState({ fname })
-										if (!fname || Validator.isNameAcceptDot(fname)) {
+										if (!fname || Validator.isNameAcceptDotForDoc(fname)) {
 											this.setState({ fnameAlert: '' })
 										} else {
 
-											this.setState({ fnameAlert: 'name should contain only alphabets', fld1: Color.inputErrorBorder })
+											this.setState({ fnameAlert: 'Name should contain only alphabets,number,dot and hyphen', fld1: Color.inputErrorBorder })
 										}
 									}} ref='fname' onSubmitEditing={() => this.refs.lname.focus()} value={this.state.fname} onFocus={() => this.setState({ keyboardAvoiding: responsiveHeight(-50), fld1: Color.primary })} /></View>
 								</View>
@@ -442,11 +442,11 @@ class EditBasicInfo extends React.Component {
 								<TextInput returnKeyType="done"
 									onBlur={() => this.isCallBlur('2')} style={[styles.createInputStyle, { borderColor: this.state.fld2 }]} placeholderTextColor={Color.placeHolderColor} placeholder="Last Name" onChangeText={lname => {
 										this.setState({ lname })
-										if (!lname || Validator.isNameAcceptDot(lname)) {
+										if (!lname || Validator.isNameAcceptDotForDoc(lname)) {
 											this.setState({ lnameAlert: '' })
 										} else {
 
-											this.setState({ lnameAlert: 'name should contain only alphabets', fld2: Color.inputErrorBorder })
+											this.setState({ lnameAlert: 'Name should contain only alphabets,number,dot and hyphen', fld2: Color.inputErrorBorder })
 										}
 									}} ref='lname' value={this.state.lname} onFocus={() => this.setState({ keyboardAvoiding: responsiveHeight(-40), fld2: Color.primary })} />
 								{this.state.lnameAlert ? <Text style={{ marginLeft: 5, fontSize: CustomFont.font12, color: Color.red }}>{this.state.lnameAlert}</Text> : null}

@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     paddingStart: responsiveWidth(3), paddingEnd: responsiveWidth(3),
     // paddingTop: responsiveHeight(1), paddingBottom: responsiveHeight(1)
   },
-  searchView: { flexDirection: 'row',  borderColor: Color.createInputBorder, borderWidth: .7, borderRadius: 5, alignItems: 'center',marginTop:responsiveHeight(1.8)},
+  searchView: { flexDirection: 'row',  borderColor: Color.createInputBorder, borderWidth: .7, borderRadius: 5, alignItems: 'center',marginTop:responsiveHeight(2)},
   searchInput: { color:Color.optiontext, fontWeight:CustomFont.fontWeight400, 
     padding: 0, height: responsiveHeight(5.5), borderRadius: 5, paddingLeft: 7, paddingRight: 7,
     marginRight: responsiveWidth(4), fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, flex: 1
@@ -110,8 +110,7 @@ const styles = StyleSheet.create({
   txtSelectMed: { marginLeft: responsiveWidth(2.5), marginRight: responsiveWidth(2.5), fontSize: CustomFont.font16, marginLeft: responsiveWidth(4), marginRight: responsiveWidth(4) },
   crossSelected: {
     alignItems: 'center', justifyContent: 'center',
-    height: 15, width: 15, borderRadius: 7.5, marginLeft: 5,
-     marginRight: 7,marginTop:responsiveWidth(3)
+    height: 15, width: 15, borderRadius: 7.5, marginRight: 10,marginTop:responsiveWidth(3)
   },
   crossSelectedMed: { alignItems: 'center', justifyContent: 'center', marginLeft: 10, },
   unselectView: {

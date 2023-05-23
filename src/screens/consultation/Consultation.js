@@ -506,11 +506,16 @@ class Consultation extends React.Component {
 			try {
 				if (tmpMedicineArr && tmpMedicineArr.length > 0)
 					for (let i = 0; i < tmpMedicineArr.length; i++) {
-						let doaseArr = tmpMedicineArr[i].medicineDosasesType;
-						let tempObj = Object.assign({ medicineDosasesTypeGuid: doaseArr[0].medicineDoasesGuId, }, tmpMedicineArr[i]); // medicineDosasesType: doaseArr[0].doasestype 
-						tempObj.medicineDosasesType = doaseArr[0].doasestype;
-						tempObj.medicineTimingShift = null;
-						tmpArr.push(tempObj);
+						if(!tmpMedicineArr[i].medicineDosasesTypeGuid){
+							let doaseArr = tmpMedicineArr[i].medicineDosasesType;
+							let tempObj = Object.assign({ medicineDosasesTypeGuid: doaseArr[0].medicineDoasesGuId, }, tmpMedicineArr[i]); // medicineDosasesType: doaseArr[0].doasestype 
+							tempObj.medicineDosasesType = doaseArr[0].doasestype;
+							tempObj.medicineTimingShift = null;
+							tmpArr.push(tempObj);
+						}else{
+							tmpMedicineArr[i].medicineDosasesType=null;
+							tmpArr.push(tmpMedicineArr[i]);
+						}
 					}
 			} catch (error) {
 
@@ -548,7 +553,7 @@ class Consultation extends React.Component {
 				}
 			}
 			DRONA.setIsConsultationChange(false);
-			actions.callLogin('V1/FuncForDrAppToAddConsultationTabData', 'post', params, signupDetails.accessToken, 'ConsultationPageSave');
+			actions.callLogin('V16/FuncForDrAppToAddConsultationTabData', 'post', params, signupDetails.accessToken, 'ConsultationPageSave');
 		} else {
 			//this.props.nav.navigation.navigate('PreviewRx', { PreviewPdfPath: null, from: 'normalPrescription', consultId: null });
 			this.callPreviewRx();
@@ -858,8 +863,9 @@ class Consultation extends React.Component {
 					if (VitalAllData && VitalAllData.length > 0) {
 						for (let i = 0; i < VitalAllData.length; i++) {
 							tempAr.push(VitalAllData[i].vitalValue);
-							if (VitalAllData[i].vitalName == 'BMI')
-								bmiIndex = i
+							if (VitalAllData[i].vitalName == 'BMI') { bmiIndex = i }
+				if (VitalAllData[i].vitalName == 'BMI') { VitalAllData[i].vitalUnit = 'kg/m²' }
+				if (VitalAllData[i].vitalName == 'Temperature') { VitalAllData[i].vitalUnit = '°F' }
 						}
 						this.setState({ vitalsDataArrayAll: VitalAllData, textInputs: tempAr });
 					}
@@ -2325,7 +2331,7 @@ class Consultation extends React.Component {
 			tempStr += ', ' + item.durationType + ' ';
 		if (tempStr)
 			tempStr = '(' + tempStr + ')'
-		tempStr = item.medicineName + ' ' + tempStr
+		// tempStr = item.medicineName + ' ' + tempStr
 
 		return tempStr;
 	}
@@ -2977,7 +2983,7 @@ class Consultation extends React.Component {
 													medicineAddUpdateFlag = 'update';
 													this.props.nav.navigation.navigate('MedicineDetails', { item: item, medTiming: medTiming, Refresh: this.RefreshData, doctorNotes: doctorNotes, });
 												}} style={{ maxWidth: responsiveWidth(82) }}>
-													<Text style={styles.txtSelect}>{this.getSelectedMMedicineTxt(item)}</Text>
+													<Text style={[styles.txtSelect, { textTransform: 'uppercase' }]}>{item.medicineName}<Text style={styles.txtSelect}>{this.getSelectedMMedicineTxt(item)}</Text></Text>
 												</TouchableOpacity>
 												<TouchableOpacity style={styles.crossSelected}
 													onPress={() => {
@@ -3018,7 +3024,7 @@ class Consultation extends React.Component {
 													this.props.nav.navigation.navigate('MedicineDetails', { item: item, medTiming: medTiming, Refresh: this.RefreshData, doctorNotes: doctorNotes, });
 													// this.clickOnMedicine(item, index)
 												}} >
-													<Text style={[styles.unselectTxtColor, { marginRight: responsiveWidth(1) }]}>{item.medicineName + ' ' + item.strength}</Text>
+													<Text style={[styles.unselectTxtColor, { marginRight: responsiveWidth(1),textTransform: 'uppercase' }]}>{item.medicineName + ' ' + item.strength}</Text>
 													<Text style={{ marginRight: responsiveWidth(2), fontSize: CustomFont.font12, color: Color.fontColor, opacity: .6, fontFamily: CustomFont.fontName }}>{item.medicineType && item.medicineType.length > 3 ? item.medicineType.substr(0, 3) : item.medicineType}</Text>
 												</TouchableOpacity>
 												);
@@ -3406,7 +3412,7 @@ class Consultation extends React.Component {
 				</Modal>
 
 				{/* -----------Vital  modal------------------- */}
-				<Modal isVisible={this.state.isModalVisibleVital} avoidKeyboard={true}
+				<Modal isVisible={this.state.isModalVisibleVital} avoidKeyboard={true} style={{marginTop: Platform.OS=='android' ? responsiveHeight(5) : responsiveHeight(3)}}
 					onRequestClose={() => this.setState({ isModalVisibleVital: false })}>
 					<View style={styles.modelViewAbout}>
 						<View style={{ marginStart: 0, margin: responsiveWidth(5), marginEnd: 0, flex: 1, marginBottom: responsiveHeight(15), paddingTop: this.state.dynamicTop, paddingBottom: this.state.dynamicBottom }}>

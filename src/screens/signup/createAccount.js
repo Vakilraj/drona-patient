@@ -83,8 +83,8 @@ class RegistrationForm extends React.Component {
 		if (!this.state.fname.trim()) {
 			this.setState({ fnameAlert: 'Please enter first name' });
 			this.refs.fname.focus();
-		} else if (!Validator.isNameAcceptDot(this.state.fname.trim())) {
-			this.setState({ fnameAlert: 'Name should contain only alphabets' });
+		} else if (!Validator.isNameAcceptDotForDoc(this.state.fname.trim())) {
+			this.setState({ fnameAlert: 'Name should contain only alphabets,number,dot and hyphen' });
 			this.refs.fname.focus();
 		} else if (this.state.fname.trim().length < 1) {
 			this.setState({ fnameAlert: 'Minimum 1 characters required' });
@@ -95,8 +95,8 @@ class RegistrationForm extends React.Component {
 		} else if (this.state.lname.trim().length < 1) {
 			this.setState({ lnameAlert: 'Minimum 1 characters required' });
 			this.refs.lname.focus();
-		} else if (!Validator.isNameAcceptDot(this.state.lname.trim())) {
-			this.setState({ lnameAlert: 'Name should contain only alphabets' });
+		} else if (!Validator.isNameAcceptDotForDoc(this.state.lname.trim())) {
+			this.setState({ lnameAlert: 'Name should contain only alphabets,number,dot and hyphen' });
 			this.refs.lname.focus();
 		}
 		// else if (signupDetails.normalLoginIdType === 'email' && !this.state.mobile) {
@@ -339,10 +339,10 @@ class RegistrationForm extends React.Component {
 									<View style={{ flex: 11 }}><TextInput returnKeyType="done" onBlur={this.callIsBlur1} onFocus={this.callIsFucused1} style={[styles.createInputStyle, { borderColor: this.state.InpborderColor1,  marginLeft: -3 }]} placeholder="First Name *" placeholderTextColor={Color.placeHolderColor} onChangeText={fname => {
 
 										this.setState({ fname })
-										if (!fname || Validator.isNameAcceptDot(fname)) {
+										if (!fname || Validator.isNameAcceptDotForDoc(fname)) {
 											this.setState({ fnameAlert: '' })
 										} else {
-											this.setState({ fnameAlert: 'Name should contain only alphabets' })
+											this.setState({ fnameAlert: 'Name should contain only alphabets,number,dot and hyphen' })
 										}
 									}} ref='fname' onSubmitEditing={() => this.refs.lname.focus()} value={this.state.fname} /></View>
 								</View>
@@ -351,10 +351,10 @@ class RegistrationForm extends React.Component {
 								{/* <Text style={styles.labelStyle}>Last Name *</Text> */}
 								<TextInput returnKeyType="done" onBlur={this.callIsBlur2} onFocus={this.callIsFucused2} style={[styles.createInputStyle, { borderColor: this.state.InpborderColor2, }]} placeholder="Last Name *" placeholderTextColor={Color.placeHolderColor} onChangeText={lname => {
 									this.setState({ lname })
-									if (!lname || Validator.isNameAcceptDot(lname)) {
+									if (!lname || Validator.isNameAcceptDotForDoc(lname)) {
 										this.setState({ lnameAlert: '' })
 									} else {
-										this.setState({ lnameAlert: 'Name should contain only alphabets' })
+										this.setState({ lnameAlert: 'Name should contain only alphabets,number,dot and hyphen' })
 									}
 								}} ref='lname' onSubmitEditing={() => this.refs.mobile.focus()} value={this.state.lname} />
 								{this.state.lnameAlert ? <Text style={{ marginLeft: 5, fontSize: CustomFont.font12, color: Color.red }}>{this.state.lnameAlert}</Text> : null}

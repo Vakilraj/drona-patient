@@ -129,8 +129,9 @@ class CN extends React.Component {
 		if (VitalAllData && VitalAllData.length > 0) {
 			for (let i = 0; i < VitalAllData.length; i++) {
 				tempAr.push(VitalAllData[i].vitalValue);
-				if (VitalAllData[i].vitalName == 'BMI')
-					bmiIndex = i
+					if (VitalAllData[i].vitalName == 'BMI') { bmiIndex = i }
+				if (VitalAllData[i].vitalName == 'BMI') { VitalAllData[i].vitalUnit = 'kg/m²' }
+				if (VitalAllData[i].vitalName == 'Temperature') { VitalAllData[i].vitalUnit = '°F' }
 			}
 			this.setState({ vitalsDataArrayAll: VitalAllData, textInputs: tempAr });
 		}

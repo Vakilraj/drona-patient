@@ -517,9 +517,9 @@ class PreviewRxButton extends React.Component {
 			<table style="width:100%;margin-top: 20px" >  
 		<tr style="display: table-row; vertical-align: inherit;border-color: inherit; ">
 			<th width="8%" style="background-color: #14091529;color: #000;text-align: left;font-size: 12px;font-weight: 700;
-		  border-left: 1px solid #f1f1f1; padding: 8px;line-height: 1.42857143;" rowspan="2">`+ Rx + ` :</th>
+		  border-left: 1px solid #f1f1f1; padding: 8px;line-height: 1.42857143;" rowspan="2">`+ Rx + ` </th>
 			<th width="35%" style="background-color: #14091529;color: #000;text-align: left;font-size: 12px;font-weight: 700;
-		  border-left: 1px solid #f1f1f1; padding: 8px;line-height: 1.42857143;" rowspan="2">`+ medicine + ` :</th>
+		  border-left: 1px solid #f1f1f1; padding: 8px;line-height: 1.42857143;" rowspan="2">`+ medicine + ` </th>
 			<th width="40%" style="background-color: #14091529;color: #000;text-align: letf;font-size: 12px;font-weight: 700;
 		  border-left: 1px solid #f1f1f1; padding: 8px;line-height: 1.42857143;" rowspan="2">`+ timingAndDur + `</th>
 			<th width="25%" style="background-color: #14091529;color: #000;text-align: left;font-size: 12px;font-weight: 700;
@@ -912,7 +912,7 @@ return temp && temp.length>0?  htmlCode:'';
 	  <tr>  
 	  <td width="80%"/>
 	  <td width="20%">
-	  Dr. `+ this.showOriginalValueView(doctorInfo.firstName) + ` ` + this.showOriginalValueView(doctorInfo.lastName) + ` ` + this.doctorSpeciality(doctorInfo) + ` ` + this.doctorEducationViewWithoutAddress(doctorInfo) + `<p>Reg no. : ` + registrationNumber + `</p>
+	  Dr. `+ this.showOriginalValueView(doctorInfo.firstName) + ` ` + this.showOriginalValueView(doctorInfo.lastName) + this.doctorSpeciality(doctorInfo)  + this.doctorEducationViewWithoutAddress(doctorInfo) + `<p>Reg no. : ` + registrationNumber + `</p>
 	  </td>
 	  </tr>
 	  </table>

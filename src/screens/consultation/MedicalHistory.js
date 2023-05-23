@@ -529,6 +529,16 @@ console.log('===='+JSON.stringify(temp));
 						this.setState({ addMedicinePopup: true, genericName: '', strength: '', medicineTypeName: '', isMedicineTypeSelected: false, medicineTypeSearchTxt: '' })
 					}, 300);
 				}
+			}else if (tagname === 'AddFamilyConditions') {
+				if (newProps.responseData.statusCode == '0' && newProps.responseData.data) {
+					let conditionGuid = newProps.responseData.data.conditionGuid;
+					let tempArr = [...this.state.selectedfamilyConditionsArr]
+					tempArr[tempArr.length - 1].conditionGuid = conditionGuid
+					this.setState({ selectedfamilyConditionsArr: tempArr });
+				}
+				// else {
+				// 	this.setState({ selectedfamilyConditionsArr: tempArr });
+				// }
 			}
 		}
 	}
@@ -572,6 +582,21 @@ console.log('===='+JSON.stringify(temp));
 			let { actions, signupDetails } = this.props;
 
 			setLogEvent("medical_history", { "add_family_condition": "click", UserGuid: signupDetails.UserGuid })
+			if (!item.conditionGuid) {
+				let params = {
+					"userGuid": signupDetails.UserGuid,
+					"DoctorGuid": signupDetails.doctorGuid,
+					"ClinicGuid": signupDetails.clinicGuid,
+					"Version": "",
+					"Data": {
+						"AppointmentGuid": appoinmentGuid, // item.appointmentGuid,
+						"ConditionGuid": item.conditionGuid,//conditionGuidForCustom
+						"ConditionName": item.conditionName,
+						"ConditionDesc": item.conditionDesc,
+					}
+				}
+				actions.callLogin('V15/FuncForDrAppToAddPatientCondition', 'post', params, signupDetails.accessToken, 'AddFamilyConditions');
+			}
 		}
 	}
 
@@ -1142,7 +1167,7 @@ console.log('===='+JSON.stringify(temp));
 									<View style={{ margin: responsiveWidth(5) }}>
 
 										<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-											<Text style={{ fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, color: Color.yrColor, fontFamily: CustomFont.fontName }}>Significant History</Text>
+											<Text style={{ fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, color: Color.yrColor, fontFamily: CustomFont.fontName }}>Other History</Text>
 
 											{this.state.notesData && this.state.notesData.length > 0 ? <Image source={edit_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), margin: 5, resizeMode: 'contain' }} /> : <Image source={plus_new} style={{ height: responsiveWidth(4.5), width: responsiveWidth(4.5), margin: 5, resizeMode: 'contain' }} />}
 
@@ -1223,7 +1248,7 @@ console.log('===='+JSON.stringify(temp));
 								</TouchableOpacity> : null}
 							</View>
 
-							<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', margin: 3 }}>
+							<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', margin: 3 ,marginRight:15}}>
 								{this.state.SelectedConditionsArr && this.state.SelectedConditionsArr.length > 0 ? this.state.SelectedConditionsArr.map((item, index) => {
 									return (<View style={styles.selectedView} >
 										<Text style={styles.txtSelect}>{item.conditionName}</Text>
@@ -1289,7 +1314,7 @@ console.log('===='+JSON.stringify(temp));
 										</TouchableOpacity> : null}
 									</View>
 
-									<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', margin: 3 }}>
+									<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', margin: 3,marginRight:15 }}>
 										{this.state.SelectedcurrentMedicationArr && this.state.SelectedcurrentMedicationArr.length > 0 ? this.state.SelectedcurrentMedicationArr.map((item, index) => {
 											return (<View style={styles.selectedView} >
 												<Text style={styles.txtSelect}>{item.medicineName}</Text>
@@ -1448,7 +1473,7 @@ console.log('===='+JSON.stringify(temp));
 								</TouchableOpacity> : null}
 							</View>
 
-							<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', margin: 3 }}>
+							<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', margin: 3,marginRight:15 }}>
 								{this.state.SelectedAllergiesArr && this.state.SelectedAllergiesArr.length > 0 ? this.state.SelectedAllergiesArr.map((item, index) => {
 									return (<View style={styles.selectedView} >
 										<Text style={styles.txtSelect}>{item.allergyName}</Text>
@@ -1572,7 +1597,7 @@ console.log('===='+JSON.stringify(temp));
 									</TouchableOpacity>
 								</View>
 
-								<View style={{ marginBottom: responsiveHeight(4) }}>
+								<View style={{ marginBottom: 0 }}>
 									<Text style={{ marginBottom: responsiveHeight(1), marginLeft: responsiveWidth(3), fontFamily: CustomFont.fontName, fontSize: CustomFont.font16, color: Color.fontColor, fontWeight: 'bold', opacity: 0.8 }}>{this.state.selectedFamily}</Text>
 									<Text style={{ marginLeft: responsiveWidth(3), fontFamily: CustomFont.fontName, fontSize: CustomFont.font12, color: Color.fontColor, opacity: 0.6 }}>Select Medical Conditions</Text>
 								</View>
@@ -1589,7 +1614,7 @@ console.log('===='+JSON.stringify(temp));
 										<Image style={styles.crossSearch} source={CrossTxt} />
 									</TouchableOpacity> : null}
 								</View>
-								<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', margin: 3 }}>
+								<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', margin: 3,marginRight:15 }}>
 									{this.state.selectedfamilyConditionsArr && this.state.selectedfamilyConditionsArr.length > 0 ? this.state.selectedfamilyConditionsArr.map((item, index) => {
 										return (<View style={styles.selectedView} >
 											<Text style={styles.txtSelect}>{item.conditionName}</Text>
@@ -1624,7 +1649,7 @@ console.log('===='+JSON.stringify(temp));
 				<Modal isVisible={this.state.isModalVisibleSignificant} avoidKeyboard={true} onRequestClose={() => this.setState({ isModalVisibleSignificant: false })}>
 					<View style={styles.modelViewSignificant}>
 						<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
-							<Text style={{ marginLeft: responsiveHeight(2), fontFamily: CustomFont.fontName, fontSize: CustomFont.font16, color: Color.fontColor, fontWeight: 'bold', opacity: 0.8 }}>Significant History</Text>
+							<Text style={{ marginLeft: responsiveHeight(2), fontFamily: CustomFont.fontName, fontSize: CustomFont.font16, color: Color.fontColor, fontWeight: 'bold', opacity: 0.8 }}>Other History</Text>
 							<TouchableOpacity style={{ padding: 10 }} onPress={() => {
 								if (isUpdateGlobalStatusBackup) {
 									DRONA.setIsConsultationChange(true)
@@ -1649,7 +1674,7 @@ console.log('===='+JSON.stringify(temp));
 											onBlur={() => this.callOnBlur('4')}
 											placeholderTextColor={Color.placeHolderColor}
 											style={{ borderWidth: 1, borderColor: this.state.fld4, padding: 7, height: responsiveHeight(30), fontSize: CustomFont.font14, borderRadius: 5, marginLeft: responsiveHeight(2), marginRight: responsiveHeight(2), textAlignVertical: 'top', color: Color.fontColor, opacity: .8, marginTop: 10 }}
-											placeholder="eg. any past surgeries or hospitalisations" multiline={true} value={this.state.notesData} onChangeText={notesData => {
+											placeholder="" multiline={true} value={this.state.notesData} onChangeText={notesData => {
 												this.setState({ notesData });
 												significantNoteBackup = notesData;
 												significantHitryFlag = true;

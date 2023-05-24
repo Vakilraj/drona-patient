@@ -182,7 +182,7 @@ class AddAssistant extends React.Component {
         else if (!this.state.genderGuid) {
             Snackbar.show({ text: 'Please select gender', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
         }
-        else if (!Validator.isNameValidate(this.state.firstName) || !Validator.isNameValidate(this.state.lastName)) {
+        else if (!Validator.isNameAcceptDot(this.state.firstName) || !Validator.isNameAcceptDot(this.state.lastName)) {
             Snackbar.show({ text: 'Name should contain only alphabets', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
         } else if (!this.state.mobileNumber) {
             Snackbar.show({ text: 'Please enter mobile number', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
@@ -248,7 +248,7 @@ class AddAssistant extends React.Component {
     }
 
     fNameValidation = (item) => {
-        if (Validator.isNameValidateAss(item)) {
+        if (Validator.isNameAcceptDot(item)) {
             this.setState({ FnameValidationError: false, firstName: item })
             // alert('matched' + item)
         }
@@ -262,7 +262,7 @@ class AddAssistant extends React.Component {
     }
 
     lNameValidation = (item) => {
-        if (Validator.isNameValidateAss(item)) {
+        if (Validator.isNameAcceptDot(item)) {
             this.setState({ LnameValidationError: false, lastName: item })
             // alert('matched' + item)
         }
@@ -291,23 +291,23 @@ class AddAssistant extends React.Component {
         return <View style={{ marginLeft: 1 }} />;
     };
     searchAssistantWithMobile = (mobileNumber) => {
-        if (mobileNumber) {
-            if (Validator.isMobileValidate(mobileNumber)) {
-                this.setState({ mobileNumber: mobileNumber });
-                if (mobileNumber.length == 10) {
-                    let { actions, signupDetails } = this.props;
-                    let params = {
-                        "DoctorGuid": signupDetails.doctorGuid,
-                        "ClinicGuid": DRONA.getClinicGuid(),
-                        "UserGuid": signupDetails.UserGuid,
-                        "Data": {
-                            "PhoneNo": mobileNumber
-                        }
-                    }
-                    actions.callLogin('V15/FuncForDrAppToSearchAssistanceDetails', 'post', params, signupDetails.accessToken, 'searchAssistant');
-                }
-            }
-        } else
+        // if (mobileNumber) {
+        //     if (Validator.isMobileValidate(mobileNumber)) {
+        //         this.setState({ mobileNumber: mobileNumber });
+        //         if (mobileNumber.length == 10) {
+        //             let { actions, signupDetails } = this.props;
+        //             let params = {
+        //                 "DoctorGuid": signupDetails.doctorGuid,
+        //                 "ClinicGuid": DRONA.getClinicGuid(),
+        //                 "UserGuid": signupDetails.UserGuid,
+        //                 "Data": {
+        //                     "PhoneNo": mobileNumber
+        //                 }
+        //             }
+        //             actions.callLogin('V15/FuncForDrAppToSearchAssistanceDetails', 'post', params, signupDetails.accessToken, 'searchAssistant');
+        //         }
+        //     }
+        // } else
             this.setState({ mobileNumber });
     }
 

@@ -29,7 +29,7 @@ import whatsapp_icon from '../../../../assets/whatsapp_icon.png';
 import RNFS from 'react-native-fs';
 import { setLogEvent } from '../../../service/Analytics';
 import ImageZoom from 'react-native-image-pan-zoom';
-let item = null;
+let item = null, patientAppoinmentItem = {};
 import Trace from '../../../service/Trace'
 let timeRange = '',prescriptionGuid= '';
 
@@ -53,7 +53,8 @@ class PastEncountersDetail extends React.Component {
     this.setState({ item: this.props.navigation.getParam("data") })
     this.setState({ appointmentStatus: this.props.navigation.getParam("item").appointmentStatus })
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => this.props.navigation.goBack());
-    this.clickOnShowPreview(this.state.filesArr[0])
+    this.clickOnShowPreview(this.state.filesArr[0]);
+    patientAppoinmentItem = this.props.navigation.getParam("item");
   }
 
   sendSms = () => {
@@ -261,7 +262,7 @@ class PastEncountersDetail extends React.Component {
                     <Image source={PrintingIcon} style={{ width: responsiveWidth(4.5), height: responsiveHeight(4.5), resizeMode: 'contain', tintColor: Color.primary }} />
                     <Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font12, color: Color.primary, fontWeight: CustomFont.fontWeight600 }}>Print</Text>
                   </TouchableOpacity>
-                  {signupDetails.isAssistantUser || !signupDetails.appoinmentGuid || this.state.isMigratedData || this.state.appointmentStatus == "Completed"? null :
+                  {signupDetails.isAssistantUser || !signupDetails.appoinmentGuid || this.state.isMigratedData || this.state.appointmentStatus == "Completed" || (patientAppoinmentItem.consultationType == 'Virtual' && !patientAppoinmentItem.isPaymentReceived)? null :
                     <TouchableOpacity onPress={() => {
                       if (item && item.isHandwritten) {
                         Snackbar.show({ text: 'Hand-Written prescriptions cannot be duplicated.', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });

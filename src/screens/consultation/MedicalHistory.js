@@ -686,6 +686,8 @@ console.log('===='+JSON.stringify(temp));
 	}
 
 	SearchConditions = (text, from) => {
+		if(text)
+		text=text.trim();
 		//console.log('------' + JSON.stringify(ConditionsFullArray))
 		let { signupDetails } = this.props;
 		setLogEvent("medical_history", { "search_condition": "search", UserGuid: signupDetails.UserGuid })
@@ -788,6 +790,8 @@ console.log('===='+JSON.stringify(temp));
 		setLogEvent("medical_history", { "remove_medication": "click", UserGuid: signupDetails.UserGuid })
 	}
 	SearchcurrentMedication = (text) => {
+		if(text)
+		text=text.trim();
 		var searchResult = _.filter(currentMedicationFullArray, function (item) {
 			return item.medicineName.toLowerCase().indexOf(text.toLowerCase()) > -1;
 		});
@@ -890,6 +894,8 @@ console.log('===='+JSON.stringify(temp));
 	}
 
 	SearchAllergies = (text) => {
+		if(text)
+		text=text.trim();
 		var searchResult = _.filter(AllergiesFullArray, function (item) {
 			return item.allergyName.toLowerCase().indexOf(text.toLowerCase()) > -1;
 		});

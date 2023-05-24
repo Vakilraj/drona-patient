@@ -260,7 +260,7 @@ class ConsultationTab extends React.Component {
 								ramPage={this.state.pageChangeIndex}
 								onChangeTab={(res) => {
 									//console.log(res.i+'-----+++++++++-----'+res.from)
-									if(DRONA.getIsConsultationChange() && signupDetails.roleCode==10 && !loading && !this.state.isDataSaved){
+									if(DRONA.getIsConsultationChange() && signupDetails.roleCode==10 && !loading){ // && !this.state.isDataSaved
 										setTimeout(()=>{
 											this.setState({ isSaveTabDataModal:true });
 										},1000)	

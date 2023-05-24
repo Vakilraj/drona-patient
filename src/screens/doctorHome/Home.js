@@ -793,7 +793,7 @@ class Home extends React.PureComponent {
 							</Text>
 
 							<Text style={{ marginTop: responsiveHeight(2), fontFamily: CustomFont.fontName, color: Color.darkText, fontSize: CustomFont.font12 }}>
-								Dr. {signupDetails.fname + ' ' + signupDetails.lname}
+								Dr. {signupDetails.fullName}
 							</Text>
 						</View>
 

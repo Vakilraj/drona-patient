@@ -505,7 +505,7 @@ class PreviewRxButton extends React.Component {
 				const htmlCode = `
 				 <tr>
 				 <td style="width:8%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;">`+ index + `</td>
-				 <td style="width:35%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;text-transform: capitalize;"><b>`+ medicineList[i].medicineName + ` ` + medicineList[i].strength + `</b></br>` + `(<i>` + medicineList[i].medicineDesc + `</i>)` + `</td>
+				 <td style="width:35%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;text-transform: capitalize;"><b>`+ medicineList[i].medicineName + ` ` +  `</b></br>` + `(<i>` + medicineList[i].medicineDesc + `</i>)` + `</td>
 					<td style="width:40%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;text-transform: capitalize;"> `+ (medicineList[i].dosagePattern) + (!medicineList[i].medicineTimingFrequency || medicineList[i].medicineTimingFrequency == 'No Preference' ? '' : ' (' + medicineList[i].medicineTimingFrequency + ')') + ` </br> ` + 'dose: ' + medicineList[i].dosages + `, ` + medicineList[i].durationValue + ` ` + medicineList[i].durationType + ` </td>
 					<td style="width:25%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;text-transform: capitalize;">`+ medicineList[i].note + `</td>
 				  </tr>
@@ -635,7 +635,13 @@ class PreviewRxButton extends React.Component {
 		if (vitalList && vitalList.length > 0) {
 			let temp = []
 			for (var i = 0; i < vitalList.length; i++) {
-				const htmlCode = vitalList[i].vitalName + ': ' + vitalList[i].vitalValue;
+				if (vitalList[i].vitalName == 'BMI') {
+					vitalList[i].vitalUnit = 'kg/m²'
+				}
+				if (vitalList[i].vitalName == 'Temperature') {
+					vitalList[i].vitalUnit = '°F'
+				}
+				const htmlCode = vitalList[i].vitalName + ': ' + vitalList[i].vitalValue + ' ' + vitalList[i].vitalUnit;
 				temp.push(htmlCode)
 			}
 			const htmlCode = `

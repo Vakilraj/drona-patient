@@ -173,7 +173,7 @@ class MedicineDetails extends React.Component {
 		let data = {
 			appointmentGuid: signupDetails.appoinmentGuid,
 			medicineGuid: item.medicineGuid,
-			medicineName: item.medicineName + ' ' + item.strength, //+ ' ' + item.medicineDesc
+			medicineName: item.medicineName , //+ ' ' + item.medicineDesc  + ' ' + item.strength
 			medicineDesc: item.medicineDesc,
 			strength: item.strength,
 			medicineTypeGuid: medicineTypeGuid,
@@ -410,7 +410,7 @@ class MedicineDetails extends React.Component {
 							</View>
 
 							<View style={{ justifyContent: 'flex-start', marginTop: responsiveHeight(2) }}>
-								<Text style={{ color: Color.black, fontSize: CustomFont.font18, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName }}>{item.medicineName ? item.medicineName.replace("Add new", '') : ''} {item.strength ? item.strength : ''}</Text>
+								<Text style={{ color: Color.black, fontSize: CustomFont.font18, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName }}>{item.medicineName ? item.medicineName.replace("Add new", '') : ''} </Text>
 								<Text style={{ fontStyle: 'italic', color: Color.datecolor, marginTop: responsiveHeight(1), fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight400, }}>{item.medicineDesc}</Text>
 							</View>
 							{/* ------- Unit------- */}

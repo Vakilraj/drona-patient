@@ -3024,7 +3024,7 @@ class Consultation extends React.Component {
 													this.props.nav.navigation.navigate('MedicineDetails', { item: item, medTiming: medTiming, Refresh: this.RefreshData, doctorNotes: doctorNotes, });
 													// this.clickOnMedicine(item, index)
 												}} >
-													<Text style={[styles.unselectTxtColor, { marginRight: responsiveWidth(1),textTransform: 'uppercase' }]}>{item.medicineName + ' ' + item.strength}</Text>
+													<Text style={[styles.unselectTxtColor, { marginRight: responsiveWidth(1),textTransform: 'uppercase' }]}>{item.medicineName}</Text>
 													<Text style={{ marginRight: responsiveWidth(2), fontSize: CustomFont.font12, color: Color.fontColor, opacity: .6, fontFamily: CustomFont.fontName }}>{item.medicineType && item.medicineType.length > 3 ? item.medicineType.substr(0, 3) : item.medicineType}</Text>
 												</TouchableOpacity>
 												);
@@ -3351,7 +3351,7 @@ class Consultation extends React.Component {
 												DRONA.setIsConsultationChange(true);
 											}} maxLength={2000} />
 										<View style={{ alignItems: 'flex-end' }}>
-											<Text style={{ fontSize: CustomFont.font10, color: Color.fontColor, marginRight: responsiveHeight(3), marginTop: 5, opacity: .4 }}>{this.state.notesData.length} / 2000</Text>
+											<Text style={{ fontSize: CustomFont.font10, color: Color.fontColor, marginRight: responsiveHeight(3), marginTop: 5, opacity: .4 }}>{this.state.notesData ? this.state.notesData.length :'0'} / 2000</Text>
 
 										</View>
 									</View> : null}

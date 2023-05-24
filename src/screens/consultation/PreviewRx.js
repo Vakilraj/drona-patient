@@ -287,12 +287,18 @@ class PreviewRx extends React.Component {
         let temp = []
 
         for (var i = 0; i < vitalList.length; i++) {
+            if (vitalList[i].vitalName == 'BMI') {
+                vitalList[i].vitalUnit = 'kg/m²'
+            }
+            if (vitalList[i].vitalName == 'Temperature') {
+                vitalList[i].vitalUnit = '°F'
+            }
             if (i == 0) {
-                const htmlCode = vitalList[i].vitalName + ': ' + vitalList[i].vitalValue;
+                const htmlCode = vitalList[i].vitalName + ': ' + vitalList[i].vitalValue + ' ' + vitalList[i].vitalUnit;
                 temp.push(htmlCode)
             }
             else {
-                const htmlCode = ', ' + vitalList[i].vitalName + ': ' + vitalList[i].vitalValue;
+                const htmlCode = ', ' + vitalList[i].vitalName + ': ' + vitalList[i].vitalValue + ' ' + vitalList[i].vitalUnit;
                 temp.push(htmlCode)
             }
         }
@@ -496,7 +502,7 @@ class PreviewRx extends React.Component {
                     <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, marginRight: responsiveWidth(2) }}>{index + 1}</Text>
                 </View>
                 <View style={{ flex: 4, borderColor: '#ddd', borderWidth: 1 }}>
-                <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, marginRight: responsiveWidth(2) }}><Text style={{ fontWeight: 'bold', textTransform: 'uppercase' }}>{item.medicineName}</Text><Text style={{ fontWeight: 'bold' }}>{item.strength + '\n'}</Text><Text style={{ fontStyle: 'italic' }}>({item.medicineDesc})</Text></Text>
+                <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, marginRight: responsiveWidth(2) }}><Text style={{ fontWeight: 'bold', textTransform: 'uppercase' }}>{item.medicineName +'\n'}</Text><Text style={{ fontStyle: 'italic' }}>({item.medicineDesc})</Text></Text>
                 </View>
                 <View style={{ flex: 3, borderColor: '#ddd', borderWidth: 1 }}>
                     <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(2) }}>{item.dosagePattern} {!item.medicineTimingFrequency || item.medicineTimingFrequency == 'No Preference' ? null : ' (' + item.medicineTimingFrequency + ')'} {'\n' + 'dose: ' + item.dosages + ', ' + item.durationType}</Text>

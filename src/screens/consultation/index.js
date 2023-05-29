@@ -49,8 +49,6 @@ class CN extends React.Component {
 			mobile: '',
 			imageSource: null,
 			responseDataIndexTab: null,
-			showFilesTab: false,
-			showMedicalTab: false
 		};
 
 	}
@@ -90,7 +88,7 @@ class CN extends React.Component {
 				this.setState({ isHideConsultNowBtn: true });
 			}
 		}
-		this.callAPIForAssistantAccess()
+		//this.callAPIForAssistantAccess()
 
 	}
 
@@ -268,27 +266,27 @@ class CN extends React.Component {
 					this.props.navigation.navigate('ConsultationTab', { vitalMasterStatus: null, from: 'consultation', item: itemObj, date: date, tabIndex: 0 });
 				}
 			}
-			else if (tagname === 'ForAssistantAccess') {
+			// else if (tagname === 'ForAssistantAccess') {
 
-				if (newProps.responseData) {
-					// let response  = newProps.responseData.data
-					if(newProps.responseData.data.userPermission)
-					forAssistantAccessData = newProps.responseData.data.userPermission;
-					for (let i = 0; i < forAssistantAccessData.length; i++) {
-						if (forAssistantAccessData[i].accessCode === 'PF' && forAssistantAccessData[i].isAuthorized) {
-							this.setState({ showFilesTab: true })
+			// 	if (newProps.responseData) {
+			// 		// let response  = newProps.responseData.data
+			// 		if(newProps.responseData.data.userPermission)
+			// 		forAssistantAccessData = newProps.responseData.data.userPermission;
+			// 		for (let i = 0; i < forAssistantAccessData.length; i++) {
+			// 			if (forAssistantAccessData[i].accessCode === 'PF' && forAssistantAccessData[i].isAuthorized) {
+			// 				this.setState({ showFilesTab: true })
 
-						}
-						else if (forAssistantAccessData[i].accessCode === 'PMH' && forAssistantAccessData[i].isAuthorized) {
-							this.setState({ showMedicalTab: true })
+			// 			}
+			// 			else if (forAssistantAccessData[i].accessCode === 'PMH' && forAssistantAccessData[i].isAuthorized) {
+			// 				this.setState({ showMedicalTab: true })
 
-						}
-					}
+			// 			}
+			// 		}
 
 
-				}
+			// 	}
 
-			}
+			// }
 		}
 	}
 
@@ -376,10 +374,10 @@ class CN extends React.Component {
 
 						}}
 					>
-						{this.state.showFilesTab ? <FilesTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Files'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} data={this.props.navigation.getParam("data", null)} />
+						{signupDetails.isAllowPatientFilesAssistant ? <FilesTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Files'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} data={this.props.navigation.getParam("data", null)} />
 							: null}
 						<VitalsTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Vitals'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} />
-						{this.state.showMedicalTab ? <MadicalHistryTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Medical History'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} />
+						{signupDetails.isAllowMedicalHistoryAssistant ? <MadicalHistryTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Medical History'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} />
 							: null}
 						{/* <PastPrescriptionTab responseDataIndexTab={this.state.responseDataIndexTab} tabLabel={'Past Prescriptions'} style={{ flex: 1 }} nav={{ navigation: this.props.navigation }} item={item} /> */}
 					</ScrollableTabView> : null}

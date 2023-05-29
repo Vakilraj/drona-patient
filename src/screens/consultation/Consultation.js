@@ -24,7 +24,7 @@ import fluentArrowUpload from '../../../assets/fluent_arrow_upload.png';
 import down from '../../../assets/down.png';
 import FollowUpModal from './FollowUpModal';
 import ThreeDotsModal from './ThreeDotsModal';
-import PreviewRxButton from './PreviewRxButton';
+//import PreviewRxButton from './PreviewRxButton';
 import Moment from 'moment';
 import DropDownPicker from 'react-native-dropdown-picker';
 import CheckBox from '@react-native-community/checkbox';
@@ -55,7 +55,7 @@ let severityArrySymptFind = [], severityArryDiagnostic = [];
 let clickItemIndex = 0, clickItemName = '', clickType = '';
 let doctorNotes = [];
 import { BehaviorSubject } from 'rxjs'
-
+let billingPreviewData={};
 
 
 class Consultation extends React.Component {
@@ -417,6 +417,22 @@ class Consultation extends React.Component {
 
 			}
 		});
+		this.getBillingPreview();
+	}
+	getBillingPreview=()=>{
+		let { actions, signupDetails } = this.props;
+		let params = {
+			"RoleCode": signupDetails.roleCode,
+			"UserGuid": signupDetails.UserGuid,
+			"DoctorGuid": signupDetails.doctorGuid,
+			"ClinicGuid": signupDetails.clinicGuid,
+			"Version": "",
+			"Data": {
+				"version": null,
+				"AppointmentGuid": signupDetails.appoinmentGuid,
+			}
+		}
+		actions.callLogin('V14/FuncForDrAppToConsulatationBillingPreview', 'post', params, signupDetails.accessToken, 'getBillingPreview');
 	}
 	setValueFromResponse = (data) => {
 		let patientConsultation = data;
@@ -577,20 +593,42 @@ class Consultation extends React.Component {
 		}
 	}
 	getFuncForDrAppToConsulatationBillingPreview = () => {
-		let { actions, signupDetails } = this.props;
-		DRONA.setIsReloadApi(true);
-		let params = {
-			"RoleCode": signupDetails.roleCode,
-			"UserGuid": signupDetails.UserGuid,
-			"DoctorGuid": signupDetails.doctorGuid,
-			"ClinicGuid": signupDetails.clinicGuid,
-			"Version": "",
-			"Data": {
-				"version": null,
-				"AppointmentGuid": signupDetails.appoinmentGuid,
-			}
+		 let { actions, signupDetails } = this.props;
+		// DRONA.setIsReloadApi(true);
+		// let params = {
+		// 	"RoleCode": signupDetails.roleCode,
+		// 	"UserGuid": signupDetails.UserGuid,
+		// 	"DoctorGuid": signupDetails.doctorGuid,
+		// 	"ClinicGuid": signupDetails.clinicGuid,
+		// 	"Version": "",
+		// 	"Data": {
+		// 		"version": null,
+		// 		"AppointmentGuid": signupDetails.appoinmentGuid,
+		// 	}
+		// }
+		// actions.callLogin('V14/FuncForDrAppToConsulatationBillingPreview', 'post', params, signupDetails.accessToken, 'consulatationBillingPreviewData');
+
+		if(billingPreviewData){
+			
+			billingPreviewData.prescriptionData.symptomList = this.state.SelectedSymptomArr;
+			billingPreviewData.prescriptionData.findingList = this.state.SelectedFindingArr;
+			billingPreviewData.prescriptionData.diagnosisList =  this.state.SelectedDiagnosticArr;
+			billingPreviewData.prescriptionData.medicineList = this.state.SelectedMedicineArr;
+			billingPreviewData.prescriptionData.investigationList = this.state.SelectedInvestigationArr
+			billingPreviewData.prescriptionData.instructionsList = this.state.SelectedInstructionArr
+			billingPreviewData.prescriptionData.vitalList = this.state.vitalsDataArray
+			billingPreviewData.prescriptionData.prescriptionNote = {
+				"prescriptionNoteGuid": noteGuid,
+				"prescriptionNoteName": this.state.notesData
+			};
+
 		}
-		actions.callLogin('V14/FuncForDrAppToConsulatationBillingPreview', 'post', params, signupDetails.accessToken, 'consulatationBillingPreviewData');
+		let cunsultationData = {
+				 "billingDetails": billingPreviewData.billingDetails,
+				"prescriptionData": billingPreviewData.prescriptionData,
+				"appointmentGuid": signupDetails.appoinmentGuid
+		}
+		this.props.nav.navigation.navigate('PreviewRx', { billingPreviewData: cunsultationData,  from: 'normalPrescription', consultId: null, PreviewPdfPath:'' });
 
 	}
 
@@ -980,6 +1018,8 @@ class Consultation extends React.Component {
 					//Snackbar.show({ text: 'Procedure not added. Please try again later', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 					this.setState({ ProcedureArr: normalListBackup, SelectedProcedureArr: selectedListBackup });
 				}
+			} else if( tagname === 'getBillingPreview'){
+				billingPreviewData = newProps.responseData.data;
 			}
 		}
 	}
@@ -3387,7 +3427,7 @@ class Consultation extends React.Component {
 
 
 						}
-						<PreviewRxButton nav={{ navigation: this.props.nav.navigation }} showCall={this.props.showCall} item={this.props.item} />
+						{/* <PreviewRxButton nav={{ navigation: this.props.nav.navigation }} showCall={this.props.showCall} item={this.props.item} /> */}
 					</View>
 				</View>
 				{/* ------------ Language Modal ---------------  */}

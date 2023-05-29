@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     Image, SafeAreaView, Text,
-    TouchableOpacity, View, Platform, BackHandler, FlatList,
+    TouchableOpacity, View, Platform, BackHandler, FlatList, PermissionsAndroid
 } from 'react-native';
 import { DataTable } from 'react-native-paper';
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
@@ -10,6 +10,8 @@ import Color from '../../components/Colors';
 import CustomFont from '../../components/CustomFont';
 import PDFView from 'react-native-view-pdf';
 import { ScrollView } from 'react-native-gesture-handler';
+
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import Language from '../../utils/Language.js';
 import * as signupActions from '../../redux/actions/signupActions';
 import * as apiActions from '../../redux/actions/apiActions';
@@ -60,7 +62,8 @@ let procedureList = '', procedureHead = '';
 let selectedConditions = [], selectedMedications = [], selectedAllergies = [], selectedFamilyHistory = [], patientCondition = [];
 
 import Trace from '../../service/Trace'
-let timeRange = '', consultId = '';
+let timeRange = '';
+let billingPreviewData = {};
 class PreviewRx extends React.Component {
 
     constructor(props) {
@@ -113,7 +116,11 @@ class PreviewRx extends React.Component {
         //
         from = this.props.navigation.state && this.props.navigation.state.params && this.props.navigation.state.params.from ? this.props.navigation.state.params.from : '';
         if (from == 'normalPrescription') {
-            this.getFuncForDrAppToConsulatationBillingPreview();
+            //this.getFuncForDrAppToConsulatationBillingPreview();
+            billingPreviewData = this.props.navigation.state?.params?.billingPreviewData;
+            if (billingPreviewData) {
+                this.billingPreviewDataFun()
+            }
         } else {
             this.setState({ showNormalPrescription: false })
         }
@@ -131,10 +138,61 @@ class PreviewRx extends React.Component {
         this.setState({
             filePath: filePath,
         })
-        consultId = this.props.navigation.state.params.consultId;
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)
     }
+    billingPreviewDataFun = () => {
+        let prescriptionDataFullArray = billingPreviewData.prescriptionData;
 
+        time = new Date().getTime();
+        time = Moment(time).format('h:mm:ss a')
+        date = new Date().getDate();
+        date = date < 10 ? '0' + date : '' + date
+        month = new Date().getMonth() + 1;
+        month = month < 10 ? '0' + month : '' + month
+        year = new Date().getFullYear();
+
+        vitalList = prescriptionDataFullArray.vitalList != null ? prescriptionDataFullArray.vitalList : [];
+        medicalHistoryList = prescriptionDataFullArray != null ? prescriptionDataFullArray : [];
+        clinicInfo = prescriptionDataFullArray.clinicInfo != null ? prescriptionDataFullArray.clinicInfo : []
+        doctorInfo = prescriptionDataFullArray.doctorInfo != null ? prescriptionDataFullArray.doctorInfo : [];
+        patientInfo = prescriptionDataFullArray.patientInfo != null ? prescriptionDataFullArray.patientInfo : [];
+        symptomList = prescriptionDataFullArray.symptomList != null ? prescriptionDataFullArray.symptomList : [];
+        findingList = prescriptionDataFullArray.findingList != null ? prescriptionDataFullArray.findingList : [];
+        medicineList = prescriptionDataFullArray.medicineList != null ? prescriptionDataFullArray.medicineList : [];
+        prescriptionNote = prescriptionDataFullArray.prescriptionNote != null ? prescriptionDataFullArray.prescriptionNote : [];
+        instructionsList = prescriptionDataFullArray.instructionsList != null ? prescriptionDataFullArray.instructionsList : [];
+        investigationList = prescriptionDataFullArray.investigationList != null ? prescriptionDataFullArray.investigationList : [];
+        diagnosisList = prescriptionDataFullArray.diagnosisList != null ? prescriptionDataFullArray.diagnosisList : [];
+        procedureList = prescriptionDataFullArray.procedureList != null ? prescriptionDataFullArray.procedureList : [];
+        followUpItem = prescriptionDataFullArray.followUp;
+        registrationNumber = doctorInfo ? doctorInfo.registrationNumber : '';
+        eSign = prescriptionDataFullArray != null ? prescriptionDataFullArray.esignature : null;
+        prescriptionHeading = Language.language.pres;
+        symptomHead = Language.language.symptoms;
+        findingHead = Language.language.findings;
+        investigationAdvise = Language.language.advisedinvestigation;
+        instructionHead = Language.language.instructions;
+        diagionsisHead = Language.language.diagnosis;
+        notes = Language.language.notes;
+        medicine = Language.language.medicine;
+        timingAndDur = Language.language.timingandduration;
+        noteStr = Language.language.note;
+        followupHead = Language.language.followup;
+        procedureHead = Language.language.procedures;
+
+        vitalHead = Language.language.vital;
+        medicalHistoryHead = Language.language.medicalHistory;
+        Rx = Language.language.Rx;
+        try {
+            selectedConditions = medicalHistoryList.selectedConditions
+            selectedMedications = medicalHistoryList.selectedCurrentMedicationList
+            selectedAllergies = medicalHistoryList.selectedAllergies
+            selectedFamilyHistory = medicalHistoryList.selectedFamilyHistory
+        } catch (error) {
+
+        }
+
+    }
     handleBackPress = () => {
         this.props.navigation.goBack();
         return true;
@@ -214,7 +272,7 @@ class PreviewRx extends React.Component {
         }
     }
 
-    symptomsView = (symptomList) => {
+    symptomsView = (symptomList, from) => {
         let temp = []
 
         for (var i = 0; i < symptomList.length; i++) {
@@ -237,10 +295,25 @@ class PreviewRx extends React.Component {
                 temp.push(htmlCode)
             }
         }
-        return temp.join("")
+        if (from == 'pdf') {
+            const htmlCode = `
+    <table style="width:100%;margin-top: 5px" >
+        <tr>
+            <th style="width:15%;">`+ symptomHead + ` :</th>
+            <td style= "text-transform: capitalize;">`+ temp.join(", ") + `</td>
+        </tr>
+    </table>
+    `
+            return htmlCode
+        } else {
+            return temp.join("");
+
+        }
+
+
     }
 
-    findingView = (findingList) => {
+    findingView = (findingList, from) => {
 
         let temp = []
 
@@ -265,7 +338,20 @@ class PreviewRx extends React.Component {
                 temp.push(htmlCode)
             }
         }
-        return temp.join("")
+
+        if (from === 'pdf') {
+            const htmlCodeForFinding = `
+        <table style="width:100%;margin-top: 5px" >
+  <tr>
+    <th style="width:15%;">`+ findingHead + ` :</th>
+   <td style= "text-transform: capitalize;">`+ temp.join(", ") + `</td>  
+  </tr> 
+</table> 
+        `
+            return htmlCodeForFinding;
+        } else {
+            return temp.join("")
+        }
     }
     procedureView = (procedureList) => {
         let temp = []
@@ -280,10 +366,23 @@ class PreviewRx extends React.Component {
                 temp.push(htmlCode)
             }
         }
-        return temp.join("")
+
+        if (from === 'pdf') {
+            const htmlCodeProcedure = `
+			<table style="width:100%;margin-top: 5px" >
+				<tr>
+					<th style="width:15%;">`+ procedureHead + ` :</th>
+					<td style= "text-transform: capitalize;">`+ temp.join(", ") + `</td>
+				</tr>
+			</table>
+			`
+            return htmlCodeProcedure;
+        } else {
+            return temp.join("")
+        }
     }
 
-    vitalView = (vitalList) => {
+    vitalView = (vitalList, from) => {
         let temp = []
 
         for (var i = 0; i < vitalList.length; i++) {
@@ -302,7 +401,21 @@ class PreviewRx extends React.Component {
                 temp.push(htmlCode)
             }
         }
-        return temp.join("")
+        const htmlCodeForVitals = `
+			<table style="width:100%;margin-top: 5px" >
+				<tr>
+					<th style="width:15%;">`+ vitalHead + ` :</th>
+					<td style="text-transform: capitalize;">`+ temp.join(", ") + `</td>
+				</tr>
+			</table>
+			`
+        if (from === 'pdf') {
+            return htmlCodeForVitals
+        } else {
+            return temp.join("")
+        }
+
+
     }
     // symptomsView = (symptomList) => {
     //     let temp = []
@@ -329,7 +442,7 @@ class PreviewRx extends React.Component {
     //     return temp.join("")
     // }
 
-    diagnosisView = (diagnosisList) => {
+    diagnosisView = (diagnosisList, from) => {
 
         let temp = []
 
@@ -353,24 +466,48 @@ class PreviewRx extends React.Component {
                 temp.push(htmlCode)
             }
         }
-        return temp.join("")
+        const htmlCodeForDiagnosis = `
+        <table style="width:100%;margin-top: 5px" >
+          <tr>
+        <th style="width:15%;">`+ diagionsisHead + ` :</th>
+        <td style= "text-transform: capitalize;">`+ temp.join(", ") + `</td>  
+          </tr> 
+        </table>
+                `
+        if (from === 'pdf') {
+            return htmlCodeForDiagnosis
+        } else {
+            return temp.join("")
+        }
+
     }
 
 
-    followUpView = (followUpItem) => {
-        let temp = []
+    followUpView = (followUpItem, from) => {
+        let temp = ''
         if (followUpItem) {
             let followupFormatDate = followUpItem.followUpDate.split("T")[0];
-            followupFormatDate = Moment(followupFormatDate).format('DD-MM-YYYY');
-            followupHead = Language.language.followup;
-            const htmlCode = followupFormatDate;
-
-            temp.push(htmlCode)
+            temp = Moment(followupFormatDate).format('DD-MM-YYYY');
         }
-        return temp
+
+        if (from == 'pdf') {
+            const htmlCodeFollowUpView = `
+			<table style="width:100%;margin-top: 5px" >
+	  <tr>
+		<th style="width:15%;vertical-align:top">`+ followupHead + ` :</th>
+	   <td style="vertical-align:text">`+ temp + `</td>  
+	  </tr> 
+	</table>
+			`
+            return htmlCodeFollowUpView;
+        } else {
+            return temp;
+        }
+
+
     }
 
-    investigationsView = (investigationList) => {
+    investigationsView = (investigationList, from) => {
         let temp = []
         for (var i = 0; i < investigationList.length; i++) {
             // const htmlCode = '• ' + investigationList[i].investigationName + '\n';
@@ -385,10 +522,22 @@ class PreviewRx extends React.Component {
                 temp.push(htmlCode)
             }
         }
-        return temp.join("")
+        if (from === 'pdf') {
+            const htmlCodeForInvestigations = `
+        <table style="width:100%;margin-top: 5px" >
+        <tr>
+          <th style="width:15%;vertical-align:text-top">`+ investigationAdvise + `:</th>
+         <td style="vertical-align:text-top; text-transform: capitalize;">`+ temp.join(", ") + `</td>  
+        </tr> 
+      </table>
+        `
+            return htmlCodeForInvestigations;
+        } else {
+            return temp.join("")
+        }
     }
 
-    instructionView = (instructionsList) => {
+    instructionView = (instructionsList, from) => {
         let temp = []
         for (var i = 0; i < instructionsList.length; i++) {
             // const htmlCode = '• ' + instructionsList[i].instructionsName + '\n';
@@ -401,7 +550,20 @@ class PreviewRx extends React.Component {
                 temp.push(htmlCode)
             }
         }
-        return temp.join("")
+
+        if (from === 'pdf') {
+            const htmlCodeInstruction = `
+                    <table style="width:100%;margin-top: 5px" >
+                    <tr>
+                      <th style="width:15%;vertical-align:top">`+ instructionHead + ` :</th>
+                     <td style="vertical-align:text; text-transform: capitalize;">`+ temp.join(", ") + `</td>  
+                    </tr> 
+                  </table>
+                    `
+            return htmlCodeInstruction
+        } else {
+            return temp.join("")
+        }
     }
 
     doctorSpeciality = (doctorInfo) => {
@@ -431,7 +593,7 @@ class PreviewRx extends React.Component {
         }
         return temp
     }
-     doctorEducationViewWithoutAddress = (doctorInfo) => {
+    doctorEducationViewWithoutAddress = (doctorInfo) => {
         let temp = []
         if (doctorInfo.doctorEducation != null && doctorInfo.doctorEducation.length > 0) {
             for (var i = 0; i < doctorInfo.doctorEducation.length; i++) {
@@ -442,10 +604,10 @@ class PreviewRx extends React.Component {
                 temp.push(tmpStr)
             }
         }
-        return temp && temp.length >0 ? temp.join():'';
+        return temp && temp.length > 0 ? temp.join() : '';
     }
 
-    selectedList = (selectedConditions, selectedMedications, selectedAllergies, selectedFamilyHistory) => {
+    selectedList = (selectedConditions, selectedMedications, selectedAllergies, selectedFamilyHistory, from) => {
         let temp = []; let selConditionArr = []; let selMedicationArr = []; let selAllergyArr = []; let selFamilyHistoryArr = [];
         let selectedConditionName, selectedMedicationsName, selectedAllergiesName
         if (selectedConditions && selectedConditions.length > 0) {
@@ -474,25 +636,40 @@ class PreviewRx extends React.Component {
                 const parentName = selectedFamilyHistory[i].familyHistoryName;
                 const patientConditionArr = selectedFamilyHistory[i].patientCondition
                 let tempVarOne = '';
-                if(patientConditionArr && patientConditionArr.length>0)
-                for (var j = 0; j < patientConditionArr.length; j++) {
-                    if (j == 0)
-                        tempVarOne = patientConditionArr[j].conditionName;
-                    else
-                        tempVarOne += ', ' + patientConditionArr[j].conditionName;
-                }
+                if (patientConditionArr && patientConditionArr.length > 0)
+                    for (var j = 0; j < patientConditionArr.length; j++) {
+                        if (j == 0)
+                            tempVarOne = patientConditionArr[j].conditionName;
+                        else
+                            tempVarOne += ', ' + patientConditionArr[j].conditionName;
+                    }
                 selFamilyHistoryArr.push(parentName + ': ' + tempVarOne)
             }
         }
-        if(selConditionArr && selConditionArr.length)
-        temp.push(selConditionArr)
-        if(selMedicationArr && selMedicationArr.length)
-        temp.push(selMedicationArr)
-        if(selAllergyArr && selAllergyArr.length)
-        temp.push(selAllergyArr)
-        if(selFamilyHistoryArr && selFamilyHistoryArr.length)
-        temp.push(selFamilyHistoryArr.join("; "))
-        return temp.join("; ")
+        if (selConditionArr && selConditionArr.length)
+            temp.push(selConditionArr)
+        if (selMedicationArr && selMedicationArr.length)
+            temp.push(selMedicationArr)
+        if (selAllergyArr && selAllergyArr.length)
+            temp.push(selAllergyArr)
+        if (selFamilyHistoryArr && selFamilyHistoryArr.length)
+            temp.push(selFamilyHistoryArr.join("; "));
+
+
+        if (from === 'pdf') {
+            const htmlCode = `
+        <table style="width:100%;margin-top: 5px" >
+           <tr>
+         <th style="width:15%;">`+ medicalHistoryHead + ` :</th>
+           <td style= "text-transform: capitalize;">`+ temp.join("; ") + `</td>
+         </tr>
+        </table>
+               `
+            return temp && temp.length > 0 ? htmlCode : '';
+        } else {
+            return temp.join("; ")
+        }
+
     }
 
     MedicineList = (item, index) => {
@@ -502,7 +679,7 @@ class PreviewRx extends React.Component {
                     <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, marginRight: responsiveWidth(2) }}>{index + 1}</Text>
                 </View>
                 <View style={{ flex: 4, borderColor: '#ddd', borderWidth: 1 }}>
-                <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, marginRight: responsiveWidth(2) }}><Text style={{ fontWeight: 'bold', textTransform: 'uppercase' }}>{item.medicineName +'\n'}</Text><Text style={{ fontStyle: 'italic' }}>({item.medicineDesc})</Text></Text>
+                    <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, marginRight: responsiveWidth(2) }}><Text style={{ fontWeight: 'bold', textTransform: 'uppercase' }}>{item.medicineName + '\n'}</Text><Text style={{ fontStyle: 'italic' }}>({item.medicineDesc})</Text></Text>
                 </View>
                 <View style={{ flex: 3, borderColor: '#ddd', borderWidth: 1 }}>
                     <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(2) }}>{item.dosagePattern} {!item.medicineTimingFrequency || item.medicineTimingFrequency == 'No Preference' ? null : ' (' + item.medicineTimingFrequency + ')'} {'\n' + 'dose: ' + item.dosages + ', ' + item.durationType}</Text>
@@ -513,6 +690,251 @@ class PreviewRx extends React.Component {
                 </View>
             </View>
         )
+    }
+    callCreatePdf = async () => {
+        if (Platform.OS === 'android') {
+            const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE);
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                this.createPDF(billingPreviewData.prescriptionData)
+            } else {
+                Alert.alert('Permission Denied!', 'You need to give storage permission to download the file');
+            }
+        } else {
+            this.createPDF(billingPreviewData.prescriptionData)
+        }
+    }
+    showOriginalValueView = (value) => {
+        let temp = []
+        if (value) {
+            const htmlCode =
+                `` + value + ``
+            temp.push(htmlCode)
+        } else {
+            const htmlCode = `
+        &nbsp 
+        `
+            temp.push(htmlCode)
+        }
+        return temp
+        //return value;
+    }
+    showmedicineListViewList = (medicineList) => {
+        if (medicineList && medicineList.length > 0) {
+            let temp = []
+            for (var i = 0; i < medicineList.length; i++) {
+                let index = i + 1
+                const htmlCode = `
+				 <tr>
+				 <td style="width:8%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;">`+ index + `</td>
+				 <td style="width:35%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;text-transform: capitalize;"><b>`+ medicineList[i].medicineName + ` ` + `</b></br>` + `(<i>` + medicineList[i].medicineDesc + `</i>)` + `</td>
+					<td style="width:40%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;text-transform: capitalize;"> `+ (medicineList[i].dosagePattern) + (!medicineList[i].medicineTimingFrequency || medicineList[i].medicineTimingFrequency == 'No Preference' ? '' : ' (' + medicineList[i].medicineTimingFrequency + ')') + ` </br> ` + 'dose: ' + medicineList[i].dosages + `, ` + medicineList[i].durationValue + ` ` + medicineList[i].durationType + ` </td>
+					<td style="width:25%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;text-transform: capitalize;">`+ medicineList[i].note + `</td>
+				  </tr>
+				 `
+                temp.push(htmlCode)
+            }
+
+            const htmlCode = `
+			<table style="width:100%;margin-top: 20px" >  
+		<tr style="display: table-row; vertical-align: inherit;border-color: inherit; ">
+			<th width="8%" style="background-color: #14091529;color: #000;text-align: left;font-size: 12px;font-weight: 700;
+		  border-left: 1px solid #f1f1f1; padding: 8px;line-height: 1.42857143;" rowspan="2">`+ Rx + ` </th>
+			<th width="35%" style="background-color: #14091529;color: #000;text-align: left;font-size: 12px;font-weight: 700;
+		  border-left: 1px solid #f1f1f1; padding: 8px;line-height: 1.42857143;" rowspan="2">`+ medicine + ` </th>
+			<th width="40%" style="background-color: #14091529;color: #000;text-align: letf;font-size: 12px;font-weight: 700;
+		  border-left: 1px solid #f1f1f1; padding: 8px;line-height: 1.42857143;" rowspan="2">`+ timingAndDur + `</th>
+			<th width="25%" style="background-color: #14091529;color: #000;text-align: left;font-size: 12px;font-weight: 700;
+		  border-left: 1px solid #f1f1f1; padding: 8px;line-height: 1.42857143;" rowspan="2">`+ notes + `</th>      
+		</tr>
+	   </tr>
+
+	   <tr>
+	   `+ temp + `
+	    </tr>
+	  </table>
+			`
+            return htmlCode
+        }
+        else {
+            return ''
+        }
+
+    }
+    getNotes = (prescriptionNote) => {
+        if (prescriptionNote.prescriptionNoteName) {
+            const htmlCode = `
+            <table style="width:100%;margin-top: 5px" >
+               <tr>
+             <th style="width:15%;">`+ medicalHistoryHead + ` :</th>
+               <td style= "text-transform: capitalize;">`+ prescriptionNote.prescriptionNoteName + `</td>
+             </tr>
+            </table>
+                   `
+            return htmlCode;
+        } else
+            return ''
+
+    }
+    createPDF = async (prescriptionDataFullArray, billingDetailsFullArray) => {
+        // console.log('_______________prescriptionDataFullArray_______________', JSON.stringify(prescriptionDataFullArray))
+        // var time = new Date().getTime();
+        // time = Moment(time).format('h:mm:ss a')
+        // var date = new Date().getDate();
+        // date = date < 10 ? '0' + date : '' + date
+        // var month = new Date().getMonth() + 1;
+        // month = month < 10 ? '0' + month : '' + month
+        // var year = new Date().getFullYear();
+        // vitalList = prescriptionDataFullArray.vitalList != null ? prescriptionDataFullArray.vitalList : [];
+        // medicalHistoryList = prescriptionDataFullArray != null ? prescriptionDataFullArray : [];
+        // let clinicInfo = prescriptionDataFullArray.clinicInfo != null ? prescriptionDataFullArray.clinicInfo : []
+        // let doctorInfo = prescriptionDataFullArray.doctorInfo != null ? prescriptionDataFullArray.doctorInfo : []
+        // let patientInfo = prescriptionDataFullArray.patientInfo != null ? prescriptionDataFullArray.patientInfo : []
+        // let symptomList = prescriptionDataFullArray.symptomList != null ? prescriptionDataFullArray.symptomList : []
+        // let findingList = prescriptionDataFullArray.findingList != null ? prescriptionDataFullArray.findingList : []
+        // let medicineList = prescriptionDataFullArray.medicineList != null ? prescriptionDataFullArray.medicineList : []
+        // let prescriptionNote = prescriptionDataFullArray.prescriptionNote != null ? prescriptionDataFullArray.prescriptionNote : []
+        // let instructionsList = prescriptionDataFullArray.instructionsList != null ? prescriptionDataFullArray.instructionsList : []
+        // let investigationList = prescriptionDataFullArray.investigationList != null ? prescriptionDataFullArray.investigationList : []
+        // let diagnosisList = prescriptionDataFullArray.diagnosisList != null ? prescriptionDataFullArray.diagnosisList : [];
+        // let procedureList = prescriptionDataFullArray.procedureList != null ? prescriptionDataFullArray.procedureList : []
+        // let followUpItem = prescriptionDataFullArray.followUp
+        // let registrationNumber = doctorInfo ? doctorInfo.registrationNumber : ''
+        // let eSign = prescriptionDataFullArray != null ? prescriptionDataFullArray.esignature : null;
+
+        // let prescriptionHeading = Language.language.pres;
+        // symptomHead = Language.language.symptoms;
+        // findingHead = Language.language.findings;
+        // investigationAdvise = Language.language.advisedinvestigation;
+        // instructionHead = Language.language.instructions;
+        // diagionsisHead = Language.language.diagnosis;
+        // followUpHeadGlobal = Language.language.followup;
+        // procedureHead = Language.language.procedures;
+        // notes = Language.language.notes;
+        // medicine = Language.language.medicine;
+        // Rx = Language.language.Rx;
+        // timingAndDur = Language.language.timingandduration;
+        // noteStr = Language.language.note;
+        // vitalHead = Language.language.vital;
+        // medicalHistoryHead = Language.language.medicalHistory;
+
+        // selectedConditions = medicalHistoryList.selectedConditions
+        // selectedMedications = medicalHistoryList.selectedCurrentMedicationList
+        // selectedAllergies = medicalHistoryList.selectedAllergies
+        // selectedFamilyHistory = medicalHistoryList.selectedFamilyHistory
+
+        // console.log('-------------------- 1 -----------------');
+
+        const htmlCode = `
+    <style>
+      table, th, td {
+  border-collapse: collapse;
+}
+th, td {
+  padding: 5px;
+  text-align: left;
+}
+</style>
+     
+    <h1>`+ prescriptionHeading + `</h1>
+    <table style="width:100%">
+    <tr>
+            <td max-width="20%">
+                 <img width="100" height="100" src=`+ clinicInfo.clinicImageUrl + ` />		  
+            </td>
+            <td width="50%" style="vertical-align:top; ">			
+                  <h2>`+ clinicInfo.clinicName + `</h2>
+                  <p>`+ clinicInfo.clinicAddress + `</p>
+                  `+ clinicInfo.clinicNumber + `
+            </td>
+            <td width="30%" style="vertical-align:top;">
+                    <h2>Dr. `+  doctorInfo.firstName  + ` ` +  doctorInfo.lastName + `</h2>
+                    `+ this.doctorSpeciality(doctorInfo) + `
+                    `+ this.doctorEducationView(doctorInfo) + `
+                    <p>Reg no. : ` + registrationNumber + `</p>
+            </td>
+    </tr>
+   </table>
+
+     <hr style="height:3px"/>
+
+    <table style="width:100%">
+    <tr>
+      <td width="70%" ><b>Name:</b> `+  patientInfo.firstName + ` ` +  patientInfo.lastName + `</td>		  
+      <td width="30%" ><b>Date:</b> `+ date + `-` + month + `-` + year + `</td>
+    </tr>
+
+    <tr>
+        <td><b>Sex/Age:</b> `+ patientInfo.gender + `, ` + patientInfo.age + `</td>
+        <td><b>Mobile:</b> `+  patientInfo.contactNumber + `</td>
+    </tr>
+
+    <tr>
+        <td><b>Consult ID:</b> `+ patientInfo?.patientCode + `</td>
+        <td><b>Consult Type:</b> `+ consultTypeValue + `</td>
+    </tr>
+
+  </table>
+
+     <hr style="height:3px"/>
+
+     `+ this.vitalView(vitalList, 'pdf') + `
+     `+ this.selectedList(selectedConditions, selectedMedications, selectedAllergies, selectedFamilyHistory, 'pdf') + `
+     `+ this.symptomsView(symptomList, 'pdf') + `
+     `+ this.findingView(findingList, 'pdf') + `
+     `+ this.diagnosisView(diagnosisList, 'pdf') + `
+     `+ this.showmedicineListViewList(medicineList) + `
+     `+ this.investigationsView(investigationList, 'pdf') + `
+     `+ this.instructionView(instructionsList, 'pdf') + `
+      `+ this.procedureView(procedureList, 'pdf') + `
+      `+ this.getNotes(prescriptionNote) + `
+      `+ this.followUpView(followUpItem, 'pdf') + `
+  <table style="width:100%;margin-bottom:0px">
+  <tr>  
+  <td width="80%"/>
+  <td width="20%">
+    <img width="150" height="40" src=`+ eSign + ` />
+  </td>
+  </tr>
+  </table>
+
+  <table style="width:100%;margin-top:0px">
+  <tr>  
+  <td width="80%"/>
+  <td width="20%">
+  Dr. `+  doctorInfo.firstName + ` ` +  doctorInfo.lastName + this.doctorSpeciality(doctorInfo) + this.doctorEducationViewWithoutAddress(doctorInfo) + `<p>Reg no. : ` + registrationNumber + `</p>
+  </td>
+  </tr>
+  </table>
+</table>`
+
+        let options = {
+            html: htmlCode,
+
+            fileNamey: 'test',
+            directory: 'Documents',
+
+        };
+
+        let file = await RNHTMLtoPDF.convert(options);
+        console.log('-------' + JSON.stringify(file))
+        //DRONA.setIsReloadApi(false);
+        this.props.navigation.navigate('BillingComplete', { filePath: file.filePath, prevScreenName: from, billingPreviewData: billingPreviewData })
+        // this.props.nav.navigation.navigate('PreviewRx', { PreviewPdfPath: file?.filePath, from: 'normalPrescription', consultId: patientInfo?.patientCode });
+    }
+
+    clinicInfoNo = (clinicNoInfo) => {
+        let temp = []
+
+        if (clinicNoInfo > 0) {
+            let htmlCode = `<p>Clinic Ph. No: ` + clinicNoInfo + `</p>`
+            temp.push(htmlCode)
+            return htmlCode;
+        }
+        else {
+            let htmlCode = ` &nbsp `
+            temp.push(htmlCode)
+            return htmlCode;
+        }
     }
 
     render() {
@@ -551,7 +973,7 @@ class PreviewRx extends React.Component {
                                     <View style={{ flex: 6, }}>
                                         <Text style={{ color: Color.black, marginLeft: responsiveWidth(0), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}><Text style={{ fontWeight: 'bold' }}>Name: </Text>{patientInfo.firstName ? patientInfo.firstName + ' ' + patientInfo.lastName : null}</Text>
                                         <Text style={{ color: Color.black, marginLeft: responsiveWidth(0), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}><Text style={{ fontWeight: 'bold' }}>Sex/Age:</Text> {patientInfo.gender ? patientInfo.gender + ', ' + patientInfo.age : null}</Text>
-                                        <Text style={{ color: Color.black, marginLeft: responsiveWidth(0), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}><Text style={{ fontWeight: 'bold' }}>Consult ID:</Text> {consultId}</Text>
+                                        <Text style={{ color: Color.black, marginLeft: responsiveWidth(0), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}><Text style={{ fontWeight: 'bold' }}>Consult ID:</Text> {patientInfo?.patientCode}</Text>
                                     </View>
                                     <View style={{ flex: 6 }}>
                                         <Text style={{ color: Color.black, marginLeft: responsiveWidth(0), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}><Text style={{ fontWeight: 'bold' }}>Date:</Text> {date ? date + `-` + month + `-` + year : null} {time ? time : null}</Text>
@@ -561,24 +983,24 @@ class PreviewRx extends React.Component {
                                 </View>
                                 {(vitalList && vitalList.length > 0) ?
                                     <View>
-                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), marginTop: 0, }}><Text style={{ fontWeight: 'bold' }}>{vitalList && vitalList.length > 0 ? vitalHead : ''}: </Text> {this.vitalView(vitalList)}</Text>
+                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), marginTop: 0, }}><Text style={{ fontWeight: 'bold' }}>{vitalList && vitalList.length > 0 ? vitalHead : ''}: </Text> {this.vitalView(vitalList, '')}</Text>
                                     </View>
                                     : null}
-                                {(selectedConditions && selectedConditions.length>0) ||  (selectedMedications && selectedMedications.length>0) || (selectedAllergies && selectedAllergies.length>0) || (selectedFamilyHistory && selectedFamilyHistory.length>0) ?
+                                {(selectedConditions && selectedConditions.length > 0) || (selectedMedications && selectedMedications.length > 0) || (selectedAllergies && selectedAllergies.length > 0) || (selectedFamilyHistory && selectedFamilyHistory.length > 0) ?
                                     <View>
-                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5),  textTransform: 'capitalize',maxWidth:responsiveWidth(90) }}><Text style={{ fontWeight: 'bold' }}>{medicalHistoryHead}: </Text>{this.selectedList(selectedConditions, selectedMedications, selectedAllergies, selectedFamilyHistory)}</Text>
+                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), textTransform: 'capitalize', maxWidth: responsiveWidth(90) }}><Text style={{ fontWeight: 'bold' }}>{medicalHistoryHead}: </Text>{this.selectedList(selectedConditions, selectedMedications, selectedAllergies, selectedFamilyHistory)}</Text>
                                     </View>
                                     : null}
 
                                 {(symptomList && symptomList.length > 0) ?
                                     <View>
-                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5),maxWidth:responsiveWidth(90) }}><Text style={{ fontWeight: 'bold' }}>{symptomList && symptomList.length > 0 ? symptomHead : ''}: </Text> {this.symptomsView(symptomList)}</Text>
+                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), maxWidth: responsiveWidth(90) }}><Text style={{ fontWeight: 'bold' }}>{symptomList && symptomList.length > 0 ? symptomHead : ''}: </Text> {this.symptomsView(symptomList)}</Text>
                                     </View>
                                     : null}
 
                                 {(findingList && findingList.length > 0) ?
                                     <View>
-                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5),maxWidth:responsiveWidth(90)}}><Text style={{ fontWeight: 'bold' }}>{findingList && findingList.length > 0 ? findingHead : ''}: </Text> {this.findingView(findingList)}</Text>
+                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), maxWidth: responsiveWidth(90) }}><Text style={{ fontWeight: 'bold' }}>{findingList && findingList.length > 0 ? findingHead : ''}: </Text> {this.findingView(findingList)}</Text>
                                     </View>
                                     : null}
 
@@ -596,7 +1018,7 @@ class PreviewRx extends React.Component {
 
                                 {diagnosisList && diagnosisList.length ?
                                     <View style={{ flexDirection: 'row' }}>
-                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName,maxWidth:responsiveWidth(90) }}><Text style={{ fontWeight: 'bold' }}>{diagionsisHead}: </Text> {this.diagnosisView(diagnosisList)}</Text>
+                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, maxWidth: responsiveWidth(90) }}><Text style={{ fontWeight: 'bold' }}>{diagionsisHead}: </Text> {this.diagnosisView(diagnosisList)}</Text>
                                     </View>
                                     : null}
 
@@ -625,24 +1047,24 @@ class PreviewRx extends React.Component {
                                 </View> : null}
 
                                 {investigationList && investigationList.length > 0 ? <View style={{ marginTop: 5 }}>
-                                    <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName,maxWidth:responsiveWidth(90) }}><Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}>{investigationAdvise}:</Text> {this.investigationsView(investigationList)}</Text>
+                                    <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, maxWidth: responsiveWidth(90) }}><Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}>{investigationAdvise}:</Text> {this.investigationsView(investigationList)}</Text>
                                 </View> : null}
 
                                 {instructionsList && instructionsList.length > 0 ?
                                     <View style={{ marginTop: 5 }}>
-                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName,maxWidth:responsiveWidth(90) }}><Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}>{instructionHead}: </Text>{this.instructionView(instructionsList)}</Text>
+                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, maxWidth: responsiveWidth(90) }}><Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}>{instructionHead}: </Text>{this.instructionView(instructionsList)}</Text>
 
                                     </View> : null}
 
                                 {(procedureList && procedureList.length > 0) ?
                                     <View>
-                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5),maxWidth:responsiveWidth(90)}}><Text style={{ fontWeight: 'bold' }}>{procedureList && procedureList.length > 0 ? procedureHead : ''}: </Text> {this.procedureView(procedureList)}</Text>
+                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), maxWidth: responsiveWidth(90) }}><Text style={{ fontWeight: 'bold' }}>{procedureList && procedureList.length > 0 ? procedureHead : ''}: </Text> {this.procedureView(procedureList)}</Text>
                                     </View>
                                     : null}
 
                                 {prescriptionNote.prescriptionNoteName ?
                                     <View style={{ marginTop: 5 }}>
-                                        <Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName,maxWidth:responsiveWidth(90) }}><Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), fontWeight: 'bold' }}>{notes}:</Text> {prescriptionNote.prescriptionNoteName}</Text>
+                                        <Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, maxWidth: responsiveWidth(90) }}><Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), fontWeight: 'bold' }}>{notes}:</Text> {prescriptionNote.prescriptionNoteName}</Text>
                                     </View> : null}
 
                                 {followUpItem ?
@@ -705,7 +1127,8 @@ class PreviewRx extends React.Component {
                         </TouchableOpacity>
                         <TouchableOpacity
                             onPress={() => {
-                                this.props.navigation.navigate('BillingComplete', { filePath: this.state.filePath, prevScreenName: from })
+                                this.callCreatePdf();
+                                //this.props.navigation.navigate('BillingComplete', { filePath: this.state.filePath, prevScreenName: from })
                             }}
                             style={{ margin: 5, borderRadius: 5, justifyContent: 'center', alignItems: 'center', backgroundColor: Color.primary, width: '60%', height: responsiveHeight(6) }}>
                             <Text style={{ color: Color.white, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: CustomFont.fontWeight600 }}>Next</Text>

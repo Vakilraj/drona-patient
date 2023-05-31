@@ -35,11 +35,9 @@ const showAert = (tagName, msg) => {
   if (msg && msg != 'Something went wrong. Please try again later') {
     if (tagName == 'GetCommunityInfoSaved') {
       alert('Sorry, we are not able to fetch the information, Please try again');
-    }
-    // else if(tagName=='CancelAppointment'){
-    //   alert('Sorry, appointment can not be cancelled. Please try again');
-    // }
-    else {
+    }else {
+      if(msg=='Result consisted of more than one row')
+      msg='Something went wrong. Please try again later'
       alert(msg)
     }
   } else {
@@ -78,10 +76,10 @@ const showAert = (tagName, msg) => {
 export function callLogin(url, apiType, params, token, tagName = null) {
   let baseUrl = "";
   if (tagName === 'afterShareLink' || tagName === 'getserverDateTime') {
-    baseUrl = 'https://mnkdrona-apim.azure-api.net/WebApp/Dev/';
+    baseUrl = 'https://mnkdrona-apim.azure-api.net/WebApp/Stag/';
   }
   else {
-    baseUrl = 'https://mnkdrona-apim.azure-api.net/DoctorApp/Dev/'  // Dev  Pilot Stag Live
+    baseUrl = 'https://mnkdrona-apim.azure-api.net/DoctorApp/Stag/'  // Dev  Pilot Stag Live
   }
   //console.log('-------->>>------'+DRONA.getIsServiceVailable())
   //if(DRONA.getIsServiceVailable()){

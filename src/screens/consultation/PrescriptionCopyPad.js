@@ -289,7 +289,6 @@ class PrescriptionCopyPad extends React.Component {
 		return (
 			<View style={{ flex: 1, backgroundColor: Color.lightGrayBg, }}>
 				<View style={{ flex: 1 }}>
-					{console.log('======= this.state.PastRxDataArray =======', JSON.stringify(this.state.PastRxDataArray))}
 					{this.state.PastRxDataArray ?
 						<View style={{ flex: 1 }}>
 							<FlatList
@@ -355,7 +354,7 @@ class PrescriptionCopyPad extends React.Component {
 							<TouchableOpacity onPress={() => {
 								this.setCopiedData()
 							}} style={{ height: responsiveHeight(6), width: responsiveWidth(78), justifyContent: 'center', alignItems: 'center', marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), backgroundColor: Color.primary, borderRadius: 5, marginTop: 7, marginBottom: 7 }}>
-								<Text style={{ color: Color.white, fontSize: CustomFont.font16 }}>Save</Text>
+								<Text style={{ color: Color.white, fontSize: CustomFont.font16 }}>Copy</Text>
 							</TouchableOpacity>
 							:
 							<View style={{ height: responsiveHeight(6), width: responsiveWidth(78), justifyContent: 'center', alignItems: 'center', marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), backgroundColor: Color.disabledBtn, borderRadius: 5, marginTop: 7, marginBottom: 7 }}>

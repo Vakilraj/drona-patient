@@ -34,7 +34,7 @@ let delIndex = 0;
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 let presentYear = new Date().getFullYear();
 import Validator from '../../components/Validator';
-let SpecializationGuid = null, DoctorServiceGuid = null;
+
 
 
 class AdditionalInfo extends React.Component {
@@ -68,8 +68,6 @@ class AdditionalInfo extends React.Component {
 			fld3: Color.newBorder,
 			fld4: Color.newBorder,
 			fld5: Color.newBorder,
-			fld6: Color.newBorder,
-			fld7: Color.newBorder,
 			isAboutDetail: false,
 			isEducationDetail: false,
 			isExperienceDetail: false,
@@ -108,41 +106,23 @@ class AdditionalInfo extends React.Component {
 			expYear1: Color.newBorder,
 			expYear2: Color.newBorder,
 			keyboardAvoiding: 0,
-			dynamicTop: 0,
-			selectedSpecializationTxt: '',
-			selectedServiceTxt: '',
-			checkBoxSpecialisationFlag:false,
-			checkBoxServiceFlag:false
+			dynamicTop: 0
 		};
 	}
 
 	componentDidMount() {
-		this.getSpecializationData();
+		//this.getAdditionalInfo();
 		try {
 			currentYear = Moment(new Date()).format('YYYY');
 		} catch (e) { }
 		if (this.props.resDataFromServer)
 			this.setValueFromResponse(this.props.resDataFromServer)
 	}
-	getSpecializationData = () => {
-		let { actions, signupDetails } = this.props;
-		let params = {
-			"RoleCode": signupDetails.roleCode,
-			"UserGuid": signupDetails.UserGuid,
-			"ClinicGuid": signupDetails.clinicGuid,
-			"DoctorGuid": signupDetails.doctorGuid,
-			"Version": "",
-			"Data": null
-		}
-		actions.callLogin('V16/FuncForDrAppToGetSearchService', 'post', params, signupDetails.accessToken, 'GetSearchService');
-		actions.callLogin('V16/FuncForDrAppToGetSearchSpecialization', 'post', params, signupDetails.accessToken, 'getSpecialization');
-
-	}
 	setValueFromResponse = (data) => {
 		let about = data.aboutDoctor;
 		let education = '', experience = '';
-		// educationList = data.educationDetails;
-		// experienceList = data.experienceDetails;
+		educationList = data.educationDetails;
+		experienceList = data.experienceDetails;
 		if (data.educationDetails && data.educationDetails.length > 0) {
 			for (let i = 0; i < data.educationDetails.length; i++) {
 				if (i == 0)
@@ -220,12 +200,6 @@ class AdditionalInfo extends React.Component {
 		}
 		else if (type == '5') {
 			this.setState({ fld5: Color.primary })
-		}
-		else if (type == '6') {
-			this.setState({ fld6: Color.primary })
-		}
-		else if (type == '7') {
-			this.setState({ fld7: Color.primary })
 		} else if (type == 'fos') {
 			this.setState({ fieldDegreeBColor: Color.primary })
 		}
@@ -262,12 +236,6 @@ class AdditionalInfo extends React.Component {
 		}
 		else if (type == '5') {
 			this.setState({ fld5: Color.inputdefaultBorder })
-		}
-		else if (type == '6') {
-			this.setState({ fld6: Color.inputdefaultBorder })
-		}
-		else if (type == '7') {
-			this.setState({ fld7: Color.inputdefaultBorder })
 		} else if (type == 'fos') {
 			this.setState({ fieldDegreeBColor: Color.inputdefaultBorder })
 		}
@@ -331,9 +299,9 @@ class AdditionalInfo extends React.Component {
 			let { actions, signupDetails } = this.props;
 			let params = {
 				"RoleCode": signupDetails.roleCode,
-				"UserGuid": signupDetails.UserGuid,
-				"DoctorGuid": signupDetails.doctorGuid,
-				"ClinicGuid": signupDetails.clinicGuid,
+			"UserGuid": signupDetails.UserGuid,
+			"DoctorGuid": signupDetails.doctorGuid,
+			"ClinicGuid": signupDetails.clinicGuid,
 				"Data": {
 					"DrEducationGuid": drEducationGuid,
 					"University": this.state.university,
@@ -441,9 +409,9 @@ class AdditionalInfo extends React.Component {
 			let { actions, signupDetails } = this.props;
 			let params = {
 				"RoleCode": signupDetails.roleCode,
-				"UserGuid": signupDetails.UserGuid,
-				"DoctorGuid": signupDetails.doctorGuid,
-				"ClinicGuid": signupDetails.clinicGuid,
+			"UserGuid": signupDetails.UserGuid,
+			"DoctorGuid": signupDetails.doctorGuid,
+			"ClinicGuid": signupDetails.clinicGuid,
 				"Data": { "AboutDoctor": this.state.aboutData }
 			}
 			actions.callLogin('V1/FuncForDrAppToUpdateAboutDoctor', 'post', params, signupDetails.accessToken, 'saveAboutDetails');
@@ -456,39 +424,31 @@ class AdditionalInfo extends React.Component {
 			let { actions, signupDetails } = this.props;
 			let params = {
 				"RoleCode": signupDetails.roleCode,
-				"UserGuid": signupDetails.UserGuid,
-				"DoctorGuid": signupDetails.doctorGuid,
-				"ClinicGuid": signupDetails.clinicGuid,
+			"UserGuid": signupDetails.UserGuid,
+			"DoctorGuid": signupDetails.doctorGuid,
+			"ClinicGuid": signupDetails.clinicGuid,
 				"Version": "",
-				"Data": {
-					"DoctorServiceGuid": DoctorServiceGuid,
-					"DoctorServiceName": this.state.selectedServiceTxt,
-					"isSpecialization": this.state.checkBoxServiceFlag
-				}
+				"Data": this.state.selectedServiceArr
 			}
 
-			actions.callLogin('V16/FuncForDrAppToAddUpdateService', 'post', params, signupDetails.accessToken, 'saveServiceDetails');
+			actions.callLogin('V1/FuncForDrAppToAddServices', 'post', params, signupDetails.accessToken, 'saveServiceDetails');
 		}
 	}
 	saveSpeciality = () => {
-		if (!this.state.selectedSpecializationTxt) {
-			Snackbar.show({ text: 'Please add specialization', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
+		if (!this.state.selectedSpecializationArr) {
+			Snackbar.show({ text: 'Please select specialization', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 		} else {
 			let { actions, signupDetails } = this.props;
 			let params = {
 				"RoleCode": signupDetails.roleCode,
-				"UserGuid": signupDetails.UserGuid,
-				"DoctorGuid": signupDetails.doctorGuid,
-				"ClinicGuid": signupDetails.clinicGuid,
+			"UserGuid": signupDetails.UserGuid,
+			"DoctorGuid": signupDetails.doctorGuid,
+			"ClinicGuid": signupDetails.clinicGuid,
 				"Version": "",
-				"Data": {
-					"SpecializationGuid": SpecializationGuid,
-					"SpecializationName": this.state.selectedSpecializationTxt,
-					"IsSpecialization": this.state.checkBoxSpecialisationFlag
-				}
+				"Data": this.state.selectedSpecializationArr
 			}
 
-			actions.callLogin('V16/FuncForDrAppToAddUpdateSpecialization', 'post', params, signupDetails.accessToken, 'saveSpecialityDetails');
+			actions.callLogin('V1/FuncForDrAppToAddSpecialisation', 'post', params, signupDetails.accessToken, 'saveSpecialityDetails');
 		}
 	}
 
@@ -517,9 +477,9 @@ class AdditionalInfo extends React.Component {
 			let { actions, signupDetails } = this.props;
 			let params = {
 				"RoleCode": signupDetails.roleCode,
-				"UserGuid": signupDetails.UserGuid,
-				"DoctorGuid": signupDetails.doctorGuid,
-				"ClinicGuid": signupDetails.clinicGuid,
+			"UserGuid": signupDetails.UserGuid,
+			"DoctorGuid": signupDetails.doctorGuid,
+			"ClinicGuid": signupDetails.clinicGuid,
 				"Version": "",
 				"Data": {
 					"AwardsGuid": awardsGuid,
@@ -634,28 +594,21 @@ class AdditionalInfo extends React.Component {
 				}
 				this.setState({ isModalVisibleRegards: false })
 			} else if (tagname === 'saveServiceDetails') {
-				if (newProps.responseData.statusCode == '-1') {
-					let data = newProps.responseData.data;
-					if (data)
-						DoctorServiceGuid = data.doctorServiceGuid;
+				if (newProps.responseData.statusCode == '0') {
+					this.getAdditionalInfo();
+					Snackbar.show({ text: 'Service details saved successfully', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 					this.setState({ isModalVisibleServices: false })
-				}
-				setTimeout(()=>{
+				} else {
 					Snackbar.show({ text: newProps.responseData.statusMessage, duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-				},300)
+				}
 			} else if (tagname === 'saveSpecialityDetails') {
-				if (newProps.responseData.statusCode == '-1') {
-					//this.getAdditionalInfo();
-					let data = newProps.responseData.data;
-					if (data)
-						SpecializationGuid = data.specializationGuid;
+				if (newProps.responseData.statusCode == '0') {
+					this.getAdditionalInfo();
+					Snackbar.show({ text: 'Speciality details saved successfully', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 					this.setState({ isModalVisibleSpecialization: false })
-				}
-				setTimeout(()=>{
+				} else {
 					Snackbar.show({ text: newProps.responseData.statusMessage, duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-				},300)
-					
-
+				}
 			} else if (tagname == 'saveEducationDetails') {
 				if (newProps.responseData.statusCode == '-1') {
 					//	Snackbar.show({ text: 'Education details saved successfully', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
@@ -774,24 +727,6 @@ class AdditionalInfo extends React.Component {
 					//
 					this.setState({ isModalVisibleExperience: false })
 				}
-			} else if (tagname == 'getSpecialization') {
-				if (newProps.responseData.statusCode == '0') {
-					let data = newProps.responseData.data;
-
-					if (data && data.length > 0) {
-						SpecializationGuid = data[0].specializationGuid
-						this.setState({ selectedSpecializationTxt: data[0].specializationName , checkBoxSpecialisationFlag: data[0].isSpecialization })
-					}
-				}
-			} else if (tagname == 'GetSearchService') {
-				if (newProps.responseData.statusCode == '0') {
-					let data = newProps.responseData.data;
-
-					if (data && data.length > 0) {
-						DoctorServiceGuid = data[0].doctorServiceGuid
-						this.setState({ selectedServiceTxt: data[0].doctorServiceName , checkBoxServiceFlag: data[0].isSpecialization})
-					}
-				}
 			}
 		}
 	}
@@ -837,7 +772,7 @@ class AdditionalInfo extends React.Component {
 			Snackbar.show({ text: 'Please enter start year', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 		} else if (this.state.expStartYear > presentYear) {
 			Snackbar.show({ text: 'Start date should be less than current date', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
-		} else if (this.state.expStartYear.length != 4) {
+		}else if (this.state.expStartYear.length != 4) {
 			Snackbar.show({ text: 'Start year should be in 4 digits', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 		} else if (this.state.expStartYear < 1920) {
 			Snackbar.show({ text: 'Start date should be actual', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
@@ -856,9 +791,9 @@ class AdditionalInfo extends React.Component {
 			let { actions, signupDetails } = this.props;
 			let params = {
 				"RoleCode": signupDetails.roleCode,
-				"UserGuid": signupDetails.UserGuid,
-				"DoctorGuid": signupDetails.doctorGuid,
-				"ClinicGuid": signupDetails.clinicGuid,
+			"UserGuid": signupDetails.UserGuid,
+			"DoctorGuid": signupDetails.doctorGuid,
+			"ClinicGuid": signupDetails.clinicGuid,
 				"Data": {
 					"DrExperienceGuid": drExperienceGuid,
 					"Title": this.state.jobTitle,
@@ -1071,32 +1006,27 @@ class AdditionalInfo extends React.Component {
 											<Text style={styles.additionalTitle}>Specialization</Text>
 										</TouchableOpacity>
 										<TouchableOpacity style={styles.editView} onPress={() => this.setState({ isModalVisibleSpecialization: true, })}>
-											<Image source={this.state.selectedSpecializationTxt ? edit_blue : add} style={[styles.editIcon, { opacity: 0.8 }]} />
-											<Text style={[styles.addEditTxt, { fontWeight: '700' }]}>{this.state.selectedSpecializationTxt ? "Edit" : "Add"}</Text>
+											<Image source={this.state.selectedSpecializationArr && this.state.selectedSpecializationArr.length ? edit_blue : add} style={[styles.editIcon, { opacity: 0.8 }]} />
+											<Text style={[styles.addEditTxt, { fontWeight: '700' }]}>{this.state.selectedSpecializationArr && this.state.selectedSpecializationArr.length ? "Edit" : "Add"}</Text>
 
 
 										</TouchableOpacity>
 									</View>
-									{this.state.selectedSpecializationTxt ? <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', marginTop: 7,marginLeft:10 }} onPress={() => {
-											this.setState({ checkBoxSpecialisationFlag: !this.state.checkBoxSpecialisationFlag });
-										}}>
-										<CheckBox
-											value={this.state.checkBoxSpecialisationFlag}
-											onCheckColor={Color.primary}
-											tintColors={{ true: Color.primary, false: Color.newBorder }}
-											onTintColor={Color.primary}
-											tintColor={Color.newBorder}
-											style={{ color: Color.mediumGrayTxt, height: responsiveFontSize(2.6), width: responsiveFontSize(2.6), tintColor: Color.primary }}
-										//onCheckColor={{color:Color.primary}}
-										/>
-										<Text style={{ fontSize: CustomFont.font12, color: Color.fontColor, marginLeft: 10 }}>Make this your ERx display speciality</Text>
-									</TouchableOpacity>:null
-
+									{
+										!this.state.isSpecialitiesDetail ? null :
+											<View>
+												<View style={styles.additionalDivider} />
+												<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', }}>
+													{this.state.selectedSpecializationArr.map((item, index) => {
+														return (
+															<View style={styles.itemSelectedView} >
+																<Text style={styles.itemSelectedTxt}>{item.specialisationName}</Text>
+															</View>
+														);
+													}, this)}
+												</View>
+											</View>
 									}
-									
-									<View style={{ flex: 1,margin:10 }}>
-										<Text style={{fontSize: CustomFont.font14, color: Color.fontColor,}}>{this.state.selectedSpecializationTxt}</Text>
-									</View>
 								</View>
 							</View>
 
@@ -1116,28 +1046,25 @@ class AdditionalInfo extends React.Component {
 											<Text style={styles.additionalTitle}>Services</Text>
 										</TouchableOpacity>
 										<TouchableOpacity style={styles.editView} onPress={() => this.setState({ isModalVisibleServices: true, })}>
-											<Image source={this.state.selectedServiceTxt ? edit_blue : add} style={[styles.editIcon, { opacity: this.state.selectedServiceTxt ? 1 : 0.8 }]} />
-											<Text style={[styles.addEditTxt, { fontWeight: '700' }]}>{this.state.selectedServiceTxt ? "Edit" : "Add"}</Text>
+											<Image source={this.state.selectedServiceArr && this.state.selectedServiceArr.length ? edit_blue : add} style={[styles.editIcon, { opacity: this.state.selectedServiceArr && this.state.selectedServiceArr.length ? 1 : 0.8 }]} />
+											<Text style={[styles.addEditTxt, { fontWeight: '700' }]}>{this.state.selectedServiceArr && this.state.selectedServiceArr.length ? "Edit" : "Add"}</Text>
 										</TouchableOpacity>
 									</View>
-									{this.state.selectedServiceTxt ? <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', marginTop: 7, marginLeft:10 }} onPress={() => {
-											this.setState({ checkBoxServiceFlag: !this.state.checkBoxServiceFlag });
-										}}>
-										<CheckBox
-											value={this.state.checkBoxServiceFlag}
-											onCheckColor={Color.primary}
-											tintColors={{ true: Color.primary, false: Color.newBorder }}
-											onTintColor={Color.primary}
-											tintColor={Color.newBorder}
-											style={{ color: Color.mediumGrayTxt, height: responsiveFontSize(2.6), width: responsiveFontSize(2.6), tintColor: Color.primary }}
-										//onCheckColor={{color:Color.primary}}
-										/>
-										<Text style={{ fontSize: CustomFont.font12, color: Color.fontColor, marginLeft: 10 }}>Make this your ERx display services</Text>
-									</TouchableOpacity> :null}
-									
-									<View style={{ flex: 1,margin:10 }}>
-										<Text style={{fontSize: CustomFont.font14, color: Color.fontColor,}}>{this.state.selectedServiceTxt}</Text>
-									</View>
+									{
+										!this.state.isServiceDetail ? null :
+											<View>
+												<View style={styles.additionalDivider} />
+												<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', }}>
+													{this.state.selectedServiceArr.map((item, index) => {
+														return (
+															<View style={styles.itemSelectedView} >
+																<Text style={styles.itemSelectedTxt}>{item.servicesName}</Text>
+															</View>
+														);
+													}, this)}
+												</View>
+											</View>
+									}
 								</View>
 							</View>
 
@@ -1248,7 +1175,7 @@ class AdditionalInfo extends React.Component {
 										placeholder="Write about yourself" placeholderTextColor={Color.placeHolderColor} multiline={true} value={this.state.aboutData} onChangeText={aboutData => {
 											this.setState({ aboutData });
 
-										}} maxLength={2000} onSubmitEditing={() => { Keyboard.dismiss() }} blurOnSubmit={true} />
+										}} maxLength={2000} onSubmitEditing={() => { Keyboard.dismiss() }}  blurOnSubmit={true}/>
 									<View style={{ alignItems: 'flex-end' }}>
 										<Text style={{ fontFamily: CustomFont.fontName, fontWeight: CustomFont.fontWeight400, fontSize: CustomFont.font12, color: Color.optiontext, marginTop: 8, }}>{this.state.aboutData.length} / 2000</Text>
 									</View>
@@ -1286,17 +1213,17 @@ class AdditionalInfo extends React.Component {
 											onChangeText={(specializationName) => { return this.SearchSpecialization(specializationName); }} value={this.state.specializationName} /> */}
 
 
-										{/* <View style={[styles.modelTextInput, { height: responsiveHeight(6), flexDirection: 'row', marginBottom: responsiveHeight(4), alignItems: 'center', backgroundColor: Color.lightPurple, borderWidth: 0 }]}>
+										<View style={[styles.modelTextInput, { height: responsiveHeight(6), flexDirection: 'row', marginBottom: responsiveHeight(4), alignItems: 'center', backgroundColor: Color.lightPurple, borderWidth: 0 }]}>
 											<Image source={search_gray} style={styles.crossIcon} />
 											<TextInput returnKeyType="done" onBlur={() => this.onCallBlur('2')} onFocus={() => this.onCallFocus('2')} style={{ marginTop: 5, height: responsiveHeight(6), alignSelf: 'center', marginStart: 14, color: Color.fontColor }}
 												placeholder="Search specialization(s)"
 												placeholderTextColor={Color.placeHolderColor}
 												onChangeText={(specializationName) => { return this.SearchSpecialization(specializationName); }} value={this.state.specializationName}
 											/>
-										</View> */}
+										</View>
 
 
-										{/* <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', }}>
+										<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', }}>
 											{this.state.selectedSpecializationArr.map((item, index) => {
 												return (
 													<View style={styles.itemSelectModelView} >
@@ -1313,17 +1240,9 @@ class AdditionalInfo extends React.Component {
 												);
 											}, this)}
 										</View>
-										<Text style={styles.sugeTxt}>Suggestions</Text> */}
-										<TextInput returnKeyType="done" style={{ marginBottom: responsiveHeight(1), borderWidth: 1, borderColor: this.state.fld6, padding: 10, height: responsiveHeight(10), fontSize: CustomFont.font14, borderRadius: 5, textAlignVertical: 'top', color: Color.fontColor, opacity: .8, marginTop: 10 }}
-											onFocus={() => this.onCallFocus(6)}
-											onBlur={() => this.onCallBlur(6)}
-											placeholder=" "
-											placeholderTextColor={Color.placeHolderColor}
-											multiline={true} value={this.state.selectedSpecializationTxt}
-											onChangeText={selectedSpecializationTxt => {
-												this.setState({ selectedSpecializationTxt });
-											}} maxLength={100} blurOnSubmit />
-										{/* <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', }}>
+										<Text style={styles.sugeTxt}>Suggestions</Text>
+
+										<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', }}>
 											{this.state.SpecializationArr.map((item, index) => {
 												return (
 													<TouchableOpacity style={[styles.itemSelectModelView, { backgroundColor: Color.white, borderColor: Color.primary, marginRight: responsiveWidth(3) }]} onPress={() => this.clickOnSpecialization(item, index)} >
@@ -1331,22 +1250,8 @@ class AdditionalInfo extends React.Component {
 													</TouchableOpacity>
 												);
 											}, this)}
-										</View> */}
+										</View>
 									</View>
-									<TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', marginTop: 7 }} onPress={() => {
-											this.setState({ checkBoxSpecialisationFlag: !this.state.checkBoxSpecialisationFlag });
-										}}>
-										<CheckBox
-											value={this.state.checkBoxSpecialisationFlag}
-											onCheckColor={Color.primary}
-											tintColors={{ true: Color.primary, false: Color.newBorder }}
-											onTintColor={Color.primary}
-											tintColor={Color.newBorder}
-											style={{ color: Color.mediumGrayTxt, height: responsiveFontSize(2.6), width: responsiveFontSize(2.6), tintColor: Color.primary }}
-										//onCheckColor={{color:Color.primary}}
-										/>
-										<Text style={{ fontSize: CustomFont.font12, color: Color.fontColor, marginLeft: 10 }}>Make this your ERx display speciality</Text>
-									</TouchableOpacity>
 									<TouchableOpacity style={styles.modalBtn} onPress={() => {
 										let { signupDetails } = this.props;
 										setLogEvent("specialization", { "save": "click", UserGuid: signupDetails.UserGuid })
@@ -1374,17 +1279,17 @@ class AdditionalInfo extends React.Component {
 									</View>
 									<View style={{ flex: 1 }}>
 										{/* value={this.state.aboutData} */}
-										{/* <View style={[styles.modelTextInput, { height: responsiveHeight(6), flexDirection: 'row', marginBottom: responsiveHeight(4), alignItems: 'center', backgroundColor: Color.lightPurple, borderWidth: 0 }]}>
+										<View style={[styles.modelTextInput, { height: responsiveHeight(6), flexDirection: 'row', marginBottom: responsiveHeight(4), alignItems: 'center', backgroundColor: Color.lightPurple, borderWidth: 0 }]}>
 											<Image source={search_gray} style={styles.crossIcon} />
 											<TextInput returnKeyType="done" onBlur={() => this.onCallBlur('1')} onFocus={() => this.onCallFocus('1')} style={{ marginTop: 5, height: responsiveHeight(6), alignSelf: 'center', marginStart: 14, color: Color.fontColor }}
 												placeholder="Search for services"
 												placeholderTextColor={Color.placeHolderColor}
 												onChangeText={(serviceName) => { return this.SearchService(serviceName); }} value={this.state.serviceName}
 											/>
-										</View> */}
+										</View>
 
 
-										{/* <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', }}>
+										<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', }}>
 											{this.state.selectedServiceArr.map((item, index) => {
 												return (
 													<View style={styles.itemSelectModelView} >
@@ -1400,9 +1305,9 @@ class AdditionalInfo extends React.Component {
 												);
 											}, this)}
 										</View>
-										<Text style={styles.sugeTxt}>Suggestions</Text> */}
+										<Text style={styles.sugeTxt}>Suggestions</Text>
 
-										{/* <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', }}>
+										<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', }}>
 											{this.state.ServiceArr.map((item, index) => {
 												return (
 													<TouchableOpacity style={[styles.itemSelectModelView, { backgroundColor: Color.white, borderColor: Color.primary, marginRight: responsiveWidth(3) }]} onPress={() => this.clickOnService(item, index)} >
@@ -1410,31 +1315,8 @@ class AdditionalInfo extends React.Component {
 													</TouchableOpacity>
 												);
 											}, this)}
-										</View> */}
-										<TextInput returnKeyType="done" style={{ marginBottom: responsiveHeight(1), borderWidth: 1, borderColor: this.state.fld7, padding: 10, height: responsiveHeight(10), fontSize: CustomFont.font14, borderRadius: 5, textAlignVertical: 'top', color: Color.fontColor, opacity: .8, marginTop: 10 }}
-											onFocus={() => this.onCallFocus(7)}
-											onBlur={() => this.onCallBlur(7)}
-											placeholder=" "
-											placeholderTextColor={Color.placeHolderColor}
-											multiline={true} value={this.state.selectedServiceTxt}
-											onChangeText={selectedServiceTxt => {
-												this.setState({ selectedServiceTxt });
-											}} maxLength={100} blurOnSubmit />
+										</View>
 									</View>
-									<TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', marginTop: 7 }} onPress={() => {
-											this.setState({ checkBoxServiceFlag: !this.state.checkBoxServiceFlag });
-										}}>
-										<CheckBox
-											value={this.state.checkBoxServiceFlag}
-											onCheckColor={Color.primary}
-											tintColors={{ true: Color.primary, false: Color.newBorder }}
-											onTintColor={Color.primary}
-											tintColor={Color.newBorder}
-											style={{ color: Color.mediumGrayTxt, height: responsiveFontSize(2.6), width: responsiveFontSize(2.6), tintColor: Color.primary }}
-										//onCheckColor={{color:Color.primary}}
-										/>
-										<Text style={{ fontSize: CustomFont.font12, color: Color.fontColor, marginLeft: 10 }}>Make this your ERx display services</Text>
-									</TouchableOpacity>
 									<TouchableOpacity style={styles.modalBtn} onPress={() => {
 										let { signupDetails } = this.props;
 										setLogEvent("service", { "save": "click", UserGuid: signupDetails.UserGuid })
@@ -1482,10 +1364,10 @@ class AdditionalInfo extends React.Component {
 												placeholder="YYYY" placeholderTextColor={Color.placeHolderColor} value={this.state.awardsYear} onChangeText={awardsYear => {
 													if (awardsYear) {
 														if (Validator.isDecimalYear(awardsYear)) {
-															this.setState({ awardsYear });
+																this.setState({ awardsYear });		
 														}
 													}
-													else {
+													else{
 														this.setState({ awardsYear });
 													}
 												}} maxLength={4} />
@@ -1597,14 +1479,14 @@ class AdditionalInfo extends React.Component {
 												placeholder="YYYY" placeholderTextColor={Color.placeHolderColor} value={this.state.startYear} onChangeText={startYear => {
 													if (startYear) {
 														if (Validator.isDecimalYear(startYear)) {
-															this.setState({ startYear });
+																this.setState({ startYear });		
 														}
 													}
-													else {
+													else{
 														this.setState({ startYear });
 													}
-
-
+													
+													
 													// this.setState({ startYear });
 													// if (startYear.length != 4 || startYear === '') {
 													// 	this.setState({ startYearAlert: '' })
@@ -1626,13 +1508,13 @@ class AdditionalInfo extends React.Component {
 												placeholder="YYYY" placeholderTextColor={Color.placeHolderColor} value={this.state.endYear} onChangeText={endYear => {
 													if (endYear) {
 														if (Validator.isDecimalYear(endYear)) {
-															this.setState({ endYear });
+																this.setState({ endYear });		
 														}
 													}
-													else {
+													else{
 														this.setState({ endYear });
 													}
-
+													
 													// this.setState({ endYear });
 													// if (endYear.length != 4 || endYear === '') {
 													// 	this.setState({ endYearAlert: '' })
@@ -1736,16 +1618,16 @@ class AdditionalInfo extends React.Component {
 												this.setState({ keyboardAvoiding: responsiveHeight(-7) });
 												this.onCallFocus('expStartYear')
 											}} style={[styles.modelTextInput1, { borderColor: this.state.expYear1, }]}
-												placeholder="YYYY" placeholderTextColor={Color.placeHolderColor} value={this.state.expStartYear} onChangeText={expStartYear => {
+												placeholder="YYYY" placeholderTextColor={Color.placeHolderColor} value={this.state.expStartYear}  onChangeText={expStartYear => {
 													if (expStartYear) {
-														if (Validator.isDecimalYear(expStartYear)) {
-															this.setState({ expStartYear });
-														}
+													if (Validator.isDecimalYear(expStartYear)) {
+															this.setState({ expStartYear });		
 													}
-													else {
-														this.setState({ expStartYear });
-													}
-												}} ref='ref3' maxLength={4} />
+												}
+												else{
+													this.setState({ expStartYear });
+												}
+											}} ref='ref3' maxLength={4} />
 										</View>
 
 										{/* <View style={{ flex: 1, alignItems: 'center' }}>
@@ -1764,14 +1646,14 @@ class AdditionalInfo extends React.Component {
 												}} style={[styles.modelTextInput1, { borderColor: this.state.expYear2, }]}
 													placeholder="YYYY" placeholderTextColor={Color.placeHolderColor} value={this.state.expEndYear} onChangeText={expEndYear => {
 														if (expEndYear) {
-															if (Validator.isDecimalYear(expEndYear)) {
-																this.setState({ expEndYear });
-															}
+														if (Validator.isDecimalYear(expEndYear)) {
+																this.setState({ expEndYear });		
 														}
-														else {
-															this.setState({ expEndYear });
-														}
-													}} maxLength={4} />}
+													}
+													else{
+														this.setState({ expEndYear });
+													}
+												}} maxLength={4} />}
 
 										</View>
 									</View>
@@ -1780,26 +1662,26 @@ class AdditionalInfo extends React.Component {
 											value={this.state.checkBoxFlag}
 											onValueChange={(newValue) => {
 												this.setState({ checkBoxFlag: newValue })
-												if (newValue) {
-													this.setState({ expEndYear: currentYear });
-												} else {
-													this.setState({ expEndYear: '' });
+												if(newValue){
+													this.setState({expEndYear:currentYear});
+												}else{
+													this.setState({expEndYear:''});
 												}
-
+												
 											}}
 											onCheckColor={Color.primary}
-											tintColors={{ true: Color.primary, false: Color.newBorder }}
+											tintColors={{true : Color.primary,false:Color.newBorder}}
 											onTintColor={Color.primary}
 											tintColor={Color.newBorder}
-											style={{ color: Color.mediumGrayTxt, height: responsiveFontSize(2.6), width: responsiveFontSize(2.6), tintColor: Color.primary }}
+											style={{ color: Color.mediumGrayTxt, height: responsiveFontSize(2.6), width: responsiveFontSize(2.6),tintColor:Color.primary }}
 										//onCheckColor={{color:Color.primary}}
 										/>
-										<Text style={{ fontSize: CustomFont.font12, color: Color.fontColor, marginLeft: 10 }} onPress={() => {
-											this.setState({ checkBoxFlag: !this.state.checkBoxFlag });
-											if (!this.state.checkBoxFlag) {
-												this.setState({ expEndYear: currentYear });
-											} else {
-												this.setState({ expEndYear: '' });
+										<Text style={{ fontSize: CustomFont.font12, color: Color.fontColor, marginLeft: 10 }} onPress={()=>{
+											this.setState({checkBoxFlag:!this.state.checkBoxFlag});
+											if(!this.state.checkBoxFlag){
+												this.setState({expEndYear:currentYear});
+											}else{
+												this.setState({expEndYear:''});
 											}
 										}}>Currently working in this role</Text>
 									</View>

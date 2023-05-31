@@ -79,7 +79,15 @@ class MedicineDetails extends React.Component {
 			showUnitDropDown: false,
 			dutaionTxt: '',
 			unitTxt: '',
-			DurationDropdownArr: durationData,
+			DurationDropdownArr:[
+				{ label: 'Daily', value: 'Daily' },
+				{ label: 'Alternate Day', value: 'Alternate Day' },
+				{ label: 'Fort Night', value: 'Fort Night' },
+				{ label: 'Hourly', value: 'Hourly' },
+				{ label: 'Monthly', value: 'Monthly' },
+				{ label: 'SOS', value: 'SOS' },
+				{ label: 'Weekly', value: 'Weekly' },
+			] ,
 			UnitDropdownArr: medicineDosasesType,
 			taperedData: [],
 			selectedIndex: 0,
@@ -310,12 +318,11 @@ class MedicineDetails extends React.Component {
 			saveData[index].appointmentGuid = signupDetails.appoinmentGuid;
 			saveData[index].medicineName = saveData[0].medicineName;
 			saveData[index].medicineIndex = index;
-			saveData[index].strength = item[0]?.strength ? item[0]?.strength : null;
 			 //saveData[index].medicineDosasesTypeGuid = 'c7221d1c-8579-11eb-996a-0022486b91c8';
 			saveData[index].durationValue = 0;
 			saveData[index].dosages = null;
 			saveData[index].route = null;
-
+			saveData[index].strength = item[0]?.strength ? item[0]?.strength : null;
 			// saveData[0]?.medicineDosasesType && saveData[0]?.medicineDosasesType.forEach((val) => {
 			// 	if (val.doasestype === _item.medicineType) {
 			// 		//saveData[index].medicineDosasesType = val.medicineDoasesGuId;
@@ -481,11 +488,13 @@ class MedicineDetails extends React.Component {
 	handleDurationData = (text, index) => {
 		this.setState({ selectedIndex: index })
 		let ans = [];
-		let temp = [...this.state.DurationDropdownArr]
-		if (text) {
-			ans = temp.filter((val) => val.label.toLowerCase().includes(text.toLowerCase()))
+		//let temp = [...this.state.DurationDropdownArr]
+		if (text && text.length>0) {
+			ans = durationData.filter((val) => val.label.toLowerCase().includes(text.toLowerCase()))
+			this.setState({ dutaionTxt: text, DurationDropdownArr: text.length === 0 ? durationData : ans })
+		}else{
+			this.setState({dutaionTxt: text,  DurationDropdownArr:  durationData})
 		}
-		this.setState({ dutaionTxt: text, DurationDropdownArr: text.length === 0 ? durationData : ans })
 		// if (text && Validator.isMobileValidate(text)) {
 		// 	for (let i = 0; i < duationTypeArr.length; i++) {
 		// 		if (text == 1)
@@ -742,7 +751,7 @@ class MedicineDetails extends React.Component {
 					source={this.state.showDurationDropDown && this.state.selectedIndex == index ? upArrow : downarrow} />
 				</View>
 
-				{this.state.selectedIndex == index && this.state.dutaionTxt && this.state.showDurationDropDown && this.state.DurationDropdownArr?.length > 0 ?
+				{this.state.selectedIndex == index && this.state.showDurationDropDown && this.state.DurationDropdownArr?.length > 0 ?
 					<View style={{
 						borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,
 						borderBottomColor: Color.createInputBorder, borderTopColor: Color.white, marginTop: responsiveHeight(-.8)
@@ -916,7 +925,7 @@ class MedicineDetails extends React.Component {
 						/>
 						<TouchableOpacity
 							onPress={() => {
-								let tempArr = [...this.state.taperedData];
+								let tempArr = this.state.taperedData;
 								let tempObj = {};//tempArr[0];
 								tempArr.push(tempObj);
 								this.setState({ taperedData: tempArr });

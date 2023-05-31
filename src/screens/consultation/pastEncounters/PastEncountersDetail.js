@@ -238,7 +238,7 @@ class PastEncountersDetail extends React.Component {
 
            
                 <View style={{ marginLeft: -0.5, flexDirection: "row", position: 'absolute', bottom: responsiveHeight(0), marginBottom: responsiveHeight(0), height: responsiveHeight(10), width: '100%', backgroundColor: Color.white, borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
-                  {signupDetails.isAssistantUser || !signupDetails.appoinmentGuid || this.state.isMigratedData || this.state.appointmentStatus == "Completed"? null : <TouchableOpacity onPress={() => {
+                  {signupDetails.isAssistantUser || !signupDetails.appoinmentGuid || this.state.isMigratedData || this.state.appointmentStatus == "Completed"  || (patientAppoinmentItem.consultationType === 'Virtual' && !patientAppoinmentItem.isPaymentReceived) ? null : <TouchableOpacity onPress={() => {
                     setLogEvent("past_encounter", { edit: "click", UserGuid: signupDetails.UserGuid })
 
                     if (item && item.isHandwritten) {

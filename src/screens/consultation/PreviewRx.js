@@ -519,7 +519,6 @@ class PreviewRx extends React.Component {
     }
 
     MedicineList = (item, index) => {
-        console.log('====== item ======', JSON.stringify(item))
         return (
             <View style={{ flex: 1, flexDirection: 'row' }}>
                 <View style={{ flex: 1, borderColor: '#ddd', borderWidth: 1 }}>

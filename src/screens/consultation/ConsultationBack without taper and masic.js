@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
 	ScrollView,
 	View,
-	Text, TextInput, Image, TouchableOpacity, FlatList, Platform, PermissionsAndroid, Alert, KeyboardAvoidingView,
+	Text, TextInput, Image, TouchableOpacity, FlatList, Platform, PermissionsAndroid, Alert, KeyboardAvoidingView, Linking,
 } from 'react-native';
 import styles from './style';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
@@ -24,7 +24,7 @@ import fluentArrowUpload from '../../../assets/fluent_arrow_upload.png';
 import down from '../../../assets/down.png';
 import FollowUpModal from './FollowUpModal';
 import ThreeDotsModal from './ThreeDotsModal';
-import PreviewRxButton from './PreviewRxButton';
+//import PreviewRxButton from './PreviewRxButton';
 import Moment from 'moment';
 import DropDownPicker from 'react-native-dropdown-picker';
 import CheckBox from '@react-native-community/checkbox';
@@ -55,8 +55,8 @@ let severityArrySymptFind = [], severityArryDiagnostic = [];
 let clickItemIndex = 0, clickItemName = '', clickType = '';
 let doctorNotes = [];
 import { BehaviorSubject } from 'rxjs'
-let medicineSaveData = [];
-let selectedMedicinesData = [];
+let billingPreviewData={};
+
 
 class Consultation extends React.Component {
 	constructor(props) {
@@ -89,7 +89,6 @@ class Consultation extends React.Component {
 			isMedicineModalOpen: false,
 			MedicineArr: [],
 			SelectedMedicineArr: [],
-			selectedNewMedicineArr: [],
 			medicineSearchTxt: '',
 
 			investigationSearchTxt: '',
@@ -142,6 +141,7 @@ class Consultation extends React.Component {
 			medicineTypeArr: [],
 			medicineFoundStatus: '',
 			isHideConsultNowBtn: false,
+			isGettingBilingPreviewData: false,
 			textInputs: [],
 			medicineTypeSearchTxt: '',
 			InpborderColor2: Color.inputdefaultBorder,
@@ -194,7 +194,6 @@ class Consultation extends React.Component {
 			this.setState({ fld4: Color.primary })
 		}
 		else if (type == '5') {
-			//this.refs._scrollView.scrollTo(1000)
 			this.setState({ fld5: Color.primary })
 		}
 		else if (type == '6') {
@@ -379,7 +378,7 @@ class Consultation extends React.Component {
 				for (let i = 0; i < tmpArrMedicine.length; i++) {
 					tmpArrMedicine[i].medicineDosasesType = [{ medicineDoasesGuId: tmpArrMedicine[i].magicTabMedicineDoasesGuId, doasestype: tmpArrMedicine[i].magicTabDoasestype, medicineTypeGuid: tmpArrMedicine[i].magicTabMedicineTypeGuid }]
 					tmpArrMedicine[i].medicineTypeGuid = tmpArrMedicine[i].magicTabMedicineTypeGuid;
-					tmpArrMedicine[i].medicineIndex = 0;
+					tmpArrMedicine[i].medicineIndex=0;
 				}
 				console.log('----' + JSON.stringify(tmpArrMedicine));
 				//Investigation merge from copied
@@ -419,6 +418,22 @@ class Consultation extends React.Component {
 
 			}
 		});
+		this.getBillingPreview();
+	}
+	getBillingPreview=()=>{
+		let { actions, signupDetails } = this.props;
+		let params = {
+			"RoleCode": signupDetails.roleCode,
+			"UserGuid": signupDetails.UserGuid,
+			"DoctorGuid": signupDetails.doctorGuid,
+			"ClinicGuid": signupDetails.clinicGuid,
+			"Version": "",
+			"Data": {
+				"version": null,
+				"AppointmentGuid": signupDetails.appoinmentGuid,
+			}
+		}
+		actions.callLogin('V14/FuncForDrAppToConsulatationBillingPreview', 'post', params, signupDetails.accessToken, 'getBillingPreview');
 	}
 	setValueFromResponse = (data) => {
 		let patientConsultation = data;
@@ -492,50 +507,6 @@ class Consultation extends React.Component {
 		severityArrySymptFind = patientConsultation.severityMaster;
 		// severityArryDiagnostic = patientConsultation.diagnoisisStatusMaster;
 		severityArryDiagnostic = [patientConsultation.diagnoisisStatusMaster[2], patientConsultation.diagnoisisStatusMaster[1], patientConsultation.diagnoisisStatusMaster[0],];
-
-		try {
-			selectedMedicinesData = this.props?.responseDataVisitInfo.selectedMedicines ? this.props?.responseDataVisitInfo.selectedMedicines : [];
-			if(selectedMedicinesData && selectedMedicinesData.length>0)
-			for(let i=0;i<selectedMedicinesData.length;i++){
-				let doaseArr = selectedMedicinesData[i].medicineDosasesType;
-				if(doaseArr && doaseArr.length>0)
-					for(let j=0;j<doaseArr.length;j++){
-						if(doaseArr[j].doasestype==selectedMedicinesData[i].medicineType){
-							selectedMedicinesData[i].medicineDosasesTypeGuid = doaseArr[j].medicineDoasesGuId;
-						}
-					}
-				
-			}
-			console.log('----before group----', JSON.stringify(selectedMedicinesData))
-			medicineSaveData = selectedMedicinesData;
-			let dividedData = [];
-			let groupedData = Object.values(selectedMedicinesData.reduce((acc, obj, idx) => {
-				const key = obj.medicineName.trim();
-				if (!acc[key]) {
-					if (!obj.values) {
-						acc[key] = { medicineName: key, values: [] };
-					}
-				}
-				if (!obj.values) {
-					if (obj.medicineType) {
-						acc[key].values.push(obj);
-						// obj.medicineDosasesType.forEach((dossesType, index) => {
-						// 	if (dossesType.doasestype === obj.medicineType) {
-						// 		acc[key].values[idx].medicineDosasesTypeGuid = dossesType?.medicineDoasesGuId ? dossesType?.medicineDoasesGuId : null
-						// 	}
-						// })
-					}
-				} else {
-					dividedData.push(obj)
-				}
-				return acc;
-			}, {}));
-			dividedData = dividedData.concat(Object.values(groupedData));
-			console.log('----derive----', JSON.stringify(dividedData))
-			this.setState({ selectedNewMedicineArr: dividedData })
-		} catch (error) {
-
-		}
 	}
 	componentWillUnmount() {
 		Trace.stopTrace()
@@ -543,39 +514,29 @@ class Consultation extends React.Component {
 
 	savePage = () => {
 		Trace.stopTrace()
-		//vitalFlag || 
 		if (symptomFlag || findingFlag || diagnosticFlag || medicineFlag || instructionFlag || investigationFlag || notesFlag || procedureFlag) {
 			let { actions, signupDetails } = this.props;
 			let tmpMedicineArr = [...this.state.SelectedMedicineArr];
 			//console.log('-----tmpMedicineArr---' + JSON.stringify(tmpMedicineArr));
 			let tmpArr = []
 			try {
-				if (medicineSaveData && medicineSaveData.length > 0)
-					for (let i = 0; i < medicineSaveData.length; i++) {
-						if (!medicineSaveData[i].medicineDosasesTypeGuid) {
-							let doaseArr = medicineSaveData[i].medicineDosasesType;
-							medicineSaveData[i].medicineDosasesTypeGuid = doaseArr[0].medicineDoasesGuId;
-							medicineSaveData[i].medicineDosasesType = doaseArr[0].doasestype;
-							medicineSaveData[i].medicineType = doaseArr[0].doasestype;
+				if (tmpMedicineArr && tmpMedicineArr.length > 0)
+					for (let i = 0; i < tmpMedicineArr.length; i++) {
+						if(!tmpMedicineArr[i].medicineDosasesTypeGuid){
+							let doaseArr = tmpMedicineArr[i].medicineDosasesType;
+							let tempObj = Object.assign({ medicineDosasesTypeGuid: doaseArr[0].medicineDoasesGuId, }, tmpMedicineArr[i]); // medicineDosasesType: doaseArr[0].doasestype 
+							tempObj.medicineDosasesType = doaseArr[0].doasestype;
+							tempObj.medicineTimingShift = null;
+							tmpArr.push(tempObj);
+						}else{
+							tmpMedicineArr[i].medicineDosasesType=null;
+							tmpArr.push(tmpMedicineArr[i]);
 						}
 					}
-				// if (tmpMedicineArr && tmpMedicineArr.length > 0)
-				// 	for (let i = 0; i < tmpMedicineArr.length; i++) {
-				// 		let doaseArr = tmpMedicineArr[i].medicineDosasesType;
-				// 		let tempObj = Object.assign({ medicineDosasesTypeGuid: doaseArr[0].medicineDoasesGuId, }, tmpMedicineArr[i]); // medicineDosasesType: doaseArr[0].doasestype 
-				// 		tempObj.medicineDosasesType = doaseArr[0].doasestype;
-				// 		tempObj.medicineTimingShift = null;
-				// 		tmpArr.push(tempObj);
-				// 	}
-
 			} catch (error) {
 
 			}
 
-			if (medicineSaveData && medicineSaveData.length > 0)
-				medicineSaveData.forEach((val, index) => {
-					delete medicineSaveData[index].medicineDosasesType
-				})
 			//console.log('-----tmpArr---' + JSON.stringify(tmpArr));
 			let params = {
 				"UserGuid": signupDetails.UserGuid,
@@ -588,7 +549,7 @@ class Consultation extends React.Component {
 						"SymptomList": this.state.SelectedSymptomArr,
 						"FindingList": this.state.SelectedFindingArr,
 						"DiagnosisList": this.state.SelectedDiagnosticArr,
-						"MedicineList": medicineSaveData, //tmpArr
+						"MedicineList": tmpArr,
 						"InvestigationList": this.state.SelectedInvestigationArr,
 						"InstructionsList": this.state.SelectedInstructionArr,
 						"ProcedureList": this.state.SelectedProcedureArr,
@@ -608,7 +569,7 @@ class Consultation extends React.Component {
 				}
 			}
 			DRONA.setIsConsultationChange(false);
-			actions.callLogin('V1/FuncForDrAppToAddConsultationTabData', 'post', params, signupDetails.accessToken, 'ConsultationPageSave');
+			actions.callLogin('V16/FuncForDrAppToAddConsultationTabData', 'post', params, signupDetails.accessToken, 'ConsultationPageSave');
 		} else {
 			//this.props.nav.navigation.navigate('PreviewRx', { PreviewPdfPath: null, from: 'normalPrescription', consultId: null });
 			this.callPreviewRx();
@@ -621,7 +582,9 @@ class Consultation extends React.Component {
 				if (granted === PermissionsAndroid.RESULTS.GRANTED) {
 					this.getFuncForDrAppToConsulatationBillingPreview();
 				} else {
-					Alert.alert('Permission Denied!', 'You need to give storage permission to download the file');
+					Alert.alert('Permission Denied!', 'You need to give storage permission to download the file',[
+						{ text: "OK", onPress: () => Linking.openSettings() }
+					]);
 				}
 			} else {
 
@@ -632,97 +595,62 @@ class Consultation extends React.Component {
 		}
 	}
 	getFuncForDrAppToConsulatationBillingPreview = () => {
-		let { actions, signupDetails } = this.props;
-		DRONA.setIsReloadApi(true);
-		let params = {
-			"RoleCode": signupDetails.roleCode,
-			"UserGuid": signupDetails.UserGuid,
-			"DoctorGuid": signupDetails.doctorGuid,
-			"ClinicGuid": signupDetails.clinicGuid,
-			"Version": "",
-			"Data": {
-				"version": null,
-				"AppointmentGuid": signupDetails.appoinmentGuid,
-			}
+		 let { actions, signupDetails } = this.props;
+		// DRONA.setIsReloadApi(true);
+		// let params = {
+		// 	"RoleCode": signupDetails.roleCode,
+		// 	"UserGuid": signupDetails.UserGuid,
+		// 	"DoctorGuid": signupDetails.doctorGuid,
+		// 	"ClinicGuid": signupDetails.clinicGuid,
+		// 	"Version": "",
+		// 	"Data": {
+		// 		"version": null,
+		// 		"AppointmentGuid": signupDetails.appoinmentGuid,
+		// 	}
+		// }
+		// actions.callLogin('V14/FuncForDrAppToConsulatationBillingPreview', 'post', params, signupDetails.accessToken, 'consulatationBillingPreviewData');
+
+		if(billingPreviewData){
+			
+			billingPreviewData.prescriptionData.symptomList = this.state.SelectedSymptomArr;
+			billingPreviewData.prescriptionData.findingList = this.state.SelectedFindingArr;
+			billingPreviewData.prescriptionData.diagnosisList =  this.state.SelectedDiagnosticArr;
+			billingPreviewData.prescriptionData.medicineList = this.state.SelectedMedicineArr;
+			billingPreviewData.prescriptionData.investigationList = this.state.SelectedInvestigationArr
+			billingPreviewData.prescriptionData.instructionsList = this.state.SelectedInstructionArr
+			billingPreviewData.prescriptionData.vitalList = this.state.vitalsDataArray
+			billingPreviewData.prescriptionData.prescriptionNote = {
+				"prescriptionNoteGuid": noteGuid,
+				"prescriptionNoteName": this.state.notesData
+			};
+
 		}
-		actions.callLogin('V14/FuncForDrAppToConsulatationBillingPreview', 'post', params, signupDetails.accessToken, 'consulatationBillingPreviewData');
+		let cunsultationData = {
+				 "billingDetails": billingPreviewData.billingDetails,
+				"prescriptionData": billingPreviewData.prescriptionData,
+				"appointmentGuid": signupDetails.appoinmentGuid
+		}
+		this.props.nav.navigation.navigate('PreviewRx', { billingPreviewData: cunsultationData,  from: 'normalPrescription', consultId: null, PreviewPdfPath:'' });
 
 	}
 
-	// RefreshData = (val) => {
-	// 	if (val.isEdit) {
-	// 		let tmpARr = this.state.SelectedMedicineArr ? [...this.state.SelectedMedicineArr] : [];
-	// 		if (medicineAddUpdateFlag == 'add') {
-	// 			tmpARr.push(val.data);
-	// 		} else {
-	// 			tmpARr.splice(medicineIndex, 1, val.data);
-	// 		}
-	// 		medicineFlag = true;
-	// 		this.setState({ SelectedMedicineArr: tmpARr })
-	// 		DRONA.setIsConsultationChange(true);
-	// 	} else {
-	// 		medicineFlag = val.isEdit;
-	// 	}
-
-	// }
 	RefreshData = (val) => {
-		let tmpARr = [];
-		let ans = [];
 		if (val.isEdit) {
-			if (medicineAddUpdateFlag == 'update') {
-				let temp = [...this.state.selectedNewMedicineArr];
-				temp.forEach((ele, index) => {
-					if (ele.medicineName == val.data[0].medicineName) { // 0 ----> index
-						ele.values = val.data
-					}
-				})
-
-				this.setState({ selectedNewMedicineArr: temp })
+			let tmpARr = this.state.SelectedMedicineArr ? [...this.state.SelectedMedicineArr] : [];
+			if (medicineAddUpdateFlag == 'add') {
+				tmpARr.push(val.data);
 			} else {
-				ans = val.data;
-				let tmp = this.state.SelectedMedicineArr;
-				if (medicineAddUpdateFlag == 'add') {
-					if (tmp.length > 0) {
-						tmp.forEach((val) => {
-							ans.push(val)
-						})
-					}
-				} else {
-					tmpARr.splice(medicineIndexValVal, 1, val.data);
-				}
-
-				if (ans.length > 0) {
-					medicineSaveData = ans;
-				} else {
-					medicineSaveData = val.data;
-				}
-
-				let dividedData = [];
-				let groupedData = Object.values(ans.reduce((acc, obj) => {
-					const key = obj.medicineName.trim();
-					if (!acc[key]) {
-						if (!obj.values) {
-							acc[key] = { medicineName: key, values: [] };
-						}
-					}
-					if (!obj.values) {
-						acc[key].values.push(obj);
-					} else {
-						dividedData.push(obj)
-					}
-					return acc;
-				}, {}));
-				dividedData = dividedData.concat(Object.values(groupedData));
-
-				medicineFlag = true;
-				this.setState({ SelectedMedicineArr: ans.length > 0 ? ans : val.data, selectedNewMedicineArr: dividedData })
-				DRONA.setIsConsultationChange(true);
+				tmpARr.splice(medicineIndex, 1, val.data);
 			}
+			medicineFlag = true;
+			this.setState({ SelectedMedicineArr: tmpARr })
+			DRONA.setIsConsultationChange(true);
 		} else {
 			medicineFlag = val.isEdit;
 		}
 
 	}
+
 
 	async UNSAFE_componentWillReceiveProps(newProps) {
 		if (newProps.responseData && newProps.responseData.tag) {
@@ -975,8 +903,9 @@ class Consultation extends React.Component {
 					if (VitalAllData && VitalAllData.length > 0) {
 						for (let i = 0; i < VitalAllData.length; i++) {
 							tempAr.push(VitalAllData[i].vitalValue);
-							if (VitalAllData[i].vitalName == 'BMI')
-								bmiIndex = i
+							if (VitalAllData[i].vitalName == 'BMI') { bmiIndex = i }
+				if (VitalAllData[i].vitalName == 'BMI') { VitalAllData[i].vitalUnit = 'kg/m²' }
+				if (VitalAllData[i].vitalName == 'Temperature') { VitalAllData[i].vitalUnit = '°F' }
 						}
 						this.setState({ vitalsDataArrayAll: VitalAllData, textInputs: tempAr });
 					}
@@ -1091,6 +1020,9 @@ class Consultation extends React.Component {
 					//Snackbar.show({ text: 'Procedure not added. Please try again later', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });
 					this.setState({ ProcedureArr: normalListBackup, SelectedProcedureArr: selectedListBackup });
 				}
+			} else if( tagname === 'getBillingPreview'){
+				billingPreviewData = newProps.responseData.data;
+				this.setState({isGettingBilingPreviewData:true});
 			}
 		}
 	}
@@ -1511,38 +1443,15 @@ class Consultation extends React.Component {
 
 	}
 	removeSelectedMedicine = (item, index) => {
-		// let tempserviceArr = [...this.state.MedicineArr];
-		// let selectedTempserviceArr = [...this.state.SelectedMedicineArr];
-		// normalListBackup = [...this.state.MedicineArr];
-		// selectedListBackup = [...this.state.SelectedMedicineArr];
-
-		// tempserviceArr.push(item)
-		// selectedTempserviceArr.splice(index, 1);
-		// this.setState({ SelectedMedicineArr: selectedTempserviceArr, MedicineArr: tempserviceArr })
-		// medicineFullArray.push(item)
-		// medicineFlag = true;
-
 		let tempserviceArr = [...this.state.MedicineArr];
+		let selectedTempserviceArr = [...this.state.SelectedMedicineArr];
 		normalListBackup = [...this.state.MedicineArr];
-		let tempServiceArr = [...this.state.selectedNewMedicineArr];
-		selectedListBackup = [...this.state.selectedNewMedicineArr];
+		selectedListBackup = [...this.state.SelectedMedicineArr];
 
-		// tempserviceArr.push(item)
-
-		/* for unique medicine*/
-		let newTempserviceArr = [];
-		tempserviceArr.forEach((item) => {
-			if (newTempserviceArr.indexOf(item) === -1) {
-				newTempserviceArr.push(item);
-			}
-		});
-
-		tempserviceArr = newTempserviceArr;
-		tempServiceArr.splice(index, 1);
-		this.setState({ selectedNewMedicineArr: tempServiceArr, MedicineArr: tempserviceArr, SelectedMedicineArr: tempServiceArr })
-		if (!medicineFullArray.some(obj => obj.medicineName === item.medicineName)) {
-			medicineFullArray.push({ medicineName: item.medicineName })
-		}
+		tempserviceArr.push(item)
+		selectedTempserviceArr.splice(index, 1);
+		this.setState({ SelectedMedicineArr: selectedTempserviceArr, MedicineArr: tempserviceArr })
+		medicineFullArray.push(item)
 		medicineFlag = true;
 	}
 
@@ -2465,7 +2374,7 @@ class Consultation extends React.Component {
 			tempStr += ', ' + item.durationType + ' ';
 		if (tempStr)
 			tempStr = '(' + tempStr + ')'
-		tempStr = item.medicineName + ' ' + tempStr
+		// tempStr = item.medicineName + ' ' + tempStr
 
 		return tempStr;
 	}
@@ -2746,7 +2655,7 @@ class Consultation extends React.Component {
 		return (
 			<View style={{ flex: 1, backgroundColor: Color.lightGrayBg }}>
 				<View style={{ flex: 1 }}>
-					<ScrollView style={{ marginBottom: responsiveHeight(2) }} ref='_scrollView'>
+					<ScrollView style={{ marginBottom: responsiveHeight(2) }}>
 						<View style={{ flex: 1 }}>
 							{/* -----------Upload Hand wtitten prescription Button-------- */}
 							<TouchableOpacity onPress={() => {
@@ -3093,8 +3002,8 @@ class Consultation extends React.Component {
 										<TouchableOpacity onPress={() => {
 											let { signupDetails } = this.props;
 											timeRange = Trace.getTimeRange();
-											Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Medicines', signupDetails.firebaseLocation)
-											Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Medicines", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+											Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Medicines', signupDetails.firebaseLocation)
+											Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Medicines", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
 											this.setState({ isSearchStart: false, isMedicineModalOpen: !this.state.isMedicineModalOpen, medTiming: medTiming, medicineSearchTxt: '', MedicineArr: medicineFullArray })
 										}}>
 											<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -3105,59 +3014,31 @@ class Consultation extends React.Component {
 											</View>
 										</TouchableOpacity>}
 
-									{
-										this.state.selectedNewMedicineArr.length > 0 && this.state.selectedNewMedicineArr.map((val, index) => {
-											return (
-												<View style={[this.state.selectedNewMedicineArr.length > 0 ? styles.selectedView : null,
-												{
-													flexDirection: 'row',
-													justifyContent: 'space-between',
-													margin: responsiveWidth(1.6),
-													flex: 1,
-												}]}>
-													<TouchableOpacity
-														style={{ flex: 4 }}
-														onPress={() => {
-															let medicineUnitVal = [...this.state.MedicineArr];
-															let { signupDetails } = this.props;
-															console.log('======= medicineUnitVal ======', JSON.stringify(medicineUnitVal))
-															// console.log('======= val.value ======', JSON.stringify(ele.values))
-															let temp = [...this.state.selectedNewMedicineArr]
-															const tempData = temp.filter((ele, index) => {
-																if (ele.medicineName === val.medicineName) {
-																	return ele
-																}
-															})
-
-															console.log('======= tempData ======', JSON.stringify(tempData))
-															setLogEvent("medicine", { "select_medicine": "click", UserGuid: signupDetails.UserGuid })
-															Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Select_Medicine", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
-															this.setState({ isMedicineModalOpen: false })
-															// medicineIndexValVal = index;
-															medicineAddUpdateFlag = 'update';
-															this.props.nav.navigation.navigate('MedicineDetails', { doctorNotes: doctorNotes, medicineUnitVal: medicineUnitVal, item: val?.values, medTiming: medTiming, Refresh: this.RefreshData });
-														}}
-													>
-														{val?.values?.map((item, index) => {
-															return (
-																<View >
-																	<Text style={styles.txtSelect}>{this.getSelectedMMedicineTxt(item)}</Text>
-																</View>);
-														}, this)}
-													</TouchableOpacity>
-													<TouchableOpacity style={styles.crossSelected}
-														onPress={() => {
-															let { signupDetails } = this.props;
-															setLogEvent("delete_medicine", { UserGuid: signupDetails.UserGuid })
-															Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Delete_Medicine", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
-															this.removeSelectedMedicine(val, index)
-														}}>
-														<Image source={cross_close} style={{ height: responsiveWidth(3), width: responsiveWidth(3), resizeMode: 'contain' }} />
-													</TouchableOpacity>
-												</View>
-											)
-										})
-									}
+									<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', marginLeft: responsiveWidth(-1.6) }}>
+										{this.state.SelectedMedicineArr && this.state.SelectedMedicineArr.length > 0 ? this.state.SelectedMedicineArr.map((item, index) => {
+											return (<View style={styles.selectedView} >
+												<TouchableOpacity onPress={() => {
+													let { signupDetails } = this.props;
+													setLogEvent("medicine", { "select_medicine": "click", UserGuid: signupDetails.UserGuid })
+													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Select_Medicine", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+													this.setState({ isMedicineModalOpen: false })
+													medicineIndex = index;
+													medicineAddUpdateFlag = 'update';
+													this.props.nav.navigation.navigate('MedicineDetails', { item: item, medTiming: medTiming, Refresh: this.RefreshData, doctorNotes: doctorNotes, });
+												}} style={{ maxWidth: responsiveWidth(82) }}>
+													<Text style={[styles.txtSelect, { textTransform: 'uppercase' }]}>{item.medicineName}<Text style={styles.txtSelect}>{this.getSelectedMMedicineTxt(item)}</Text></Text>
+												</TouchableOpacity>
+												<TouchableOpacity style={styles.crossSelected}
+													onPress={() => {
+														let { signupDetails } = this.props;
+														setLogEvent("delete_medicine", { UserGuid: signupDetails.UserGuid })
+														Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Delete_Medicine", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
+														this.removeSelectedMedicine(item, index)
+													}}>
+													<Image source={cross_close} style={{ height: responsiveWidth(3), width: responsiveWidth(3), resizeMode: 'contain' }} />
+												</TouchableOpacity></View>);
+										}, this) : null}
+									</View>
 									{this.state.isMedicineModalOpen ? <View>
 										<View style={[styles.searchView, { borderColor: this.state.fld5, borderWidth: 1 }]}>
 											<TextInput returnKeyType="done"
@@ -3168,8 +3049,8 @@ class Consultation extends React.Component {
 												onChangeText={(medicineSearchTxt) => {
 													let { signupDetails } = this.props;
 													setLogEvent("patient_consultation", { "search_medicine": "search", UserGuid: signupDetails.UserGuid, "keyword": medicineSearchTxt })
-													Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType + 'Medicine_Search', signupDetails.firebaseLocation)
-													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Medicine_Search", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
+													Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Medicine_Search', signupDetails.firebaseLocation)
+													Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Medicine_Search", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
 													this.SearchMedicine(medicineSearchTxt)
 												}} maxLength={30} />
 											{this.state.medicineSearchTxt ? <TouchableOpacity style={{ alignSelf: 'center' }} onPress={() => { this.setState({ medicineSearchTxt: '', MedicineArr: medicineFullArray }); }}>
@@ -3180,15 +3061,13 @@ class Consultation extends React.Component {
 										<View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', marginLeft: responsiveWidth(-1.6), marginTop: responsiveHeight(1.8) }}>
 											{this.state.MedicineArr && this.state.MedicineArr.length > 0 ? this.state.MedicineArr.map((item, index) => {
 												return (<TouchableOpacity style={styles.unselectView} onPress={() => {
-													let medicineUnitVal = [...this.state.MedicineArr];
 													this.setState({ isMedicineModalOpen: false })
-													medicineIndexValVal = index;
+													medicineIndex = index;
 													medicineAddUpdateFlag = 'add';
-													this.props.nav.navigation.navigate('MedicineDetails', { doctorNotes: doctorNotes, medicineUnitVal: medicineUnitVal, item: item.values ? item.values : item, medTiming: medTiming, Refresh: this.RefreshData });
+													this.props.nav.navigation.navigate('MedicineDetails', { item: item, medTiming: medTiming, Refresh: this.RefreshData, doctorNotes: doctorNotes, });
 													// this.clickOnMedicine(item, index)
 												}} >
-													{/* <Text style={[styles.unselectTxtColor, { marginRight: responsiveWidth(1) }]}>{item.medicineName + ' ' + item?.strength}</Text> */}
-													<Text style={[styles.unselectTxtColor, { marginRight: responsiveWidth(1) }]}>{item.medicineName}</Text>
+													<Text style={[styles.unselectTxtColor, { marginRight: responsiveWidth(1),textTransform: 'uppercase' }]}>{item.medicineName}</Text>
 													<Text style={{ marginRight: responsiveWidth(2), fontSize: CustomFont.font12, color: Color.fontColor, opacity: .6, fontFamily: CustomFont.fontName }}>{item.medicineType && item.medicineType.length > 3 ? item.medicineType.substr(0, 3) : item.medicineType}</Text>
 												</TouchableOpacity>
 												);
@@ -3197,7 +3076,7 @@ class Consultation extends React.Component {
 										{
 											this.state.isSearchStart && this.state.medicineSearchTxt ?
 												<TouchableOpacity onPress={this.addPressClick} style={{ margin: responsiveWidth(3), alignItems: 'center', justifyContent: 'center' }}>
-													<Text style={{ color: Color.primaryBlue, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: CustomFont.fontWeight700 }}> + Add '{this.state.medicineSearchTxt}' as a New Medicine</Text>
+													<Text style={{ color: Color.primaryBlue, fontSize: CustomFont.font14, fontFamily: CustomFont.fontName, fontWeight: CustomFont.fontWeight700 }}> + Add <Text style={{ textTransform: 'capitalize' }}>'{this.state.medicineSearchTxt}'</Text> as a New Medicine</Text>
 												</TouchableOpacity> : null
 										}
 									</View> : null}
@@ -3515,7 +3394,7 @@ class Consultation extends React.Component {
 												DRONA.setIsConsultationChange(true);
 											}} maxLength={2000} />
 										<View style={{ alignItems: 'flex-end' }}>
-											<Text style={{ fontSize: CustomFont.font10, color: Color.fontColor, marginRight: responsiveHeight(3), marginTop: 5, opacity: .4 }}>{this.state.notesData.length} / 2000</Text>
+											<Text style={{ fontSize: CustomFont.font10, color: Color.fontColor, marginRight: responsiveHeight(3), marginTop: 5, opacity: .4 }}>{this.state.notesData ? this.state.notesData.length :'0'} / 2000</Text>
 
 										</View>
 									</View> : null}
@@ -3532,7 +3411,7 @@ class Consultation extends React.Component {
 					<View style={{ backgroundColor: Color.white, flexDirection: 'row', alignItems: 'center', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 10, justifyContent: 'center' }}>
 
 						<ThreeDotsModal item={this.props.item} nav={{ navigation: this.props.nav.navigation }} RefreshPatient={this.RefreshPatient} />
-						{!appointmentStatus || (appointmentStatus == 'No Show' || appointmentStatus == 'Cancelled' || appointmentStatus == 'Completed' || signupDetails.isAssistantUser || !signupDetails.appoinmentGuid || (this.props.item.consultationType == 'Virtual' && !this.props.item.isPaymentReceived) || this.state.isHideConsultNowBtn || signupDetails.returnValueFromTwilio)
+						{!appointmentStatus || (appointmentStatus == 'No Show' || appointmentStatus == 'Cancelled' || appointmentStatus == 'Completed' || signupDetails.isAssistantUser || !signupDetails.appoinmentGuid || (this.props.item.consultationType == 'Virtual' && !this.props.item.isPaymentReceived) || this.state.isHideConsultNowBtn || signupDetails.returnValueFromTwilio || !this.state.isGettingBilingPreviewData)
 							?
 							<View style={{ height: responsiveHeight(6), width: responsiveWidth(78), justifyContent: 'center', alignItems: 'center', marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), backgroundColor: Color.disabledBtn, borderRadius: 5, marginTop: 7, marginBottom: 7 }}>
 								<Text style={{ fontFamily: CustomFont.fontName, color: Color.white, fontSize: CustomFont.font14, textAlign: 'center', fontWeight: CustomFont.fontWeight600 }}>Save & Preview Rx</Text>
@@ -3551,7 +3430,7 @@ class Consultation extends React.Component {
 
 
 						}
-						<PreviewRxButton nav={{ navigation: this.props.nav.navigation }} showCall={this.props.showCall} item={this.props.item} />
+						{/* <PreviewRxButton nav={{ navigation: this.props.nav.navigation }} showCall={this.props.showCall} item={this.props.item} /> */}
 					</View>
 				</View>
 				{/* ------------ Language Modal ---------------  */}
@@ -3576,7 +3455,7 @@ class Consultation extends React.Component {
 				</Modal>
 
 				{/* -----------Vital  modal------------------- */}
-				<Modal isVisible={this.state.isModalVisibleVital} avoidKeyboard={true}
+				<Modal isVisible={this.state.isModalVisibleVital} avoidKeyboard={true} style={{marginTop: Platform.OS=='android' ? responsiveHeight(5) : responsiveHeight(3)}}
 					onRequestClose={() => this.setState({ isModalVisibleVital: false })}>
 					<View style={styles.modelViewAbout}>
 						<View style={{ marginStart: 0, margin: responsiveWidth(5), marginEnd: 0, flex: 1, marginBottom: responsiveHeight(15), paddingTop: this.state.dynamicTop, paddingBottom: this.state.dynamicBottom }}>

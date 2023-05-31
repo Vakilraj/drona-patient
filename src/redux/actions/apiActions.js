@@ -78,10 +78,10 @@ const showAert = (tagName, msg) => {
 export function callLogin(url, apiType, params, token, tagName = null) {
   let baseUrl = "";
   if (tagName === 'afterShareLink' || tagName === 'getserverDateTime') {
-    baseUrl = 'https://mnkdrona-apim.azure-api.net/WebApp/Stag/';
+    baseUrl = 'https://mnkdrona-apim.azure-api.net/WebApp/Dev/';
   }
   else {
-    baseUrl = 'https://mnkdrona-apim.azure-api.net/DoctorApp/Stag/'  // Dev  Pilot Stag Live
+    baseUrl = 'https://mnkdrona-apim.azure-api.net/DoctorApp/Dev/'  // Dev  Pilot Stag Live
   }
   //console.log('-------->>>------'+DRONA.getIsServiceVailable())
   //if(DRONA.getIsServiceVailable()){

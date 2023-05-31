@@ -291,23 +291,23 @@ class AddAssistant extends React.Component {
         return <View style={{ marginLeft: 1 }} />;
     };
     searchAssistantWithMobile = (mobileNumber) => {
-        // if (mobileNumber) {
-        //     if (Validator.isMobileValidate(mobileNumber)) {
-        //         this.setState({ mobileNumber: mobileNumber });
-        //         if (mobileNumber.length == 10) {
-        //             let { actions, signupDetails } = this.props;
-        //             let params = {
-        //                 "DoctorGuid": signupDetails.doctorGuid,
-        //                 "ClinicGuid": DRONA.getClinicGuid(),
-        //                 "UserGuid": signupDetails.UserGuid,
-        //                 "Data": {
-        //                     "PhoneNo": mobileNumber
-        //                 }
-        //             }
-        //             actions.callLogin('V15/FuncForDrAppToSearchAssistanceDetails', 'post', params, signupDetails.accessToken, 'searchAssistant');
-        //         }
-        //     }
-        // } else
+        if (mobileNumber) {
+            if (Validator.isMobileValidate(mobileNumber)) {
+                this.setState({ mobileNumber: mobileNumber });
+                if (mobileNumber.length == 10) {
+                    let { actions, signupDetails } = this.props;
+                    let params = {
+                        "DoctorGuid": signupDetails.doctorGuid,
+                        "ClinicGuid": DRONA.getClinicGuid(),
+                        "UserGuid": signupDetails.UserGuid,
+                        "Data": {
+                            "PhoneNo": mobileNumber
+                        }
+                    }
+                    actions.callLogin('V15/FuncForDrAppToSearchAssistanceDetails', 'post', params, signupDetails.accessToken, 'searchAssistant');
+                }
+            }
+        } else
             this.setState({ mobileNumber });
     }
 

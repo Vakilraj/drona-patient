@@ -289,6 +289,7 @@ class PrescriptionCopyPad extends React.Component {
 		return (
 			<View style={{ flex: 1, backgroundColor: Color.lightGrayBg, }}>
 				<View style={{ flex: 1 }}>
+					{console.log('======= this.state.PastRxDataArray =======', JSON.stringify(this.state.PastRxDataArray))}
 					{this.state.PastRxDataArray ?
 						<View style={{ flex: 1 }}>
 							<FlatList

@@ -57,6 +57,7 @@ let doctorNotes = [];
 import { BehaviorSubject } from 'rxjs'
 let medicineSaveData = [];
 let selectedMedicinesData = [];
+let medicineIndexValVal;
 
 class Consultation extends React.Component {
 	constructor(props) {
@@ -194,7 +195,6 @@ class Consultation extends React.Component {
 			this.setState({ fld4: Color.primary })
 		}
 		else if (type == '5') {
-			//this.refs._scrollView.scrollTo(1000)
 			this.setState({ fld5: Color.primary })
 		}
 		else if (type == '6') {
@@ -281,14 +281,14 @@ class Consultation extends React.Component {
 		const nameSubject = new BehaviorSubject('initRxjs');
 		DRONA.setRxjsContext(nameSubject);
 		DRONA.getRxjsContext().subscribe(data => {
-			console.log('----++++---====' + JSON.stringify(data));
+			// console.log('----++++---====' + JSON.stringify(data));
 			if (data != 'initRxjs') {
 				let FullResArr = data.fullres;
 				let selectedArr = data.selectedItem;
 				let selSymptomArr = [], selFindingArr = [], selDiagnosticArr = [], selMedicineArr = [], selInvestigationArr = [], selInstructionArr = [], selProcedureArr = [];
 				for (let i = 0; i < selectedArr.length; i++) {
 					let innerDataArr = selectedArr[i];
-					for (j = 0; j < innerDataArr.length; j++) {
+					for (let j = 0; j < innerDataArr.length; j++) {
 						if (innerDataArr[j].isSelect && innerDataArr[j].prefix == 'Sx') {
 							let symptomArr = FullResArr[i].selectedSymptoms;
 							selSymptomArr = selSymptomArr.concat(symptomArr);
@@ -379,9 +379,9 @@ class Consultation extends React.Component {
 				for (let i = 0; i < tmpArrMedicine.length; i++) {
 					tmpArrMedicine[i].medicineDosasesType = [{ medicineDoasesGuId: tmpArrMedicine[i].magicTabMedicineDoasesGuId, doasestype: tmpArrMedicine[i].magicTabDoasestype, medicineTypeGuid: tmpArrMedicine[i].magicTabMedicineTypeGuid }]
 					tmpArrMedicine[i].medicineTypeGuid = tmpArrMedicine[i].magicTabMedicineTypeGuid;
-					tmpArrMedicine[i].medicineIndex = 0;
+					// tmpArrMedicine[i].medicineIndex = 0;
 				}
-				console.log('----' + JSON.stringify(tmpArrMedicine));
+				// console.log('----' + JSON.stringify(tmpArrMedicine));
 				//Investigation merge from copied
 				let tmpArrInvestigation = [...this.state.SelectedInvestigationArr];
 				for (let i = selInvestigationArr.length - 1; i >= 0; i--) {
@@ -413,8 +413,63 @@ class Consultation extends React.Component {
 						tmpArrProcedure.push(selProcedureArr[i])
 					}
 				}
+				let tempData = [...this.state.selectedNewMedicineArr];
+				// console.log('======= tempData ======', JSON.stringify(tempData));
+				// console.log('======= tmpArrMedicine ======', JSON.stringify(tmpArrMedicine));
+				let dividedData = [];
+				if (tempData.length > 0) {
+					let groupedData = Object.values(tmpArrMedicine.reduce((acc, obj) => {
+						const key = obj.medicineName.toUpperCase().trim();
+						if (!acc[key]) {
+							if (!obj.values) {
+								acc[key] = { medicineName: key, values: [] };
+							}
+						}
+						if (!obj.values) {
+							acc[key].values.push(obj);
+						} else {
+							dividedData.push(obj)
+						}
+						return acc;
+					}, {}));
+					dividedData = dividedData.concat(Object.values(groupedData));
+					medicineFlag = true;
+				} else {
+					dividedData = tempData;
+					let groupedData = Object.values(tmpArrMedicine.reduce((acc, obj) => {
+						const key = obj.medicineName.toUpperCase().trim();
+						if (!acc[key]) {
+							if (!obj.values) {
+								acc[key] = { medicineName: key, values: [] };
+							}
+						}
+						if (!obj.values) {
+							acc[key].values.push(obj);
+						} else {
+							dividedData.push(obj)
+						}
+						return acc;
+					}, {}));
+					dividedData = dividedData.concat(Object.values(groupedData));
+				}
 
-				this.setState({ SelectedSymptomArr: tmpArrSymp, SelectedFindingArr: tmpArrFinding, SelectedDiagnosticArr: tmpArrDiagnostic, SelectedMedicineArr: tmpArrMedicine, SelectedInvestigationArr: tmpArrInvestigation, SelectedInstructionArr: tmpArrInstruction, SelectedProcedureArr: tmpArrProcedure })
+				console.log('======= before dividedData =====', JSON.stringify(dividedData));
+
+				let temp = [...dividedData]
+				let objData = [];
+				temp.forEach((ele) => {
+					if (ele.values) {
+						ele.values.forEach((val) => {
+							objData.push(val);
+						})
+					}
+				})
+				medicineSaveData = objData
+
+				console.log('======= after dividedData =====', JSON.stringify(objData));
+
+				this.setState({ SelectedSymptomArr: tmpArrSymp, SelectedFindingArr: tmpArrFinding, SelectedDiagnosticArr: tmpArrDiagnostic, SelectedMedicineArr: tmpArrMedicine, selectedNewMedicineArr: dividedData, SelectedInvestigationArr: tmpArrInvestigation, SelectedInstructionArr: tmpArrInstruction, SelectedProcedureArr: tmpArrProcedure })
+				medicineFlag = true;
 				//console.log('-----++++--' + JSON.stringify(selSymptomArr));
 
 			}
@@ -495,18 +550,18 @@ class Consultation extends React.Component {
 
 		try {
 			selectedMedicinesData = this.props?.responseDataVisitInfo.selectedMedicines ? this.props?.responseDataVisitInfo.selectedMedicines : [];
-			if(selectedMedicinesData && selectedMedicinesData.length>0)
-			for(let i=0;i<selectedMedicinesData.length;i++){
-				let doaseArr = selectedMedicinesData[i].medicineDosasesType;
-				if(doaseArr && doaseArr.length>0)
-					for(let j=0;j<doaseArr.length;j++){
-						if(doaseArr[j].doasestype==selectedMedicinesData[i].medicineType){
-							selectedMedicinesData[i].medicineDosasesTypeGuid = doaseArr[j].medicineDoasesGuId;
+			if (selectedMedicinesData && selectedMedicinesData.length > 0)
+				for (let i = 0; i < selectedMedicinesData.length; i++) {
+					let doaseArr = selectedMedicinesData[i].medicineDosasesType;
+					if (doaseArr && doaseArr.length > 0)
+						for (let j = 0; j < doaseArr.length; j++) {
+							if (doaseArr[j].doasestype == selectedMedicinesData[i].medicineType) {
+								selectedMedicinesData[i].medicineDosasesTypeGuid = doaseArr[j].medicineDoasesGuId;
+							}
 						}
-					}
-				
-			}
-			console.log('----before group----', JSON.stringify(selectedMedicinesData))
+
+				}
+			// console.log('----before group----', JSON.stringify(selectedMedicinesData))
 			medicineSaveData = selectedMedicinesData;
 			let dividedData = [];
 			let groupedData = Object.values(selectedMedicinesData.reduce((acc, obj, idx) => {
@@ -519,11 +574,6 @@ class Consultation extends React.Component {
 				if (!obj.values) {
 					if (obj.medicineType) {
 						acc[key].values.push(obj);
-						// obj.medicineDosasesType.forEach((dossesType, index) => {
-						// 	if (dossesType.doasestype === obj.medicineType) {
-						// 		acc[key].values[idx].medicineDosasesTypeGuid = dossesType?.medicineDoasesGuId ? dossesType?.medicineDoasesGuId : null
-						// 	}
-						// })
 					}
 				} else {
 					dividedData.push(obj)
@@ -531,8 +581,9 @@ class Consultation extends React.Component {
 				return acc;
 			}, {}));
 			dividedData = dividedData.concat(Object.values(groupedData));
-			console.log('----derive----', JSON.stringify(dividedData))
+			// console.log('----derive----', JSON.stringify(dividedData))
 			this.setState({ selectedNewMedicineArr: dividedData })
+			medicineFlag = true
 		} catch (error) {
 
 		}
@@ -542,6 +593,8 @@ class Consultation extends React.Component {
 	}
 
 	savePage = () => {
+		console.log('========= medicineSaveData =======', JSON.stringify(medicineSaveData));
+		console.log('========= medicineFlag =======', medicineFlag);
 		Trace.stopTrace()
 		//vitalFlag || 
 		if (symptomFlag || findingFlag || diagnosticFlag || medicineFlag || instructionFlag || investigationFlag || notesFlag || procedureFlag) {
@@ -676,8 +729,17 @@ class Consultation extends React.Component {
 						ele.values = val.data
 					}
 				})
-
+				let objData = [];
+				temp.forEach((ele) => {
+					if (ele.values) {
+						ele.values.forEach((val) => {
+							objData.push(val);
+						})
+					}
+				})
+				medicineSaveData = objData
 				this.setState({ selectedNewMedicineArr: temp })
+				medicineFlag = true;
 			} else {
 				ans = val.data;
 				let tmp = this.state.SelectedMedicineArr;
@@ -2439,6 +2501,7 @@ class Consultation extends React.Component {
 		//this.dismissDialog()
 	}
 	getSelectedMMedicineTxt = (item) => {
+		// console.log('=========== item ===========', JSON.stringify(item))
 		// let tempStr = '';
 		// if (item.dosages)
 		// 	tempStr = item.dosages + ' ' + item.medicineType;
@@ -2454,7 +2517,7 @@ class Consultation extends React.Component {
 		// tempStr = item.medicineName + ' ' + tempStr
 
 		let tempStr = '';
-		if (item.dosages)
+		if (item.medicineType)
 			tempStr = item.medicineType;
 
 		if (item.dosagePattern)
@@ -2746,7 +2809,7 @@ class Consultation extends React.Component {
 		return (
 			<View style={{ flex: 1, backgroundColor: Color.lightGrayBg }}>
 				<View style={{ flex: 1 }}>
-					<ScrollView style={{ marginBottom: responsiveHeight(2) }} ref='_scrollView'>
+					<ScrollView style={{ marginBottom: responsiveHeight(2) }}>
 						<View style={{ flex: 1 }}>
 							{/* -----------Upload Hand wtitten prescription Button-------- */}
 							<TouchableOpacity onPress={() => {
@@ -3107,6 +3170,7 @@ class Consultation extends React.Component {
 
 									{
 										this.state.selectedNewMedicineArr.length > 0 && this.state.selectedNewMedicineArr.map((val, index) => {
+											// { console.log('======= this.state.selectedNewMedicineArr ======', JSON.stringify(this.state.selectedNewMedicineArr)) }
 											return (
 												<View style={[this.state.selectedNewMedicineArr.length > 0 ? styles.selectedView : null,
 												{
@@ -3120,7 +3184,7 @@ class Consultation extends React.Component {
 														onPress={() => {
 															let medicineUnitVal = [...this.state.MedicineArr];
 															let { signupDetails } = this.props;
-															console.log('======= medicineUnitVal ======', JSON.stringify(medicineUnitVal))
+															// console.log('======= medicineUnitVal ======', JSON.stringify(medicineUnitVal))
 															// console.log('======= val.value ======', JSON.stringify(ele.values))
 															let temp = [...this.state.selectedNewMedicineArr]
 															const tempData = temp.filter((ele, index) => {
@@ -3129,7 +3193,7 @@ class Consultation extends React.Component {
 																}
 															})
 
-															console.log('======= tempData ======', JSON.stringify(tempData))
+															// console.log('======= tempData ======', JSON.stringify(tempData))
 															setLogEvent("medicine", { "select_medicine": "click", UserGuid: signupDetails.UserGuid })
 															Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Select_Medicine", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.firebaseSpeciality })
 															this.setState({ isMedicineModalOpen: false })

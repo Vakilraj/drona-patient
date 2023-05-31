@@ -310,6 +310,7 @@ class MedicineDetails extends React.Component {
 			saveData[index].appointmentGuid = signupDetails.appoinmentGuid;
 			saveData[index].medicineName = saveData[0].medicineName;
 			saveData[index].medicineIndex = index;
+			saveData[index].strength = item[0]?.strength ? item[0]?.strength : null;
 			 //saveData[index].medicineDosasesTypeGuid = 'c7221d1c-8579-11eb-996a-0022486b91c8';
 			saveData[index].durationValue = 0;
 			saveData[index].dosages = null;
@@ -715,6 +716,7 @@ class MedicineDetails extends React.Component {
 						let temp = [...this.state.taperedData];
 						temp[index].medicineTimingFrequency = item.value
 					}}
+					defaultValue={item?.medicineTimingFrequency}
 					globalTextStyle={{ color: Color.fontColor, fontSize: CustomFont.font16 }}
 					placeholder="Empty Stomach"
 					placeholderStyle={{ color: Color.placeHolderColor, fontSize: CustomFont.font16 }}
@@ -914,7 +916,7 @@ class MedicineDetails extends React.Component {
 						/>
 						<TouchableOpacity
 							onPress={() => {
-								let tempArr = this.state.taperedData;
+								let tempArr = [...this.state.taperedData];
 								let tempObj = {};//tempArr[0];
 								tempArr.push(tempObj);
 								this.setState({ taperedData: tempArr });

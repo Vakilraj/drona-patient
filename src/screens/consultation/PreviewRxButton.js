@@ -329,7 +329,7 @@ class PreviewRxButton extends React.Component {
 			}
 		}
 		return temp
-    }
+	}
 	// medicineListView = (medicineList) => {
 	// 	let temp = []
 	// 	for (var i = 0; i < medicineList.length; i++) {
@@ -500,16 +500,28 @@ class PreviewRxButton extends React.Component {
 	showmedicineListViewList = (medicineList) => {
 		if (medicineList && medicineList.length > 0) {
 			let temp = []
-			for (var i = 0; i < medicineList.length; i++) {
-				let index = i + 1
+			for (let j = 0; j < medicineList.length; j++) {
+				let index = j + 1
 				const htmlCode = `
-				 <tr>
-				 <td style="width:8%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;">`+ index + `</td>
-				 <td style="width:35%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;text-transform: capitalize;"><b>`+ medicineList[i].medicineName + ` ` +  `</b></br>` + `(<i>` + medicineList[i].medicineDesc + `</i>)` + `</td>
-					<td style="width:40%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;text-transform: capitalize;"> `+ (medicineList[i].dosagePattern) + (!medicineList[i].medicineTimingFrequency || medicineList[i].medicineTimingFrequency == 'No Preference' ? '' : ' (' + medicineList[i].medicineTimingFrequency + ')') + ` </br> ` + 'dose: ' + medicineList[i].dosages + `, ` + medicineList[i].durationValue + ` ` + medicineList[i].durationType + ` </td>
-					<td style="width:25%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;text-transform: capitalize;">`+ medicineList[i].note + `</td>
-				  </tr>
-				 `
+					 <tr>
+					 <td style="width:8%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;">`+ index + `</td>
+					 <td style="width:35%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;text-transform: capitalize;"><b>`+ medicineList[j].medicineName + ` ` + medicineList[j].strength + `</b></br>` + `(<i>` + medicineList[j].medicineDesc + `</i>)` + `</td>
+					 <td style="width:40%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;text-transform: capitalize;">
+					 ${
+					medicineList[j].values.map((val) => {
+						return (`<div > `+ val.medicineType + `<i>-` + val.medicineTimingFrequency + ` -</i>` + val.durationType + ` - (<i>` + `<Span> from <Span>` + val.startFrom + `<span>to</span> ` + val.to + `</i>)` + ` </div>`)
+					})	
+					 }
+					 </td>
+					 <td style="width:25%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;text-transform: capitalize;">
+					 ${
+					medicineList[j].values.map((val) => {
+						return (`<div>`+ val.note + `</div>`)
+					})	
+					 }
+					 </td>
+					  </tr>
+					 `
 				temp.push(htmlCode)
 			}
 
@@ -517,9 +529,9 @@ class PreviewRxButton extends React.Component {
 			<table style="width:100%;margin-top: 20px" >  
 		<tr style="display: table-row; vertical-align: inherit;border-color: inherit; ">
 			<th width="8%" style="background-color: #14091529;color: #000;text-align: left;font-size: 12px;font-weight: 700;
-		  border-left: 1px solid #f1f1f1; padding: 8px;line-height: 1.42857143;" rowspan="2">`+ Rx + ` </th>
+		  border-left: 1px solid #f1f1f1; padding: 8px;line-height: 1.42857143;" rowspan="2">`+ Rx + ` :</th>
 			<th width="35%" style="background-color: #14091529;color: #000;text-align: left;font-size: 12px;font-weight: 700;
-		  border-left: 1px solid #f1f1f1; padding: 8px;line-height: 1.42857143;" rowspan="2">`+ medicine + ` </th>
+		  border-left: 1px solid #f1f1f1; padding: 8px;line-height: 1.42857143;" rowspan="2">`+ medicine + ` :</th>
 			<th width="40%" style="background-color: #14091529;color: #000;text-align: letf;font-size: 12px;font-weight: 700;
 		  border-left: 1px solid #f1f1f1; padding: 8px;line-height: 1.42857143;" rowspan="2">`+ timingAndDur + `</th>
 			<th width="25%" style="background-color: #14091529;color: #000;text-align: left;font-size: 12px;font-weight: 700;
@@ -635,13 +647,7 @@ class PreviewRxButton extends React.Component {
 		if (vitalList && vitalList.length > 0) {
 			let temp = []
 			for (var i = 0; i < vitalList.length; i++) {
-				if (vitalList[i].vitalName == 'BMI') {
-					vitalList[i].vitalUnit = 'kg/m²'
-				}
-				if (vitalList[i].vitalName == 'Temperature') {
-					vitalList[i].vitalUnit = '°F'
-				}
-				const htmlCode = vitalList[i].vitalName + ': ' + vitalList[i].vitalValue + ' ' + vitalList[i].vitalUnit;
+				const htmlCode = vitalList[i].vitalName + ': ' + vitalList[i].vitalValue;
 				temp.push(htmlCode)
 			}
 			const htmlCode = `
@@ -661,52 +667,52 @@ class PreviewRxButton extends React.Component {
 	}
 	selectedList = (selectedConditions, selectedMedications, selectedAllergies, selectedFamilyHistory) => {
 		let temp = []; let selConditionArr = []; let selMedicationArr = []; let selAllergyArr = []; let selFamilyHistoryArr = [];
-        let selectedConditionName, selectedMedicationsName, selectedAllergiesName
-        if (selectedConditions && selectedConditions.length > 0) {
-            for (var i = 0; i < selectedConditions.length; i++) {
-                selectedConditionName = selectedConditions[i].conditionName
-                const htmlCode = ' ' + selectedConditionName;
-                selConditionArr.push(htmlCode)
-            }
-        }
-        if (selectedMedications && selectedMedications.length > 0) {
-            for (var i = 0; i < selectedMedications.length; i++) {
-                selectedMedicationsName = selectedMedications[i].medicineName
-                const htmlCode = ' ' + selectedMedicationsName;
-                selMedicationArr.push(htmlCode)
-            }
-        }
-        if (selectedAllergies && selectedAllergies.length > 0) {
-            for (var i = 0; i < selectedAllergies.length; i++) {
-                selectedAllergiesName = selectedAllergies[i].allergyName
-                const htmlCode = " " + selectedAllergiesName;
-                selAllergyArr.push(htmlCode)
-            }
-        }
-        if (selectedFamilyHistory && selectedFamilyHistory.length > 0) {
-            for (var i = 0; i < selectedFamilyHistory.length; i++) {
-                const parentName = selectedFamilyHistory[i].familyHistoryName;
-                const patientConditionArr = selectedFamilyHistory[i].patientCondition
-                let tempVarOne = '';
-                if(patientConditionArr && patientConditionArr.length>0)
-                for (var j = 0; j < patientConditionArr.length; j++) {
-                    if (j == 0)
-                        tempVarOne = patientConditionArr[j].conditionName;
-                    else
-                        tempVarOne += ', ' + patientConditionArr[j].conditionName;
-                }
-                selFamilyHistoryArr.push(parentName + ': ' + tempVarOne)
-            }
-        }
+		let selectedConditionName, selectedMedicationsName, selectedAllergiesName
+		if (selectedConditions && selectedConditions.length > 0) {
+			for (var i = 0; i < selectedConditions.length; i++) {
+				selectedConditionName = selectedConditions[i].conditionName
+				const htmlCode = ' ' + selectedConditionName;
+				selConditionArr.push(htmlCode)
+			}
+		}
+		if (selectedMedications && selectedMedications.length > 0) {
+			for (var i = 0; i < selectedMedications.length; i++) {
+				selectedMedicationsName = selectedMedications[i].medicineName
+				const htmlCode = ' ' + selectedMedicationsName;
+				selMedicationArr.push(htmlCode)
+			}
+		}
+		if (selectedAllergies && selectedAllergies.length > 0) {
+			for (var i = 0; i < selectedAllergies.length; i++) {
+				selectedAllergiesName = selectedAllergies[i].allergyName
+				const htmlCode = " " + selectedAllergiesName;
+				selAllergyArr.push(htmlCode)
+			}
+		}
+		if (selectedFamilyHistory && selectedFamilyHistory.length > 0) {
+			for (var i = 0; i < selectedFamilyHistory.length; i++) {
+				const parentName = selectedFamilyHistory[i].familyHistoryName;
+				const patientConditionArr = selectedFamilyHistory[i].patientCondition
+				let tempVarOne = '';
+				if (patientConditionArr && patientConditionArr.length > 0)
+					for (var j = 0; j < patientConditionArr.length; j++) {
+						if (j == 0)
+							tempVarOne = patientConditionArr[j].conditionName;
+						else
+							tempVarOne += ', ' + patientConditionArr[j].conditionName;
+					}
+				selFamilyHistoryArr.push(parentName + ': ' + tempVarOne)
+			}
+		}
 
-		if(selConditionArr && selConditionArr.length)
-        temp.push(selConditionArr)
-        if(selMedicationArr && selMedicationArr.length)
-        temp.push(selMedicationArr)
-        if(selAllergyArr && selAllergyArr.length)
-        temp.push(selAllergyArr)
-        if(selFamilyHistoryArr && selFamilyHistoryArr.length)
-        temp.push(selFamilyHistoryArr.join("; "))
+		if (selConditionArr && selConditionArr.length)
+			temp.push(selConditionArr)
+		if (selMedicationArr && selMedicationArr.length)
+			temp.push(selMedicationArr)
+		if (selAllergyArr && selAllergyArr.length)
+			temp.push(selAllergyArr)
+		if (selFamilyHistoryArr && selFamilyHistoryArr.length)
+			temp.push(selFamilyHistoryArr.join("; "))
 
 		const htmlCode = `
 	<table style="width:100%;margin-top: 5px" >
@@ -716,7 +722,7 @@ class PreviewRxButton extends React.Component {
 		</tr>
 	</table>
 	`
-return temp && temp.length>0?  htmlCode:'';
+		return temp && temp.length > 0 ? htmlCode : '';
 
 	}
 	showfollowUpViewList = (followUpItem) => {
@@ -772,7 +778,29 @@ return temp && temp.length>0?  htmlCode:'';
 		let patientInfo = prescriptionDataFullArray.patientInfo != null ? prescriptionDataFullArray.patientInfo : []
 		let symptomList = prescriptionDataFullArray.symptomList != null ? prescriptionDataFullArray.symptomList : []
 		let findingList = prescriptionDataFullArray.findingList != null ? prescriptionDataFullArray.findingList : []
-		let medicineList = prescriptionDataFullArray.medicineList != null ? prescriptionDataFullArray.medicineList : []
+		// let medicineList = prescriptionDataFullArray.medicineList != null ? prescriptionDataFullArray.medicineList : []
+		let temp = prescriptionDataFullArray.medicineList != null ? prescriptionDataFullArray.medicineList : []
+		let medicineList = [];
+		let groupedData = Object.values(temp.reduce((acc, obj, idx) => {
+			const key = obj.medicineName.trim();
+			const strength = obj?.strength;
+			const medicineDesc = obj?.medicineDesc
+			if (!acc[key]) {
+				if (!obj.values) {
+					acc[key] = { medicineName: key, strength: strength, medicineDesc: medicineDesc, values: [] };
+				}
+			}
+			if (!obj.values) {
+				if (obj.medicineType) {
+					acc[key].values.push(obj);
+				}
+			} else {
+				medicineList.push(obj)
+			}
+			return acc;
+		}, {}));
+		medicineList = medicineList.concat(Object.values(groupedData));
+
 		let prescriptionNote = prescriptionDataFullArray.prescriptionNote != null ? prescriptionDataFullArray.prescriptionNote : []
 		let instructionsList = prescriptionDataFullArray.instructionsList != null ? prescriptionDataFullArray.instructionsList : []
 		let investigationList = prescriptionDataFullArray.investigationList != null ? prescriptionDataFullArray.investigationList : []
@@ -918,7 +946,7 @@ return temp && temp.length>0?  htmlCode:'';
 	  <tr>  
 	  <td width="80%"/>
 	  <td width="20%">
-	  Dr. `+ this.showOriginalValueView(doctorInfo.firstName) + ` ` + this.showOriginalValueView(doctorInfo.lastName) + this.doctorSpeciality(doctorInfo)  + this.doctorEducationViewWithoutAddress(doctorInfo) + `<p>Reg no. : ` + registrationNumber + `</p>
+	  Dr. `+ this.showOriginalValueView(doctorInfo.firstName) + ` ` + this.showOriginalValueView(doctorInfo.lastName) + ` ` + this.doctorSpeciality(doctorInfo) + ` ` + this.doctorEducationViewWithoutAddress(doctorInfo) + `<p>Reg no. : ` + registrationNumber + `</p>
 	  </td>
 	  </tr>
 	  </table>

@@ -63,7 +63,11 @@ class BillingComplete extends React.Component {
         Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType + 'Prescription_Complete', signupDetails.firebaseLocation)
         Trace.setLogEventWithTrace(signupDetails.firebaseUserType + "Prescription_Complete", { 'TimeRange': timeRange, 'Mobile': signupDetails.firebasePhoneNumber, 'Age': signupDetails.firebaseDOB, 'Speciality': signupDetails.drSpeciality })
         base64ImageArr = [];
-        this.getConsulatationBillingPreviewData();
+
+        let billingPreviewData = this.props.navigation.state.params;
+        if(billingPreviewData){
+            this.getBillingPreviewData(billingPreviewData.billingPreviewData);
+        }
         this.getPrivateNote();
         let filePath = this.props.navigation.state.params.filePath;
         this.setState({
@@ -80,6 +84,14 @@ class BillingComplete extends React.Component {
 
         if (prevScreenName == 'handwrittenedit') {
             this.makeBase64ImageArrayEditCase(this.props.navigation.state.params.imgArr)
+        }
+    }
+    getBillingPreviewData = (billingPreviewData) => {
+        if(billingPreviewData){
+        let billingDetailsFullArray = billingPreviewData.billingDetails;
+            let patientDetailsFullArray = billingPreviewData.prescriptionData.patientInfo;
+            this.setState({ billingDetailsState: billingDetailsFullArray });
+            this.setState({ patientDetailsState: patientDetailsFullArray });
         }
     }
     componentWillUnmount() {
@@ -191,13 +203,14 @@ class BillingComplete extends React.Component {
 
     }
     handleApi = (response, tag) => {
-        if (tag === 'getConsulatationBillingPreviewData') {
-            let billingDetailsFullArray = response.billingDetails;
-            let patientDetailsFullArray = response.prescriptionData.patientInfo;
-            this.setState({ billingDetailsState: billingDetailsFullArray });
-            this.setState({ patientDetailsState: patientDetailsFullArray });
+        // if (tag === 'getConsulatationBillingPreviewData') {
+        //     let billingDetailsFullArray = response.billingDetails;
+        //     let patientDetailsFullArray = response.prescriptionData.patientInfo;
+        //     this.setState({ billingDetailsState: billingDetailsFullArray });
+        //     this.setState({ patientDetailsState: patientDetailsFullArray });
 
-        } else if (tag === 'completeConsultationWithNoti') {
+        // } else 
+        if (tag === 'completeConsultationWithNoti') {
             let { signupDetails } = this.props;
             if (prevScreenName == 'normalPrescription') {
                 timeRange = Trace.getTimeRange();
@@ -294,23 +307,6 @@ class BillingComplete extends React.Component {
         }
     }
 
-
-    getConsulatationBillingPreviewData = () => {
-        let { actions, signupDetails } = this.props;
-        let params = {
-            "RoleCode": signupDetails.roleCode,
-            "UserGuid": signupDetails.UserGuid,
-            "DoctorGuid": signupDetails.doctorGuid,
-            "ClinicGuid": signupDetails.clinicGuid,
-            "Version": "",
-            "Data": {
-                "version": null,
-                "AppointmentGuid": signupDetails.appoinmentGuid,
-            }
-        }
-        actions.callLogin('V14/FuncForDrAppToConsulatationBillingPreview', 'post', params, signupDetails.accessToken, 'getConsulatationBillingPreviewData');
-    }
-
     completeConsultation = (type) => {
         let { actions, signupDetails } = this.props;
         setLogEvent("Appointment_Complete", { "Complete": "click", UserGuid: signupDetails.UserGuid })
@@ -351,9 +347,9 @@ class BillingComplete extends React.Component {
             }
             else{
                 this.printRemotePDF();
-                this.setState({ showHomeBtn: true })
                 setTimeout(() => {
                 actions.callLogin('V16/FuncForDrAppToCompleteConsultWithoutNotification', 'post', params, signupDetails.accessToken, 'completeConsultationWithOutNoti');
+                this.setState({ showHomeBtn: true })
                 }, 300)     
             }})
         //}

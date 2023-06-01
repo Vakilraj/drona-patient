@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     Image, SafeAreaView, Text,
-    TouchableOpacity, View, Platform, BackHandler, FlatList, PermissionsAndroid
+    TouchableOpacity, View, Platform, BackHandler, FlatList, PermissionsAndroid,Linking
 } from 'react-native';
 import { DataTable } from 'react-native-paper';
 import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
@@ -89,24 +89,10 @@ class PreviewRx extends React.Component {
             showNormalPrescription: true,
         };
         flag == 0;
+        this.backHandler=null;
     }
 
-    getFuncForDrAppToConsulatationBillingPreview = () => {
-        let { actions, signupDetails } = this.props;
-        let params = {
-            "RoleCode": signupDetails.roleCode,
-            "UserGuid": signupDetails.UserGuid,
-            "DoctorGuid": signupDetails.doctorGuid,
-            "ClinicGuid": signupDetails.clinicGuid,
-            "Version": "",
-            "Data": {
-                "version": null,
-                "AppointmentGuid": signupDetails.appoinmentGuid,
-            }
-        }
-        actions.callLogin('V14/FuncForDrAppToConsulatationBillingPreview', 'post', params, signupDetails.accessToken, 'consulatationBillingPreviewDataVIEW');
-    }
-    componentDidMount() {
+    async componentDidMount() {
 
         let { signupDetails } = this.props;
         timeRange = Trace.getTimeRange();
@@ -116,8 +102,13 @@ class PreviewRx extends React.Component {
         //
         from = this.props.navigation.state && this.props.navigation.state.params && this.props.navigation.state.params.from ? this.props.navigation.state.params.from : '';
         if (from == 'normalPrescription') {
-            //this.getFuncForDrAppToConsulatationBillingPreview();
+            try {
+                let tempIndex = await AsyncStorage.getItem('lanIndex');
+                Language.language.setLanguage(this.state.languageArr[tempIndex].value)
+            } catch (error) {
+            }
             billingPreviewData = this.props.navigation.state?.params?.billingPreviewData;
+            console.log('-----'+JSON.stringify(billingPreviewData));
             if (billingPreviewData) {
                 this.billingPreviewDataFun()
             }
@@ -141,6 +132,7 @@ class PreviewRx extends React.Component {
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)
     }
     billingPreviewDataFun = () => {
+        
         let prescriptionDataFullArray = billingPreviewData.prescriptionData;
 
         time = new Date().getTime();
@@ -204,72 +196,7 @@ class PreviewRx extends React.Component {
     }
 
     async UNSAFE_componentWillReceiveProps(newProps) {
-        try {
-            let tempIndex = await AsyncStorage.getItem('lanIndex');
-            Language.language.setLanguage(this.state.languageArr[tempIndex].value)
-        } catch (error) {
-        }
-        if (newProps.responseData && newProps.responseData.tag) {
-            let tagname = newProps.responseData.tag;
-            if (tagname === 'consulatationBillingPreviewDataVIEW') {
-
-                let data = newProps.responseData.data;
-
-
-                let billingDetailsFullArray = data.billingDetails;
-                let prescriptionDataFullArray = data.prescriptionData;
-
-
-                time = new Date().getTime();
-                time = Moment(time).format('h:mm:ss a')
-                date = new Date().getDate();
-                date = date < 10 ? '0' + date : '' + date
-                month = new Date().getMonth() + 1;
-                month = month < 10 ? '0' + month : '' + month
-                year = new Date().getFullYear();
-
-                vitalList = prescriptionDataFullArray.vitalList != null ? prescriptionDataFullArray.vitalList : [];
-                medicalHistoryList = prescriptionDataFullArray != null ? prescriptionDataFullArray : [];
-                clinicInfo = prescriptionDataFullArray.clinicInfo != null ? prescriptionDataFullArray.clinicInfo : []
-                doctorInfo = prescriptionDataFullArray.doctorInfo != null ? prescriptionDataFullArray.doctorInfo : [];
-                patientInfo = prescriptionDataFullArray.patientInfo != null ? prescriptionDataFullArray.patientInfo : [];
-                symptomList = prescriptionDataFullArray.symptomList != null ? prescriptionDataFullArray.symptomList : [];
-                findingList = prescriptionDataFullArray.findingList != null ? prescriptionDataFullArray.findingList : [];
-                medicineList = prescriptionDataFullArray.medicineList != null ? prescriptionDataFullArray.medicineList : [];
-                prescriptionNote = prescriptionDataFullArray.prescriptionNote != null ? prescriptionDataFullArray.prescriptionNote : [];
-                instructionsList = prescriptionDataFullArray.instructionsList != null ? prescriptionDataFullArray.instructionsList : [];
-                investigationList = prescriptionDataFullArray.investigationList != null ? prescriptionDataFullArray.investigationList : [];
-                diagnosisList = prescriptionDataFullArray.diagnosisList != null ? prescriptionDataFullArray.diagnosisList : [];
-                procedureList = prescriptionDataFullArray.procedureList != null ? prescriptionDataFullArray.procedureList : [];
-                followUpItem = prescriptionDataFullArray.followUp;
-                registrationNumber = doctorInfo ? doctorInfo.registrationNumber : '';
-                eSign = prescriptionDataFullArray != null ? prescriptionDataFullArray.esignature : null;
-                prescriptionHeading = Language.language.pres;
-                symptomHead = Language.language.symptoms;
-                findingHead = Language.language.findings;
-                investigationAdvise = Language.language.advisedinvestigation;
-                instructionHead = Language.language.instructions;
-                diagionsisHead = Language.language.diagnosis;
-                notes = Language.language.notes;
-                medicine = Language.language.medicine;
-                timingAndDur = Language.language.timingandduration;
-                noteStr = Language.language.note;
-                followupHead = Language.language.followup;
-                procedureHead = Language.language.procedures;
-
-                vitalHead = Language.language.vital;
-                medicalHistoryHead = Language.language.medicalHistory;
-                Rx = Language.language.Rx;
-                try {
-                    selectedConditions = medicalHistoryList.selectedConditions
-                    selectedMedications = medicalHistoryList.selectedCurrentMedicationList
-                    selectedAllergies = medicalHistoryList.selectedAllergies
-                    selectedFamilyHistory = medicalHistoryList.selectedFamilyHistory
-                } catch (error) {
-
-                }
-            }
-        }
+       
     }
 
     symptomsView = (symptomList, from) => {
@@ -697,7 +624,9 @@ class PreviewRx extends React.Component {
             if (granted === PermissionsAndroid.RESULTS.GRANTED) {
                 this.createPDF(billingPreviewData.prescriptionData)
             } else {
-                Alert.alert('Permission Denied!', 'You need to give storage permission to download the file');
+                Alert.alert('Permission Denied!', 'You need to give storage permission to download the file',[
+                    { text: "OK", onPress: () => Linking.openSettings() }
+                ]);
             }
         } else {
             this.createPDF(billingPreviewData.prescriptionData)
@@ -776,54 +705,6 @@ class PreviewRx extends React.Component {
 
     }
     createPDF = async (prescriptionDataFullArray, billingDetailsFullArray) => {
-        // console.log('_______________prescriptionDataFullArray_______________', JSON.stringify(prescriptionDataFullArray))
-        // var time = new Date().getTime();
-        // time = Moment(time).format('h:mm:ss a')
-        // var date = new Date().getDate();
-        // date = date < 10 ? '0' + date : '' + date
-        // var month = new Date().getMonth() + 1;
-        // month = month < 10 ? '0' + month : '' + month
-        // var year = new Date().getFullYear();
-        // vitalList = prescriptionDataFullArray.vitalList != null ? prescriptionDataFullArray.vitalList : [];
-        // medicalHistoryList = prescriptionDataFullArray != null ? prescriptionDataFullArray : [];
-        // let clinicInfo = prescriptionDataFullArray.clinicInfo != null ? prescriptionDataFullArray.clinicInfo : []
-        // let doctorInfo = prescriptionDataFullArray.doctorInfo != null ? prescriptionDataFullArray.doctorInfo : []
-        // let patientInfo = prescriptionDataFullArray.patientInfo != null ? prescriptionDataFullArray.patientInfo : []
-        // let symptomList = prescriptionDataFullArray.symptomList != null ? prescriptionDataFullArray.symptomList : []
-        // let findingList = prescriptionDataFullArray.findingList != null ? prescriptionDataFullArray.findingList : []
-        // let medicineList = prescriptionDataFullArray.medicineList != null ? prescriptionDataFullArray.medicineList : []
-        // let prescriptionNote = prescriptionDataFullArray.prescriptionNote != null ? prescriptionDataFullArray.prescriptionNote : []
-        // let instructionsList = prescriptionDataFullArray.instructionsList != null ? prescriptionDataFullArray.instructionsList : []
-        // let investigationList = prescriptionDataFullArray.investigationList != null ? prescriptionDataFullArray.investigationList : []
-        // let diagnosisList = prescriptionDataFullArray.diagnosisList != null ? prescriptionDataFullArray.diagnosisList : [];
-        // let procedureList = prescriptionDataFullArray.procedureList != null ? prescriptionDataFullArray.procedureList : []
-        // let followUpItem = prescriptionDataFullArray.followUp
-        // let registrationNumber = doctorInfo ? doctorInfo.registrationNumber : ''
-        // let eSign = prescriptionDataFullArray != null ? prescriptionDataFullArray.esignature : null;
-
-        // let prescriptionHeading = Language.language.pres;
-        // symptomHead = Language.language.symptoms;
-        // findingHead = Language.language.findings;
-        // investigationAdvise = Language.language.advisedinvestigation;
-        // instructionHead = Language.language.instructions;
-        // diagionsisHead = Language.language.diagnosis;
-        // followUpHeadGlobal = Language.language.followup;
-        // procedureHead = Language.language.procedures;
-        // notes = Language.language.notes;
-        // medicine = Language.language.medicine;
-        // Rx = Language.language.Rx;
-        // timingAndDur = Language.language.timingandduration;
-        // noteStr = Language.language.note;
-        // vitalHead = Language.language.vital;
-        // medicalHistoryHead = Language.language.medicalHistory;
-
-        // selectedConditions = medicalHistoryList.selectedConditions
-        // selectedMedications = medicalHistoryList.selectedCurrentMedicationList
-        // selectedAllergies = medicalHistoryList.selectedAllergies
-        // selectedFamilyHistory = medicalHistoryList.selectedFamilyHistory
-
-        // console.log('-------------------- 1 -----------------');
-
         const htmlCode = `
     <style>
       table, th, td {

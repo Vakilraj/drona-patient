@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
 	ScrollView,
 	View,
-	Text, TextInput, Image, TouchableOpacity, FlatList, Platform, PermissionsAndroid, Alert, KeyboardAvoidingView,
+	Text, TextInput, Image, TouchableOpacity, FlatList, Platform, PermissionsAndroid, Alert, KeyboardAvoidingView, Linking,
 } from 'react-native';
 import styles from './style';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
@@ -141,6 +141,7 @@ class Consultation extends React.Component {
 			medicineTypeArr: [],
 			medicineFoundStatus: '',
 			isHideConsultNowBtn: false,
+			isGettingBilingPreviewData: false,
 			textInputs: [],
 			medicineTypeSearchTxt: '',
 			InpborderColor2: Color.inputdefaultBorder,
@@ -513,7 +514,6 @@ class Consultation extends React.Component {
 
 	savePage = () => {
 		Trace.stopTrace()
-		//vitalFlag || 
 		if (symptomFlag || findingFlag || diagnosticFlag || medicineFlag || instructionFlag || investigationFlag || notesFlag || procedureFlag) {
 			let { actions, signupDetails } = this.props;
 			let tmpMedicineArr = [...this.state.SelectedMedicineArr];
@@ -582,7 +582,9 @@ class Consultation extends React.Component {
 				if (granted === PermissionsAndroid.RESULTS.GRANTED) {
 					this.getFuncForDrAppToConsulatationBillingPreview();
 				} else {
-					Alert.alert('Permission Denied!', 'You need to give storage permission to download the file');
+					Alert.alert('Permission Denied!', 'You need to give storage permission to download the file',[
+						{ text: "OK", onPress: () => Linking.openSettings() }
+					]);
 				}
 			} else {
 
@@ -1020,6 +1022,7 @@ class Consultation extends React.Component {
 				}
 			} else if( tagname === 'getBillingPreview'){
 				billingPreviewData = newProps.responseData.data;
+				this.setState({isGettingBilingPreviewData:true});
 			}
 		}
 	}
@@ -3408,7 +3411,7 @@ class Consultation extends React.Component {
 					<View style={{ backgroundColor: Color.white, flexDirection: 'row', alignItems: 'center', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 10, justifyContent: 'center' }}>
 
 						<ThreeDotsModal item={this.props.item} nav={{ navigation: this.props.nav.navigation }} RefreshPatient={this.RefreshPatient} />
-						{!appointmentStatus || (appointmentStatus == 'No Show' || appointmentStatus == 'Cancelled' || appointmentStatus == 'Completed' || signupDetails.isAssistantUser || !signupDetails.appoinmentGuid || (this.props.item.consultationType == 'Virtual' && !this.props.item.isPaymentReceived) || this.state.isHideConsultNowBtn || signupDetails.returnValueFromTwilio)
+						{!appointmentStatus || (appointmentStatus == 'No Show' || appointmentStatus == 'Cancelled' || appointmentStatus == 'Completed' || signupDetails.isAssistantUser || !signupDetails.appoinmentGuid || (this.props.item.consultationType == 'Virtual' && !this.props.item.isPaymentReceived) || this.state.isHideConsultNowBtn || signupDetails.returnValueFromTwilio || !this.state.isGettingBilingPreviewData)
 							?
 							<View style={{ height: responsiveHeight(6), width: responsiveWidth(78), justifyContent: 'center', alignItems: 'center', marginLeft: responsiveWidth(3), marginRight: responsiveWidth(3), backgroundColor: Color.disabledBtn, borderRadius: 5, marginTop: 7, marginBottom: 7 }}>
 								<Text style={{ fontFamily: CustomFont.fontName, color: Color.white, fontSize: CustomFont.font14, textAlign: 'center', fontWeight: CustomFont.fontWeight600 }}>Save & Preview Rx</Text>

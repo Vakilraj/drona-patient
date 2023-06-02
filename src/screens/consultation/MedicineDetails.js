@@ -25,8 +25,8 @@ import Validator from '../../components/Validator';
 import Trace from '../../service/Trace'
 import _ from 'lodash';
 let prevIndexTimings = 0, prevIndexDoase = 0, prevIndexDuration = 1, medicineType = '', medicineTypeGuid = '', durationType = 'days', DurationTypeValue = '5', MedicineDoasesGuId = '', doasestype = '', Dosages = '', TimingTypeGuid = '', dosagePattern = '';
-let doasagesPatterArr = [{ label: '1-0-0', value: '1-0-0', isSelect: true }, { label: '0-1-0', value: '0-1-0', isSelect: false }, { label: '0-0-1', value: '0-0-1', isSelect: false }, { label: '1-1-0', value: '1-1-0', isSelect: false }, { label: '0-1-1', value: '0-1-1', isSelect: false }, { label: '1-0-1', value: '1-0-1', isSelect: false }, { label: '1-1-1', value: '1-1-1', isSelect: false }, { label: '6 Hourly', value: '6 Hourly', isSelect: false }, { label: 'Alternate Day', value: 'Alternate Day', isSelect: false }, { label: 'Weekly', value: 'Weekly', isSelect: false }, { label: 'Monthly', value: 'Monthly', isSelect: false }, { label: 'SOS', value: 'SOS', isSelect: false }, { label: 'Custom dosage', value: 'Custom dosage', isSelect: false }]
-let clickFlag = 0, isEdit = false, prvLength = -1, InputTxtLengthDosage = 15, InputTxtLengthDuration = 5, InputTxtLengthUnit = 5;
+let doasagesPatterArr = [{ label: '1-0-0', value: '1-0-0', isSelect: true }, { label: '0-1-0', value: '0-1-0', isSelect: false }, { label: '0-0-1', value: '0-0-1', isSelect: false }, { label: '1-1-0', value: '1-1-0', isSelect: false }, { label: '0-1-1', value: '0-1-1', isSelect: false }, { label: '1-0-1', value: '1-0-1', isSelect: false }, { label: '1-1-1', value: '1-1-1', isSelect: false }, { label: '6 Hourly', value: '6 Hourly', isSelect: false }, { label: 'Alternate Day', value: 'Alternate Day', isSelect: false }, { label: 'Weekly', value: 'Weekly', isSelect: false }, { label: 'Monthly', value: 'Monthly', isSelect: false }, { label: 'SOS', value: 'SOS', isSelect: false }]
+let clickFlag = 0, isEdit = false, prvLength = -1, InputTxtLengthDosage = 15, InputTxtLengthDuration = 5, InputTxtLengthUnit = 5, fromDayMaxLength = 5;
 let medicineTimingFrequency = 'Empty Stomach';
 let medicineDosasesType;
 let fromDaysData = [{ value: 'days' }, { value: 'weeks' }, { value: 'months' }, { value: 'years' }]
@@ -94,6 +94,7 @@ class MedicineDetails extends React.Component {
 			fromDaysTxt: '',
 			showFromDayTxtDropDown: false,
 			fromDaysDataArr: fromDaysData,
+			toDaysDataArr: fromDaysData,
 			showToDayTxtDropDown: false,
 			showDoctorNotesdropDown: false,
 			doctorNoteTxt: '',
@@ -564,12 +565,15 @@ class MedicineDetails extends React.Component {
 	}
 
 	handleFromDaysData = (item, index) => {
-		let temp = [{ value: 'days' }, { value: 'weeks' }, { value: 'months' }, { value: 'years' }]
+		let isValOne = (item == 1) ? true : false ;
+		let temp = [{ value: isValOne ? 'day' :'days' }, { value: isValOne ? 'week' : 'weeks' }, { value: isValOne ? 'month' : 'months' }, { value: isValOne ? 'year' : 'years' }]
 		if (item && Validator.isMobileValidate(item)) {
 			temp.forEach((ele) => {
 				ele.value = item + ' ' + `${ele.value}`
 			})
 			this.setState({ fromDaysTxt: item, showFromDayTxtDropDown: true, selectedIndex: index, fromDaysDataArr: temp })
+		} else {
+			this.setState({ fromDaysTxt: item, showFromDayTxtDropDown: false, selectedIndex: index, fromDaysDataArr: [] })
 		}
 
 	}
@@ -578,15 +582,19 @@ class MedicineDetails extends React.Component {
 		let tempData = this.state.taperedData;
 		tempData[index].startFrom = item.value
 		let temp = [{ value: 'days' }, { value: 'weeks' }, { value: 'months' }, { value: 'years' }]
+		fromDayMaxLength = item.length;
 		this.setState({ fromDaysTxt: item.value, showFromDayTxtDropDown: false, fromDaysDataArr: temp })
 	}
 	handleToDaysData = (item, index) => {
-		let temp = [{ value: 'days' }, { value: 'weeks' }, { value: 'months' }, { value: 'years' }]
+		let isValOne = (item == 1) ? true : false ;
+		let temp = [{ value: isValOne ? 'day' :'days' }, { value: isValOne ? 'week' : 'weeks' }, { value: isValOne ? 'month' : 'months' }, { value: isValOne ? 'year' : 'years' }]
 		if (item && Validator.isMobileValidate(item)) {
 			temp.forEach((ele) => {
 				ele.value = item + ' ' + `${ele.value}`
 			})
-			this.setState({ toDaysTxt: item, showToDayTxtDropDown: true, selectedIndex: index, fromDaysDataArr: temp })
+			this.setState({ toDaysTxt: item, showToDayTxtDropDown: true, selectedIndex: index, toDaysDataArr: temp })
+		} else{
+			this.setState({ toDaysTxt: item, showToDayTxtDropDown: false, selectedIndex: index, toDaysDataArr: [] })
 		}
 
 	}
@@ -595,7 +603,7 @@ class MedicineDetails extends React.Component {
 		const tempData = this.state.taperedData;
 		tempData[index].to = item.value
 		let temp = [{ value: 'days' }, { value: 'weeks' }, { value: 'months' }, { value: 'years' }]
-		this.setState({ toDaysTxt: item.value, showToDayTxtDropDown: false, fromDaysDataArr: temp })
+		this.setState({ toDaysTxt: item.value, showToDayTxtDropDown: false, toDaysDataArr: temp })
 	}
 
 	renderTaperedItem = ({ item, index }) => {
@@ -819,7 +827,7 @@ class MedicineDetails extends React.Component {
 							borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,
 							borderBottomColor: Color.createInputBorder, borderTopColor: Color.white, marginTop: responsiveHeight(-.8), flex: 1, marginRight: responsiveWidth(2)
 						}}><FlatList style={{ backgroundColor: '#fafafa' }}
-							data={this.state.fromDaysDataArr}
+							data={this.state.toDaysDataArr}
 							renderItem={({ item, _index }) => (
 								<TouchableOpacity style={{ zIndex: 999, height: responsiveHeight(7), justifyContent: 'flex-start', }} onPress={() => this.clickOnToDays(item, index)}>
 									<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }} >{item.value}</Text>

@@ -478,6 +478,7 @@ class Consultation extends React.Component {
 		});
 	}
 	setValueFromResponse = (data) => {
+		console.log('======= data =======', JSON.stringify(data))
 		let patientConsultation = data;
 		SymptomFullArray = patientConsultation.symptomList
 		findingFullArray = patientConsultation.findingList
@@ -602,6 +603,7 @@ class Consultation extends React.Component {
 	savePage = () => {
 		Trace.stopTrace()
 		//vitalFlag || 
+		console.log('====== medicineSaveData ======', JSON.stringify(medicineSaveData))
 		if (symptomFlag || findingFlag || diagnosticFlag || medicineFlag || instructionFlag || investigationFlag || notesFlag || procedureFlag) {
 			let { actions, signupDetails } = this.props;
 			let tmpMedicineArr = [...this.state.SelectedMedicineArr];
@@ -1611,6 +1613,17 @@ class Consultation extends React.Component {
 		if (!medicineFullArray.some(obj => obj.medicineName === item.medicineName)) {
 			medicineFullArray.push({ medicineName: item.medicineName })
 		}
+
+		let temp = [...tempServiceArr]
+				let objData = [];
+				temp.forEach((ele) => {
+					if (ele.values) {
+						ele.values.forEach((val) => {
+							objData.push(val);
+						})
+					}
+				})
+				medicineSaveData = objData
 		medicineFlag = true;
 	}
 

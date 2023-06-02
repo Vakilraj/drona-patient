@@ -33,7 +33,7 @@ let symptomList = '';
 let vitalList = '';
 let medicalHistoryList = '';
 let findingList = '';
-let medicineList = '';
+let medicineList = [];
 let prescriptionNote = '';
 let instructionsList = '';
 let investigationList = '';
@@ -86,8 +86,12 @@ class PreviewRx extends React.Component {
             showNormalPrescription: true,
         };
         flag == 0;
+        this.clearArr();
     }
 
+    clearArr = () => {
+        medicineList = [];
+    }
     getFuncForDrAppToConsulatationBillingPreview = () => {
         let { actions, signupDetails } = this.props;
         let params = {
@@ -156,8 +160,6 @@ class PreviewRx extends React.Component {
             if (tagname === 'consulatationBillingPreviewDataVIEW') {
 
                 let data = newProps.responseData.data;
-
-
                 let billingDetailsFullArray = data.billingDetails;
                 let prescriptionDataFullArray = data.prescriptionData;
 
@@ -193,7 +195,7 @@ class PreviewRx extends React.Component {
                         }, {}));
                         dividedData = dividedData.concat(Object.values(groupedData));
 
-                        //console.log('======= dividedData =======', JSON.stringify(dividedData))
+                        console.log('======= dividedData =======', JSON.stringify(dividedData))
 
                         medicineList = dividedData;
                     } catch (error) {
@@ -691,6 +693,7 @@ class PreviewRx extends React.Component {
                                             <Text style={{ padding: 5, color: Color.black, marginLeft: 5, fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: 5 }}>{noteStr}</Text>
                                         </View>
                                     </View>
+                                    {console.log('==========>>>> ==========>>>> medicineList <<<<======== <<<<========', JSON.stringify(medicineList))}
                                     <FlatList
                                         data={medicineList}
                                         renderItem={({ item, index }) => this.MedicineList(item, index)}

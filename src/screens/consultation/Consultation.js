@@ -478,7 +478,6 @@ class Consultation extends React.Component {
 		});
 	}
 	setValueFromResponse = (data) => {
-		console.log('======= data =======', JSON.stringify(data))
 		let patientConsultation = data;
 		SymptomFullArray = patientConsultation.symptomList
 		findingFullArray = patientConsultation.findingList
@@ -567,30 +566,29 @@ class Consultation extends React.Component {
 			console.log('----before group----', JSON.stringify(selectedMedicinesData))
 			medicineSaveData = selectedMedicinesData;
 			let dividedData = [];
-			if(selectedMedicinesData && selectedMedicinesData.length>0){
-				let groupedData = Object.values(selectedMedicinesData.reduce((acc, obj, idx) => {
-					const key = obj.medicineName.trim();
-					if (!acc[key]) {
-						if (!obj.values) {
-							acc[key] = { medicineName: key, values: [] };
-						}
-					}
+			let groupedData = Object.values(selectedMedicinesData.reduce((acc, obj, idx) => {
+				const key = obj.medicineName.trim();
+				if (!acc[key]) {
 					if (!obj.values) {
-						if (obj.medicineType) {
-							acc[key].values.push(obj);
-							// obj.medicineDosasesType.forEach((dossesType, index) => {
-							// 	if (dossesType.doasestype === obj.medicineType) {
-							// 		acc[key].values[idx].medicineDosasesTypeGuid = dossesType?.medicineDoasesGuId ? dossesType?.medicineDoasesGuId : null
-							// 	}
-							// })
-						}
-					} else {
-						dividedData.push(obj)
+						acc[key] = { medicineName: key, values: [] };
 					}
-					return acc;
-				}, {}));
-				dividedData = dividedData.concat(Object.values(groupedData));
-			}
+				}
+				if (!obj.values) {
+					if (obj.medicineType) {
+						acc[key].values.push(obj);
+						// obj.medicineDosasesType.forEach((dossesType, index) => {
+						// 	if (dossesType.doasestype === obj.medicineType) {
+						// 		acc[key].values[idx].medicineDosasesTypeGuid = dossesType?.medicineDoasesGuId ? dossesType?.medicineDoasesGuId : null
+						// 	}
+						// })
+					}
+				} else {
+					dividedData.push(obj)
+				}
+				return acc;
+			}, {}));
+			dividedData = dividedData.concat(Object.values(groupedData));
+			console.log('----derive----', JSON.stringify(dividedData))
 			this.setState({ selectedNewMedicineArr: dividedData })
 		} catch (error) {
 
@@ -603,7 +601,6 @@ class Consultation extends React.Component {
 	savePage = () => {
 		Trace.stopTrace()
 		//vitalFlag || 
-		console.log('====== medicineSaveData ======', JSON.stringify(medicineSaveData))
 		if (symptomFlag || findingFlag || diagnosticFlag || medicineFlag || instructionFlag || investigationFlag || notesFlag || procedureFlag) {
 			let { actions, signupDetails } = this.props;
 			let tmpMedicineArr = [...this.state.SelectedMedicineArr];
@@ -615,9 +612,10 @@ class Consultation extends React.Component {
 						if (!medicineSaveData[i].medicineDosasesTypeGuid) {
 							let doaseArr = medicineSaveData[i].medicineDosasesType;
 							medicineSaveData[i].medicineDosasesTypeGuid = doaseArr[0].medicineDoasesGuId;
-							medicineSaveData[i].medicineDosasesType = doaseArr[0].doasestype;
+							//medicineSaveData[i].medicineDosasesType = doaseArr[0].doasestype;
 							medicineSaveData[i].medicineType = doaseArr[0].doasestype;
 						}
+						tmpArr.push(medicineSaveData[i])
 					}
 				// if (tmpMedicineArr && tmpMedicineArr.length > 0)
 				// 	for (let i = 0; i < tmpMedicineArr.length; i++) {
@@ -632,9 +630,9 @@ class Consultation extends React.Component {
 
 			}
 
-			if (medicineSaveData && medicineSaveData.length > 0)
-				medicineSaveData.forEach((val, index) => {
-					delete medicineSaveData[index].medicineDosasesType
+			if (tmpArr && tmpArr.length > 0)
+			tmpArr.forEach((val, index) => {
+					delete tmpArr[index].medicineDosasesType
 				})
 			//console.log('-----tmpArr---' + JSON.stringify(tmpArr));
 			let params = {
@@ -648,7 +646,7 @@ class Consultation extends React.Component {
 						"SymptomList": this.state.SelectedSymptomArr,
 						"FindingList": this.state.SelectedFindingArr,
 						"DiagnosisList": this.state.SelectedDiagnosticArr,
-						"MedicineList": medicineSaveData, //tmpArr
+						"MedicineList": tmpArr, //tmpArr
 						"InvestigationList": this.state.SelectedInvestigationArr,
 						"InstructionsList": this.state.SelectedInstructionArr,
 						"ProcedureList": this.state.SelectedProcedureArr,
@@ -767,23 +765,22 @@ class Consultation extends React.Component {
 				}
 
 				let dividedData = [];
-				if(ans && ans.length>0){
-					let groupedData = Object.values(ans.reduce((acc, obj) => {
-						const key = obj.medicineName.trim();
-						if (!acc[key]) {
-							if (!obj.values) {
-								acc[key] = { medicineName: key, values: [] };
-							}
-						}
+				let groupedData = Object.values(ans.reduce((acc, obj) => {
+					const key = obj.medicineName.trim();
+					if (!acc[key]) {
 						if (!obj.values) {
-							acc[key].values.push(obj);
-						} else {
-							dividedData.push(obj)
+							acc[key] = { medicineName: key, values: [] };
 						}
-						return acc;
-					}, {}));
-					dividedData = dividedData.concat(Object.values(groupedData));
-				}
+					}
+					if (!obj.values) {
+						acc[key].values.push(obj);
+					} else {
+						dividedData.push(obj)
+					}
+					return acc;
+				}, {}));
+				dividedData = dividedData.concat(Object.values(groupedData));
+
 				medicineFlag = true;
 				this.setState({ SelectedMedicineArr: ans.length > 0 ? ans : val.data, selectedNewMedicineArr: dividedData })
 				DRONA.setIsConsultationChange(true);
@@ -1613,8 +1610,8 @@ class Consultation extends React.Component {
 		if (!medicineFullArray.some(obj => obj.medicineName === item.medicineName)) {
 			medicineFullArray.push({ medicineName: item.medicineName })
 		}
-
-		let temp = [...tempServiceArr]
+		medicineFlag = true;
+		let temp = [...tempServiceArr];
 				let objData = [];
 				temp.forEach((ele) => {
 					if (ele.values) {
@@ -1624,7 +1621,6 @@ class Consultation extends React.Component {
 					}
 				})
 				medicineSaveData = objData
-		medicineFlag = true;
 	}
 
 	SearchMedicine = (text) => {

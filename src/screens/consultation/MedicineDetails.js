@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
 	KeyboardAvoidingView,
 	ScrollView,
@@ -26,7 +26,7 @@ import Trace from '../../service/Trace'
 import _ from 'lodash';
 let prevIndexTimings = 0, prevIndexDoase = 0, prevIndexDuration = 1, medicineType = '', medicineTypeGuid = '', durationType = 'days', DurationTypeValue = '5', MedicineDoasesGuId = '', doasestype = '', Dosages = '', TimingTypeGuid = '', dosagePattern = '';
 let doasagesPatterArr = [{ label: '1-0-0', value: '1-0-0', isSelect: true }, { label: '0-1-0', value: '0-1-0', isSelect: false }, { label: '0-0-1', value: '0-0-1', isSelect: false }, { label: '1-1-0', value: '1-1-0', isSelect: false }, { label: '0-1-1', value: '0-1-1', isSelect: false }, { label: '1-0-1', value: '1-0-1', isSelect: false }, { label: '1-1-1', value: '1-1-1', isSelect: false }, { label: '6 Hourly', value: '6 Hourly', isSelect: false }, { label: 'Alternate Day', value: 'Alternate Day', isSelect: false }, { label: 'Weekly', value: 'Weekly', isSelect: false }, { label: 'Monthly', value: 'Monthly', isSelect: false }, { label: 'SOS', value: 'SOS', isSelect: false }]
-let clickFlag = 0, isEdit = false, prvLength = -1, InputTxtLengthDosage = 15, InputTxtLengthDuration = 5, InputTxtLengthUnit = 5, fromDayMaxLength = 5;
+let clickFlag = 0, isEdit = false, prvLength = -1, InputTxtLengthDosage = 15, InputTxtLengthDuration = 5, InputTxtLengthUnit = 5;
 let medicineTimingFrequency = 'Empty Stomach';
 let medicineDosasesType;
 let fromDaysData = [{ value: 'days' }, { value: 'weeks' }, { value: 'months' }, { value: 'years' }]
@@ -94,13 +94,12 @@ class MedicineDetails extends React.Component {
 			fromDaysTxt: '',
 			showFromDayTxtDropDown: false,
 			fromDaysDataArr: fromDaysData,
-			toDaysDataArr: fromDaysData,
 			showToDayTxtDropDown: false,
 			showDoctorNotesdropDown: false,
 			doctorNoteTxt: '',
 			// noteDatas: temp,
 			doctorNotesDataArr: [],
-			// DurationDropdownArr: durationData,
+			toDaysDataArr: fromDaysData,
 
 
 
@@ -128,15 +127,38 @@ class MedicineDetails extends React.Component {
 			}
 		});
 		let item = this.props.navigation.state.params.item;
-		console.log('===this.props.navigation.state.params===', JSON.stringify(this.props.navigation.state.params.medicineUnitVal))
-		if (Array.isArray(item)) {
-			this.setState({ taperedData: item });
+		console.log('===this.props.navigation.state.params===', JSON.stringify(item))
+		if (!Array.isArray(item)) {
+			item=[item];
+			//this.setState({ taperedData: item });
 		}
-		else {
-			let tempArr = [];
-			tempArr.push(item);
-			this.setState({ taperedData: tempArr })
+		for(let i=0;i<item.length;i++){
+			let itemObj=item[0];
+			if(itemObj.medicineDoasesTypeGuid){
+				if(itemObj.medicineDosasesType){
+					for(let j=0;j<itemObj.medicineDosasesType.length;j++){
+		
+						if(itemObj.medicineDosasesType[j].medicineDoasesGuId=itemObj.medicineDoasesTypeGuid){
+							itemObj.medicineType=itemObj.medicineDosasesType[j].doasestype;
+							break;
+						}
+					}
+				}
+			}else{
+				if(itemObj.medicineDosasesType){
+					itemObj.medicineType=itemObj.medicineDosasesType[0].doasestype;
+					itemObj.medicineDoasesTypeGuid=itemObj.medicineDosasesType[0].medicineDoasesGuId;
+		
+				}
+			}
+			item[i]=itemObj
 		}
+		this.setState({ taperedData: item })
+		// else {
+		// 	let tempArr = [];
+		// 	tempArr.push(item);
+		// 	this.setState({ taperedData: tempArr })
+		// }
 		doctorNotes = this.props.navigation.state.params.doctorNotes;
 		this.setState({ doctorNotesDataArr: doctorNotes })
 		medicineTypeGuid = item.medicineTypeGuid;
@@ -465,25 +487,11 @@ class MedicineDetails extends React.Component {
 	}
 	clickOnState = (item, index) => {
 		const tempData = this.state.taperedData
-		if (item.value === 'Custom dosage') {
-			dosagePattern = null;
-			tempData[index].dosagePattern = '';
-			this.setState({ dosageSearchTxt: '', showStateDosage: false, CustomInput: true });
-			try {
-				setTimeout(() => {
-					this.refs.search.focus();
-				}, 500)
-			} catch (error) {
-
-			}
-		}
-		else {
 			dosagePattern = item.value;
 			//if(dosagePattern && dosagePattern.length>4)
 			InputTxtLengthDosage = dosagePattern.length;
 			tempData[index].dosagePattern = item.label
 			this.setState({ dosageSearchTxt: item.label, showStateDosage: false, CustomInput: false })
-		}
 	}
 
 	handleDurationData = (text, index) => {
@@ -542,8 +550,7 @@ class MedicineDetails extends React.Component {
 				UnitDropdownArr: fullArrayUnit
 			});
 		}
-
-		this.setState({ unitTxt: text });
+		//this.setState({ unitTxt: text });
 
 	}
 
@@ -572,8 +579,8 @@ class MedicineDetails extends React.Component {
 				ele.value = item + ' ' + `${ele.value}`
 			})
 			this.setState({ fromDaysTxt: item, showFromDayTxtDropDown: true, selectedIndex: index, fromDaysDataArr: temp })
-		} else {
-			this.setState({ fromDaysTxt: item, showFromDayTxtDropDown: false, selectedIndex: index, fromDaysDataArr: [] })
+		}else{
+			this.setState({ showFromDayTxtDropDown: false,  fromDaysDataArr: [] })
 		}
 
 	}
@@ -581,9 +588,8 @@ class MedicineDetails extends React.Component {
 	clickOnFromDays = (item, index) => {
 		let tempData = this.state.taperedData;
 		tempData[index].startFrom = item.value
-		let temp = [{ value: 'days' }, { value: 'weeks' }, { value: 'months' }, { value: 'years' }]
-		fromDayMaxLength = item.length;
-		this.setState({ fromDaysTxt: item.value, showFromDayTxtDropDown: false, fromDaysDataArr: temp })
+		//let temp = [{ value: 'days' }, { value: 'weeks' }, { value: 'months' }, { value: 'years' }]
+		this.setState({ fromDaysTxt: item.value, showFromDayTxtDropDown: false, taperedData: tempData})//toDaysDataArr: temp
 	}
 	handleToDaysData = (item, index) => {
 		let isValOne = (item == 1) ? true : false ;
@@ -593,8 +599,8 @@ class MedicineDetails extends React.Component {
 				ele.value = item + ' ' + `${ele.value}`
 			})
 			this.setState({ toDaysTxt: item, showToDayTxtDropDown: true, selectedIndex: index, toDaysDataArr: temp })
-		} else{
-			this.setState({ toDaysTxt: item, showToDayTxtDropDown: false, selectedIndex: index, toDaysDataArr: [] })
+		}else{
+			this.setState({ showToDayTxtDropDown: false,  toDaysDataArr: [] });
 		}
 
 	}
@@ -603,11 +609,13 @@ class MedicineDetails extends React.Component {
 		const tempData = this.state.taperedData;
 		tempData[index].to = item.value
 		let temp = [{ value: 'days' }, { value: 'weeks' }, { value: 'months' }, { value: 'years' }]
-		this.setState({ toDaysTxt: item.value, showToDayTxtDropDown: false, toDaysDataArr: temp })
+		this.setState({ toDaysTxt: item.value, showToDayTxtDropDown: false, fromDaysDataArr: temp })
 	}
 
 	renderTaperedItem = ({ item, index }) => {
-		let medicineName = this.state.taperedData;
+		 let medicineName = this.state.taperedData;
+		
+		 console.log('-----lll  '+JSON.stringify(item));
 		return (
 			<View>
 				<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flex: 1, borderTopWidth: index !== 0 ? 2 : null, borderColor: index !== 0 ? '#D2D7F3' : null }}>
@@ -645,7 +653,7 @@ class MedicineDetails extends React.Component {
 						style={[styles.createInputStyle, { borderColor: this.state.selectedIndex === index ? this.state.InpborderColorUnit : Color.inputdefaultBorder }]} placeholder={'Enter Unit'}
 						placeholderTextColor={Color.placeHolderColor}
 						defaultValue={item?.medicineType ? item?.medicineType : ''}
-						// value={item?.medicineType }
+						 //value={item?.medicineType }
 						// maxLength={InputTxtLengthUnit}
 						onChangeText={(text) => this.handleUnitData(text, index)}
 						ref='search' returnKeyType='done' />
@@ -668,7 +676,8 @@ class MedicineDetails extends React.Component {
 						<FlatList style={{ backgroundColor: '#fafafa' }}
 							data={this.state.UnitDropdownArr}
 							renderItem={({ item, _index }) => (
-								<TouchableOpacity style={{ zIndex: 999, height: responsiveHeight(7), justifyContent: 'flex-start', }} onPress={() => this.clickOnUnit(item, index)}>
+								<TouchableOpacity style={{ zIndex: 999, height: responsiveHeight(7), justifyContent: 'flex-start', }}
+								 onPress={() => this.clickOnUnit(item, index)}>
 									<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }} >{item.doasestype}</Text>
 								</TouchableOpacity>
 							)}
@@ -774,6 +783,7 @@ class MedicineDetails extends React.Component {
 							keyExtractor={(item, index) => index.toString()}
 						/>
 					</View> : null}
+				{/* ---------	Start and to section------- */}
 				{
 					this.state.taperedData.length > 1 ?
 						<View style={{ flexDirection: 'row', flex: 1 }}>
@@ -788,7 +798,7 @@ class MedicineDetails extends React.Component {
 									placeholderTextColor={Color.placeHolderColor}
 									defaultValue={item?.startFrom}
 									onChangeText={(text) => this.handleFromDaysData(text, index)}
-									ref='search' returnKeyType='done' />
+									ref='search' returnKeyType='done' maxLength={12}/>
 							</View>
 
 							<View style={{ flex: 1, }}>
@@ -802,7 +812,7 @@ class MedicineDetails extends React.Component {
 									placeholderTextColor={Color.placeHolderColor}
 									defaultValue={item?.to}
 									onChangeText={(text) => this.handleToDaysData(text, index)}
-									ref='search' returnKeyType='done' />
+									ref='search' returnKeyType='done' maxLength={12}/>
 							</View>
 						</View> : null
 
@@ -909,9 +919,7 @@ class MedicineDetails extends React.Component {
 		let item = this.props.navigation.state.params.item;
 		return (
 			<SafeAreaView style={{ flex: 1, backgroundColor: Color.white, marginTop: 20, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} onStartShouldSetResponder={() => this.dismissDialog()}>
-				<KeyboardAvoidingView behavior={Platform.OS === "ios" ? 'padding' : null}>
 					<View style={{ margin: responsiveWidth(5) }}>
-						<View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 							<TouchableOpacity onPress={() => {
 								this.props.navigation.goBack();
 								try {
@@ -923,8 +931,6 @@ class MedicineDetails extends React.Component {
 							}}>
 								<Image source={arrow_grey} style={{ height: responsiveWidth(4.5), width: responsiveWidth(5), margin: 7, marginTop: 10 }} />
 							</TouchableOpacity>
-
-						</View>
 						<FlatList
 							style={{ height: responsiveHeight(73) }}
 							data={this.state.taperedData}
@@ -955,7 +961,6 @@ class MedicineDetails extends React.Component {
 							<Text style={{ fontFamily: CustomFont.fontName, color: Color.white, fontSize: CustomFont.font16, textAlign: 'center', fontFamily: CustomFont.fontName }}>Add</Text>
 						</TouchableOpacity>
 					</View>
-				</KeyboardAvoidingView>
 			</SafeAreaView>
 		);
 	}

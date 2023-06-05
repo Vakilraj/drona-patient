@@ -147,7 +147,7 @@ class confirmAppointment extends React.Component {
                 }
                 setTimeout(() => {
                     Snackbar.show({ text: newProps.responseData.statusMessage, duration: Snackbar.LENGTH_LONG, backgroundColor: Color.primary });
-                }, 2000)
+                }, 300)
                 //
                 let { signupDetails } = this.props;
                 let timeRange = Trace.getTimeRange();
@@ -171,13 +171,13 @@ class confirmAppointment extends React.Component {
                     this.props.navigation.navigate('DoctorHome');
                     setTimeout(() => {
                         Snackbar.show({ text: 'Appointment booked successfully', duration: Snackbar.LENGTH_LONG, backgroundColor: Color.primary });
-                    }, 2000)
+                    }, 300)
 
                 } else {
                     alert(newProps.responseData.statusMessage)
                     setTimeout(() => {
                         this.props.navigation.navigate('DoctorHome');
-                    }, 2000)
+                    }, 300)
                 }
                // setLogEvent("add_appointment", { "appointmentType": DRONA.getClinicType() })
             } else if (tagname === 'reschedule') {
@@ -191,13 +191,13 @@ class confirmAppointment extends React.Component {
                     this.props.navigation.navigate('DoctorHome');
                     setTimeout(() => {
                         Snackbar.show({ text: 'Appointment rescheduled successfully', duration: Snackbar.LENGTH_LONG, backgroundColor: Color.primary });
-                    }, 2000)
+                    }, 300)
                     setLogEvent("reschdule_book_appointment_success", { UserGuid:signupDetails.UserGuid })
                 } else {
                     alert(newProps.responseData.statusMessage)
                     setTimeout(() => {
                         this.props.navigation.navigate('DoctorHome');
-                    }, 2000)
+                    }, 300)
                 }
             }
         }

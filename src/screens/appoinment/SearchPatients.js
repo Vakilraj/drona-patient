@@ -370,7 +370,7 @@ class SearchPatients extends React.Component {
 								margin: 10, padding: 0, backgroundColor: Color.patientSearchBg, height: responsiveHeight(5.5), borderRadius: 5, paddingLeft: 10, paddingRight: 10, marginLeft: responsiveWidth(4),
 								marginRight: responsiveWidth(4), fontSize: CustomFont.font14, fontFamily: CustomFont.fontName,
 								color: Color.patientSearch, fontWeight: '400', letterSpacing: 1
-							}} placeholder={ "Search by patient name or mobile number"} value={this.state.searchTxt}
+							}} placeholder={this.state.addPatientType == 'frompatient' ? "Search by patient name or mobile number" : "Search by patient name or mobile number"} value={this.state.searchTxt}
 							onChangeText={(searchTxt) => {
 								this.setState({ patientNumber: searchTxt });
 								return this.SearchFilterFunction(searchTxt);

@@ -58,8 +58,8 @@ class confirmAppointment extends React.Component {
 
         let { actions, signupDetails } = this.props;
         let timeRange = Trace.getTimeRange();
-        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +"Confirm_Appointment_Page_Time",  signupDetails.firebaseLocation);
-        Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Confirm_Appointment_Page_Time", {'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
+        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +"Confirm_Appointment_Page_Time",  signupDetails.firebaseLocation);
+        Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Confirm_Appointment_Page_Time", {'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
        
         let params = {
             "UserGuid": signupDetails.UserGuid,
@@ -147,12 +147,12 @@ class confirmAppointment extends React.Component {
                 }
                 setTimeout(() => {
                     Snackbar.show({ text: newProps.responseData.statusMessage, duration: Snackbar.LENGTH_LONG, backgroundColor: Color.primary });
-                }, 300)
+                }, 2000)
                 //
                 let { signupDetails } = this.props;
                 let timeRange = Trace.getTimeRange();
-                Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality,signupDetails.firebaseUserType +'Appointment_Booked', signupDetails.firebaseLocation );
-                Trace.setLogEventWithTrace( signupDetails.firebaseUserType + "Appointment_Booked", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
+                Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality,signupDetails.firebaseUserType +'Appointment_Booked', signupDetails.firebaseLocation );
+                Trace.setLogEventWithTrace( signupDetails.firebaseUserType + "Appointment_Booked", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
                 //
                 setLogEvent("walkin_book_appointment_success", { UserGuid:signupDetails.UserGuid })
             }
@@ -163,21 +163,21 @@ class confirmAppointment extends React.Component {
                     //
                     let { signupDetails } = this.props;
                     let timeRange = Trace.getTimeRange();
-                    Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality,signupDetails.firebaseUserType +'Appointment_Booked', signupDetails.firebaseLocation );
-                    Trace.setLogEventWithTrace( signupDetails.firebaseUserType + "Appointment_Booked", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
+                    Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality,signupDetails.firebaseUserType +'Appointment_Booked', signupDetails.firebaseLocation );
+                    Trace.setLogEventWithTrace( signupDetails.firebaseUserType + "Appointment_Booked", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
                     //
 
                     setLogEvent("new_book_appointment_success", { UserGuid:signupDetails.UserGuid,'source':'App' })
                     this.props.navigation.navigate('DoctorHome');
                     setTimeout(() => {
                         Snackbar.show({ text: 'Appointment booked successfully', duration: Snackbar.LENGTH_LONG, backgroundColor: Color.primary });
-                    }, 300)
+                    }, 2000)
 
                 } else {
                     alert(newProps.responseData.statusMessage)
                     setTimeout(() => {
                         this.props.navigation.navigate('DoctorHome');
-                    }, 300)
+                    }, 2000)
                 }
                // setLogEvent("add_appointment", { "appointmentType": DRONA.getClinicType() })
             } else if (tagname === 'reschedule') {
@@ -185,19 +185,19 @@ class confirmAppointment extends React.Component {
                     //
                     let { signupDetails } = this.props;
                     let timeRange = Trace.getTimeRange();
-                    Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality,signupDetails.firebaseUserType +'Appointment_Rescheduled', signupDetails.firebaseLocation );
-                    Trace.setLogEventWithTrace( signupDetails.firebaseUserType + "Appointment_Rescheduled", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
+                    Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality,signupDetails.firebaseUserType +'Appointment_Rescheduled', signupDetails.firebaseLocation );
+                    Trace.setLogEventWithTrace( signupDetails.firebaseUserType + "Appointment_Rescheduled", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
                     //
                     this.props.navigation.navigate('DoctorHome');
                     setTimeout(() => {
                         Snackbar.show({ text: 'Appointment rescheduled successfully', duration: Snackbar.LENGTH_LONG, backgroundColor: Color.primary });
-                    }, 300)
+                    }, 2000)
                     setLogEvent("reschdule_book_appointment_success", { UserGuid:signupDetails.UserGuid })
                 } else {
                     alert(newProps.responseData.statusMessage)
                     setTimeout(() => {
                         this.props.navigation.navigate('DoctorHome');
-                    }, 300)
+                    }, 2000)
                 }
             }
         }
@@ -298,6 +298,7 @@ class confirmAppointment extends React.Component {
                     
                 }
             }
+            //console.log('----'+JSON.stringify(params))
             actions.callLogin('V16/FuncForDrAppToPatientBookAppointment_V3', 'post', params, signupDetails.accessToken, 'postConfirm');
         }
         signupDetails.confirmAppoinmentDate=DRONA.getSelectedAppoinDate();

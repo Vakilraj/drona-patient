@@ -6,9 +6,8 @@ import { NO_LOADER } from "../constants";
 // var path = RNFS.DocumentDirectoryPath + '/test.txt';
 import AsyncStorage from 'react-native-encrypted-storage';
 import axios from "axios";
-import {Alert} from 'react-native';
-import RNExitApp from 'react-native-exit-app';
 //import NetInfo from "@react-native-community/netinfo";
+import {Clipboard} from 'react-native'
 export const fetchProductsBegin = () => ({
   type: API_BEGIN,
 });
@@ -35,9 +34,11 @@ const showAert = (tagName, msg) => {
   if (msg && msg != 'Something went wrong. Please try again later') {
     if (tagName == 'GetCommunityInfoSaved') {
       alert('Sorry, we are not able to fetch the information, Please try again');
-    }else {
-      if(msg=='Result consisted of more than one row')
-      msg='Something went wrong. Please try again later'
+    }
+    // else if(tagName=='CancelAppointment'){
+    //   alert('Sorry, appointment can not be cancelled. Please try again');
+    // }
+    else {
       alert(msg)
     }
   } else {
@@ -75,138 +76,123 @@ const showAert = (tagName, msg) => {
 }
 export function callLogin(url, apiType, params, token, tagName = null) {
   let baseUrl = "";
+  //mnkdronadoctorappdev  mnkdronadoctorappstag mnkdronadoctorapplive mnkdronadoctorapptest
+  // mnkdronadoctorapploadtesting  mnkdronadoctorappprepilot pilot mankindtesting mnkdronadoctorapplive mnkdronawebapplive dotnetcore6
+
+  // LocationEnabler    important thing--> it is comment for ios and open for Android 
   if (tagName === 'afterShareLink' || tagName === 'getserverDateTime') {
-    baseUrl = 'https://mnkdrona-apim.azure-api.net/WebApp/Dev/';
+    baseUrl = 'https://mnkdrona-apim.azure-api.net/WebApp/Stag/';
   }
   else {
-    baseUrl = 'https://mnkdrona-apim.azure-api.net/DoctorApp/Dev/'  // Dev  Pilot Stag Live
+    baseUrl = 'https://mnkdrona-apim.azure-api.net/DoctorApp/Stag/'  // Dev  Pilot Stag Live
   }
-  //console.log('-------->>>------'+DRONA.getIsServiceVailable())
-  //if(DRONA.getIsServiceVailable()){
-    if (apiType === "get") {
-      if(tagName=='getIstTime')
-      baseUrl = "https://worldtimeapi.org/api/timezone/Asia/";
-      else
-      baseUrl = "https://api.postalpincode.in/pincode/";
   
-      const request = axios.get(baseUrl + url, {
-        headers: {
-          "Content-Type": "application/json",
-          "X-Content-Type-Options": "nosniff",
-          Authorization: "Bearer " + token,
-        },
-        timeout: 20000,
-      });
-      console.log("\n\n" + baseUrl + url + " request- " + JSON.stringify(request))
-      return (dispatch) => {
-        if (tagName === "refreshToken") {
-          dispatch(removeLoader());
-        } else {
-          dispatch(fetchProductsBegin());
-        }
-  
-        return request
-          .then((data) => {
-            // Handle Success response here
-            let modifyData = data.data;
-            if (tagName) {
-              modifyData.tag = tagName;
-            }
-            console.log("\n\n" + url + " response- " + JSON.stringify(modifyData))
-            dispatch(fetchProductsSuccess(modifyData));
-            return modifyData;
-          })
-          .catch((error) => {
-            // Handle error here, you can show error alert here or within reducer
-            dispatch(fetchProductsFailure(error));
-          });
-      };
-    } else {
-      if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") { } else { console.log = function () { }; }
-  
-      const headersValue = {
+  if (apiType === "get") {
+    baseUrl = "https://api.postalpincode.in/pincode/";
+    const request = axios.get(baseUrl + url, {
+      headers: {
         "Content-Type": "application/json",
         "X-Content-Type-Options": "nosniff",
         Authorization: "Bearer " + token,
+      },
+      timeout: 20000,
+    });
+    return (dispatch) => {
+      if (tagName === "refreshToken") {
+        dispatch(removeLoader());
+      } else {
+        dispatch(fetchProductsBegin());
       }
-      const request = axios.post(baseUrl + url, params, {
-        headers: headersValue,
-        timeout: 180000,
-      });
-      console.log("\n\n" + baseUrl + url + " request- " + JSON.stringify(params))
-      console.log("\n\n" + url + " headers- " + JSON.stringify(headersValue))
-      
-      return (dispatch) => {
-        let str = 'GetCommunityInfo GetFilter viewpost SearchForSymptom SearchForSymptom SearchForFindings SearchForDiagnosis SearchForMedicine SearchForInvestigation SearchForInstructions SearchFamilyConditions SearchForConditions SearchForcurrentMedication SearchFoAllergies sharepostby AddSymptoms getserverDateTime ResentOtpForLogin GetActivationPackages tt GetWeekPasswordList GetWeekPass AddInvestigation AddInstruction ReasonOfVisitList getEditAssistanceDetailsOnBoarding SearchForProcedure Kpidata HomeScreenAnalytics GetMultiClinicList getBillingPreview'
-        if (str.includes(tagName)) {
-          dispatch(removeLoader());
-        } else {
-          dispatch(fetchProductsBegin());
-        }
-  
-        return request
-          .then((data) => {
-            let modifyData = data.data;
-            if (tagName) {
-              modifyData.tag = tagName;
-            }
-  
-            if (modifyData.statusCode == -9 ) { // || modifyData.statusCode == -3
-              if (tagName == 'login' || tagName == 'getStarted' || tagName == 'ApplyPromoCode') {
-                dispatch(fetchProductsSuccess(modifyData));
-              }
-              else {
-                showAert(tagName, modifyData.statusMessage);
-                dispatch(fetchProductsSuccess({ tag: 'dronaheltherrors' }));
-              }
-            } else {
+
+      return request
+        .then((data) => {
+          // Handle Success response here
+          let modifyData = data.data;
+          if (tagName) {
+            modifyData.tag = tagName;
+          }
+
+          dispatch(fetchProductsSuccess(modifyData));
+          return modifyData;
+        })
+        .catch((error) => {
+          // Handle error here, you can show error alert here or within reducer
+          dispatch(fetchProductsFailure(error));
+        });
+    };
+  } else {
+    if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") { } else { console.log = function () { }; }
+
+    const headersValue = {
+      "Content-Type": "application/json",
+      "X-Content-Type-Options": "nosniff",
+      Authorization: "Bearer " + token,
+    }
+    const request = axios.post(baseUrl + url, params, {
+      headers: headersValue,
+      timeout: 180000,
+    });
+    console.log("\n\n" + baseUrl + url + " request- " + JSON.stringify(params))
+    console.log("\n\n" + url + " headers- " + JSON.stringify(headersValue))
+    
+    return (dispatch) => {
+      let str = 'GetCommunityInfo GetFilter viewpost SearchForSymptom SearchForSymptom SearchForFindings SearchForDiagnosis SearchForMedicine SearchForInvestigation SearchForInstructions SearchFamilyConditions SearchForConditions SearchForcurrentMedication SearchFoAllergies sharepostby AddSymptoms getserverDateTime ResentOtpForLogin GetActivationPackages tt GetWeekPasswordList GetWeekPass AddInvestigation AddInstruction ReasonOfVisitList getEditAssistanceDetailsOnBoarding SearchForProcedure Kpidata HomeScreenAnalytics completeConsultationWithNoti'
+      if (str.includes(tagName)) {
+        dispatch(removeLoader());
+      } else {
+        dispatch(fetchProductsBegin());
+      }
+
+      return request
+        .then((data) => {
+          let modifyData = data.data;
+          if (tagName) {
+            modifyData.tag = tagName;
+          }
+
+          if (modifyData.statusCode == -9 ) { // || modifyData.statusCode == -3
+            if (tagName == 'login' || tagName == 'getStarted' || tagName == 'ApplyPromoCode') {
               dispatch(fetchProductsSuccess(modifyData));
             }
-  
-            console.log("\n\n" + url + " response- " + JSON.stringify(modifyData))
-            return modifyData;
-          })
-          .catch((error) => {
-            try {
-              console.log(url + "  error message--------- " + error.message)
-              if (error.message.includes('401')) {
-                AsyncStorage.setItem('profile_complete', 'logout');
-                DRONA.getThat().props.navigation.navigate('GetStarted');
-              } else if (error.message.includes('Network Error')) {
-                alert(error.message);
-              }
-              else {
-                showAert(tagName, null);
-              }
-  
-            } catch (error) {
-  
+            else {
+              showAert(tagName, modifyData.statusMessage);
+              dispatch(fetchProductsSuccess({ tag: 'dronaheltherrors' }));
             }
-            dispatch(fetchProductsFailure(error));
-          });
-      };
-    }
-  //}else{
-  //fetchProductsSuccess({ tag: 'dronaheltherrors' });
-//   Alert.alert(
-//     'Service not Available',
-//     'server down during 12:00AM - 6AM time period.',
-//     [
-//         {
-//             text: 'Ok',
-//             onPress: () => {
-//               RNExitApp.exitApp();
-//             },
-//         },
-//     ],
-//     { cancelable: false },
-// );
-//   }
-  
-}
+          } else {
+            dispatch(fetchProductsSuccess(modifyData));
+          }
 
+          console.log("\n\n" + url + " response- " + JSON.stringify(modifyData))
+      //     try {
+      //       RNFS.appendFile(path, "\n\n" + url + " response- " + JSON.stringify(modifyData) , 'utf8')
+      //         .then((success) => {
+      //           console.log('FILE WRITTEN!'+path);
+      //         })
+      //         .catch((err) => {
+      //           console.log(err.message);
+      //         });
+      //     } catch (error) {
+      // console.log(error)
+      //     }
 
+          return modifyData;
+        })
+        .catch((error) => {
+          try {
+            console.log(url + "  error message--------- " + error.message)
+            if (error.message.includes('401')) {
+              AsyncStorage.setItem('profile_complete', 'logout');
+              DRONA.getThat().props.navigation.navigate('GetStarted');
+            } else if (error.message.includes('Network Error')) {
+              alert(error.message);
+            }
+            else {
+              showAert(tagName, null);
+            }
 
+          } catch (error) {
+
+          }
       //     try {
       //       RNFS.appendFile(path, url + "  error " + error.message , 'utf8')
       //         .then((success) => {
@@ -218,3 +204,8 @@ export function callLogin(url, apiType, params, token, tagName = null) {
       //     } catch (error) {
       // console.log(error)
       //     }
+          dispatch(fetchProductsFailure(error));
+        });
+    };
+  }
+}

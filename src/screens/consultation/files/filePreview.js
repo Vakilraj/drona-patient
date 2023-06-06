@@ -513,7 +513,7 @@ class FilePreview extends React.Component {
             <TouchableOpacity onPress={() => this.makeDownload(this.state.fileExt)} style={styles.submitbtn}>
               <Text style={styles.submittxt}>Download</Text>
             </TouchableOpacity>
-            {this.state.fileExt == '.pdf' ? <TouchableOpacity style={[styles.submitbtn, { marginLeft: responsiveWidth(8), backgroundColor: Color.weekdaycellPink, }]}
+            {this.state.fileExt !== '.png' ? <TouchableOpacity style={[styles.submitbtn, { marginLeft: responsiveWidth(8), backgroundColor: Color.weekdaycellPink, }]}
               onPress={() => {
                 setLogEvent("patient_appointment", { "print_pdf": "click", })
                 this.printRemotePDF()

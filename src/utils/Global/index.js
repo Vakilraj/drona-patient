@@ -9,7 +9,7 @@ var init = () => {
   doctorGuid='',clinicGuid='',selectedIndexClinic=0,
   scheduleTypeGuid='', startDate='',endDate='',selectedAppoinDate=''
   customerCareNo='',customerCareEmail='',questionListHeader='',answerDetailsHeader='FAQ',that = null,address='',subscription='',twilioToken='',
-  roomName='',showAppoinmentCompleteMsg=0,isDrTimingsUpdated=true,isAddAppointmentModal=0,isReloadApi=true,isNetConnected=true,isConsultationChange=false,isNeedForTabChane=false,isServiceVailable=true,subjectSebscription=null,rxjsContext=null;
+  roomName='',showAppoinmentCompleteMsg=0,isDrTimingsUpdated=true,isAddAppointmentModal=0,isReloadApi=true,isNetConnected=true,isConsultationChange=false,isNeedForTabChane=false,subjectSebscription=null;
    
     return {
    
@@ -182,26 +182,11 @@ var init = () => {
         return isNeedForTabChane;
       },
 
-      setIsServiceVailable: t => {
-        isServiceVailable = t;
-      },
-      getIsServiceVailable: () => {
-        return isServiceVailable;
-      },
-
-
       setSubjectSebscription: t => {
         subjectSebscription = t;
       },
       getSubjectSebscription: () => {
         return subjectSebscription;
-      },
-
-      setRxjsContext: t => {
-        rxjsContext = t;
-      },
-      getRxjsContext: () => {
-        return rxjsContext;
       },
     };
   })();

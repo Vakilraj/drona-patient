@@ -336,7 +336,7 @@ class AddPrescription extends React.Component {
         this.deleteImage(item, index)
         // Alert.alert(
         //     "Delete Message",
-        //     "Are you sure want to delete?",
+        //     "Are you sure to delete?",
         //     [
         //         {
         //             text: "Cancel",
@@ -475,8 +475,8 @@ class AddPrescription extends React.Component {
                 imagePaths:urlImageArr,
                 name: 'mergepdffile',
                 maxSize: { // optional maximum image dimension - larger images will be resized
-                    width: 2480,
-                    height: 3508,
+                    width: 600,
+                    height: 800,
                 },
                 quality: .7, // optional compression paramter
             };
@@ -559,6 +559,7 @@ class AddPrescription extends React.Component {
 								cropHeight={responsiveHeight(97)}
 								imageWidth={responsiveWidth(97)}
 								imageHeight={responsiveHeight(97)}
+								panToMove='y'
 								enableSwipeDown='y'
 								pinchToZoom='y'
 								panToMove={false}

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import {
 	ScrollView,
 	View, FlatList,
-	Text, TextInput, Image, TouchableOpacity, KeyboardAvoidingView, Clipboard, BackHandler
+	Text, TextInput, Image, TouchableOpacity, KeyboardAvoidingView, Alert, BackHandler
 } from 'react-native';
 import styles from './style';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
@@ -33,7 +33,6 @@ import WhatsAppIcon from '../../../assets/whatsapp.png';
 import Snackbar from 'react-native-snackbar';
 import Validator from '../../components/Validator';
 import ThreeDotsModal from './ThreeDotsModal';
-import PreviewRxButton from './PreviewRxButton';
 import { setLogEvent } from '../../service/Analytics';
 import { Separator } from 'native-base';
 import Trace from '../../service/Trace'
@@ -122,8 +121,8 @@ class medicalHistory extends React.Component {
 		let { signupDetails } = this.props;
 		//
 		let timeRange = Trace.getTimeRange();
-		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Treatment_Plan_List',  signupDetails.firebaseLocation)
-		Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Treatment_Plan_List", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
+		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Treatment_Plan_List',  signupDetails.firebaseLocation)
+		Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Treatment_Plan_List", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
 		//
 		appoinmentGuid = this.props.data && this.props.data.pastAppointmentGuid ? this.props.data.pastAppointmentGuid : signupDetails.appoinmentGuid
 		appointmentStatus = this.props.item && this.props.item.appointmentStatus ? this.props.item.appointmentStatus : '';
@@ -243,8 +242,8 @@ class medicalHistory extends React.Component {
 		let { signupDetails } = this.props;
 		//
 		let timeRange = Trace.getTimeRange();
-		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Add_Treatment_Popup',  signupDetails.firebaseLocation)
-		Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Add_Treatment_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
+		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Add_Treatment_Popup',  signupDetails.firebaseLocation)
+		Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Add_Treatment_Popup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
 		this.callAPIForGettingTreatmentList();
 		
 	}
@@ -371,10 +370,10 @@ class medicalHistory extends React.Component {
 		totalAmount = this.state.treatmentArr[index].cost;
 		dueAmount = this.state.treatmentArr[index].balanceAmount;
 		paidAmount = this.state.treatmentArr[index].paid;
-        if(signupDetails.doctorFullName.includes("Dr.") || signupDetails.doctorFullName.includes("dr."))
-		doctorFullName = signupDetails.doctorFullName
+        if(signupDetails.fullName.includes("Dr.") || signupDetails.fullName.includes("dr."))
+		doctorFullName = signupDetails.fullName
 		else
-		doctorFullName = 'Dr. ' +  signupDetails.doctorFullName
+		doctorFullName = 'Dr. ' +  signupDetails.fullName
 		if (this.state.treatmentArr[index].shareIconUrl) {
 			pdfIconArr = this.state.treatmentArr[index].shareIconUrl
 		}
@@ -582,15 +581,15 @@ class medicalHistory extends React.Component {
 
 
 		let file = await RNHTMLtoPDF.convert(options)
-		//console.log('PDF created ========= > ' + JSON.stringify(file.filePath));
-		if (file) {
+		console.log('PDF created ========= > ' + JSON.stringify(file.filePath));
+		if (file != '') {
 			RNFetchBlob.fs
 				.readFile(file.filePath, 'base64')
 				.then((data) => {
 					//console.log('pdf for base64 ' + JSON.stringify(data))
 
 					const base64Data = 'data:application/pdf;base64,' + data
-					//Clipboard.setString(file.filePath +'  '+base64Data);
+
 					const shareOptions = {
 						title: 'Share Treament Summary',
 						// message: 'some message',
@@ -599,6 +598,7 @@ class medicalHistory extends React.Component {
 					};
 
 					if (data) {
+						
 						Share.open(shareOptions)
 							.then((res) => {
 								console.log("m,m,m,m,")

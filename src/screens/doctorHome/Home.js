@@ -198,7 +198,6 @@ class Home extends React.PureComponent {
 								signupDetails.clinicGuid = clinicList[clinicIndex].clinicGuid;
 								signupDetails.clinicStatus = clinicList[clinicIndex].status;
 								signupDetails.clinicImageUrl = clinicList[clinicIndex].clinicImageUrl;
-								DRONA.setClinicGuid(clinicList[clinicIndex].clinicGuid);
 							} catch (e) { }
 							let params = {
 								"UserGuid": data.userInfo.userGuid,
@@ -793,7 +792,7 @@ class Home extends React.PureComponent {
 							</Text>
 
 							<Text style={{ marginTop: responsiveHeight(2), fontFamily: CustomFont.fontName, color: Color.darkText, fontSize: CustomFont.font12 }}>
-								Dr. {signupDetails.fullName}
+								Dr. {signupDetails.fname + ' ' + signupDetails.lname}
 							</Text>
 						</View>
 

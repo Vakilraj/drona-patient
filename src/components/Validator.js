@@ -52,21 +52,4 @@ static isDecimalYear(mobile) {
   const reg = /^[+-]?([1-9]+\.?[0-9]*|\.[0-9]+)$/;
   return reg.test(mobile);
 }
-static isNumberHyphanDotSlashValidate(mobile) {
-  const reg = /^[0-9./-]+$/;
-  return reg.test(mobile);
-}
-static isNameAcceptDot(name) {
-  //const reg = /^[A-Za-z. ]*$/;
-  const reg = /^[a-zA-Z0-9. ]+$/;
-  return reg.test(name);
-}
-static isSpecialCharValidatorWithHypen(name) {
-  const reg = /^[a-zA-Z0-9-() ]+$/;
-  return reg.test(name);
-}
-static isNameAcceptDotForDoc(name) {
-  const reg = /^[a-zA-Z0-9.\-() ]+$/;
-  return reg.test(name);
-}
 }

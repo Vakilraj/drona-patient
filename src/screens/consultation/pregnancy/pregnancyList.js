@@ -138,8 +138,8 @@ class PregnancyList extends React.Component {
         
         let { signupDetails } = this.props;
         timeRange = Trace.getTimeRange();
-        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Pre_Pregnancy_Calendar_Time',  signupDetails.firebaseLocation)
-        Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Pre_Pregnancy_Calendar_Time", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
+        Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Pre_Pregnancy_Calendar_Time',  signupDetails.firebaseLocation)
+        Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Pre_Pregnancy_Calendar_Time", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
     
         this.backHandler = BackHandler.addEventListener('hardwareBackPress', () =>{
             this.props.navigation.goBack();
@@ -218,7 +218,7 @@ class PregnancyList extends React.Component {
     removeImage = (item, index) => {
         Alert.alert(
             "Delete Message",
-            "Are you sure want to delete?",
+            "Are you sure to delete?",
             [
                 {
                     text: "Cancel",
@@ -1148,8 +1148,8 @@ class PregnancyList extends React.Component {
                                     }, 300);
                                     let { signupDetails } = this.props;
                                     timeRange = Trace.getTimeRange();
-                                    Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Pre_Pregnancy_Calendar_Time',  signupDetails.firebaseLocation)
-                                    Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Pre_Pregnancy_Calendar_Time", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
+                                    Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Pre_Pregnancy_Calendar_Time',  signupDetails.firebaseLocation)
+                                    Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Pre_Pregnancy_Calendar_Time", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
                             
                                 }}>
                                 <Image source={this.state.isPrePregnancy ? radioSelected : radioNotSelected} style={{ marginTop: responsiveWidth(2.3), marginRight: responsiveWidth(2), marginBottom: responsiveWidth(2), width: responsiveFontSize(2.2), height: responsiveFontSize(2.2), resizeMode: 'contain' }} />
@@ -1162,8 +1162,8 @@ class PregnancyList extends React.Component {
                                     //
                                     let { signupDetails } = this.props;
                                     timeRange = Trace.getTimeRange();
-                                    Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Post_Pregnancy_Calendar_Time',  signupDetails.firebaseLocation)
-                                    Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Post_Pregnancy_Calendar_Time", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
+                                    Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Post_Pregnancy_Calendar_Time',  signupDetails.firebaseLocation)
+                                    Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Post_Pregnancy_Calendar_Time", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
                                      //
                                     setTimeout(() => {
                                         this.handlePrePostPregnancy(this.state.isPrePregnancy)

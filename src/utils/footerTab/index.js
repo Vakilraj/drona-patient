@@ -24,13 +24,13 @@ class footerIndex extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			selectedIndex: props.selected ? props.selected : 2,
+			//selectedIndex: props.selected ? props.selected : 2,
 
 		};
 		
 	}
 	clickOnTab = (index) => {
-		this.setState({ selectedIndex: index });
+		//this.setState({ selectedIndex: index });
 		this.props.ClickOnMeter(index);
 		let { actions, signupDetails } = this.props;
 						signupDetails.globalTabIndex = index;

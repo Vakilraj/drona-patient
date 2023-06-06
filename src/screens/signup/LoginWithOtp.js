@@ -3,8 +3,8 @@ import {
 	SafeAreaView, View,
 	Text, Image, TextInput, TouchableOpacity, KeyboardAvoidingView, StatusBar, Platform, ScrollView,
 } from 'react-native';
- import styles from './style';
- import CustomFont from '../../components/CustomFont';
+import styles from './style';
+import CustomFont from '../../components/CustomFont';
 
 import * as signupActions from '../../redux/actions/signupActions';
 import * as apiActions from '../../redux/actions/apiActions';
@@ -23,7 +23,7 @@ import AsyncStorage from 'react-native-encrypted-storage';
 import { setLogEvent } from '../../service/Analytics';
 import { sha256 } from 'js-sha256';
 import CryptoJS from "react-native-crypto-js";
-let countinSec=60;
+//let countinSec=60;
 class LoginWithOtp extends React.Component {
 
 	constructor(props) {
@@ -153,8 +153,8 @@ class LoginWithOtp extends React.Component {
 						await AsyncStorage.setItem('userGuid', CryptoJS.AES.encrypt(newProps.responseData.data.userGuid, 'MNKU').toString());
 					}
 					await AsyncStorage.setItem('accessToken', CryptoJS.AES.encrypt(newProps.responseData.accessToken, 'MNKU').toString());
-					this.props.navigation.navigate('DoctorHome');
-					//this.props.navigation.navigate(signupDetails.roleCode==10? 'ChooseClinic':'DoctorHome');
+					this.props.navigation.navigate('DoctorHome',{from:'login'});
+					//this.props.navigation.navigate('ChooseClinic',{from:'login'});
 				} else {
 					alert(JSON.stringify(newProps.responseData.statusMessage))
 				}
@@ -351,6 +351,7 @@ class LoginWithOtp extends React.Component {
 						</View>
 					</ScrollView>
 				</KeyboardAvoidingView>
+
 			</SafeAreaView>
 		);
 	}

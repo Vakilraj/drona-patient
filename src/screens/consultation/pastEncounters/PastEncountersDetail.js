@@ -29,7 +29,7 @@ import whatsapp_icon from '../../../../assets/whatsapp_icon.png';
 import RNFS from 'react-native-fs';
 import { setLogEvent } from '../../../service/Analytics';
 import ImageZoom from 'react-native-image-pan-zoom';
-let item = null, patientAppoinmentItem = {};
+let item = null;
 import Trace from '../../../service/Trace'
 let timeRange = '',prescriptionGuid= '';
 
@@ -53,8 +53,7 @@ class PastEncountersDetail extends React.Component {
     this.setState({ item: this.props.navigation.getParam("data") })
     this.setState({ appointmentStatus: this.props.navigation.getParam("item").appointmentStatus })
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => this.props.navigation.goBack());
-    this.clickOnShowPreview(this.state.filesArr[0]);
-    patientAppoinmentItem = this.props.navigation.getParam("item");
+    this.clickOnShowPreview(this.state.filesArr[0])
   }
 
   sendSms = () => {
@@ -159,8 +158,8 @@ class PastEncountersDetail extends React.Component {
   repeatVisit = () => {
     let { actions, signupDetails } = this.props;
     timeRange = Trace.getTimeRange();
-    Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Duplicate_rx',  signupDetails.firebaseLocation)
-    Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Duplicate_rx", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
+    Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Duplicate_rx',  signupDetails.firebaseLocation)
+    Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Duplicate_rx", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
     let params = {
       "userGuid": signupDetails.UserGuid, "DoctorGuid": signupDetails.doctorGuid
       , "ClinicGuid": signupDetails.clinicGuid,
@@ -238,7 +237,7 @@ class PastEncountersDetail extends React.Component {
 
            
                 <View style={{ marginLeft: -0.5, flexDirection: "row", position: 'absolute', bottom: responsiveHeight(0), marginBottom: responsiveHeight(0), height: responsiveHeight(10), width: '100%', backgroundColor: Color.white, borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
-                  {signupDetails.isAssistantUser || !signupDetails.appoinmentGuid || this.state.isMigratedData || this.state.appointmentStatus == "Completed"  || (patientAppoinmentItem.consultationType === 'Virtual' && !patientAppoinmentItem.isPaymentReceived) ? null : <TouchableOpacity onPress={() => {
+                  {signupDetails.isAssistantUser || !signupDetails.appoinmentGuid || this.state.isMigratedData || this.state.appointmentStatus == "Completed"? null : <TouchableOpacity onPress={() => {
                     setLogEvent("past_encounter", { edit: "click", UserGuid: signupDetails.UserGuid })
 
                     if (item && item.isHandwritten) {
@@ -262,7 +261,7 @@ class PastEncountersDetail extends React.Component {
                     <Image source={PrintingIcon} style={{ width: responsiveWidth(4.5), height: responsiveHeight(4.5), resizeMode: 'contain', tintColor: Color.primary }} />
                     <Text style={{ fontFamily: CustomFont.fontName, fontSize: CustomFont.font12, color: Color.primary, fontWeight: CustomFont.fontWeight600 }}>Print</Text>
                   </TouchableOpacity>
-                  {signupDetails.isAssistantUser || !signupDetails.appoinmentGuid || this.state.isMigratedData || this.state.appointmentStatus == "Completed" || (patientAppoinmentItem.consultationType == 'Virtual' && !patientAppoinmentItem.isPaymentReceived)? null :
+                  {signupDetails.isAssistantUser || !signupDetails.appoinmentGuid || this.state.isMigratedData || this.state.appointmentStatus == "Completed"? null :
                     <TouchableOpacity onPress={() => {
                       if (item && item.isHandwritten) {
                         Snackbar.show({ text: 'Hand-Written prescriptions cannot be duplicated.', duration: Snackbar.LENGTH_SHORT, backgroundColor: Color.primary });

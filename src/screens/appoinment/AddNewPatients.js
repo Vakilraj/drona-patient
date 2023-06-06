@@ -217,7 +217,7 @@ class AddNewPatients extends React.Component {
 		try {
 
 			let item = this.props.navigation.state.params.item ? this.props.navigation.state.params.item : '';
-			console.log('--------item--+  ' + JSON.stringify(item))
+			//console.log('--------item--+  ' + JSON.stringify(item))
 			from = this.props.navigation.state.params.from ? this.props.navigation.state.params.from : '';
 			isGetData = this.props.navigation.state.params.isGetData ? this.props.navigation.state.params.isGetData : false;
 
@@ -293,19 +293,27 @@ class AddNewPatients extends React.Component {
 		//this.getRelationShip()
 		//this.callTagApi()
 	}
-
 	callGetData = () => {
-		let item = this.props.navigation.state.params.item ? this.props.navigation.state.params.item : '';
+		if (this.props.navigation.state.params.patientFamilyMemberData && this.props.navigation.state.params.from === 'addfamily') {
+			let data = this.props.navigation.state.params.patientFamilyMemberData
+			dataAll = data
+				if (data.patientDetailsList) {
+					this.setState({ parentName: data.patientDetailsList.firstName + ' ' + data.patientDetailsList.lastName, mobile: data.patientDetailsList.phoneNumber })
+				}
+		} else {
+			let item = this.props.navigation.state.params.item ? this.props.navigation.state.params.item : '';
 
-		let { actions, signupDetails } = this.props;
-		let params = {
-			"RoleCode": signupDetails.roleCode,
-			"UserGuid": signupDetails.UserGuid,
-			"DoctorGuid": signupDetails.doctorGuid,
-			"ClinicGuid": signupDetails.clinicGuid,
-			"Data": { "PatientGuid": item.patientGuid }
+			let { actions, signupDetails } = this.props;
+			let params = {
+				"RoleCode": signupDetails.roleCode,
+				"UserGuid": signupDetails.UserGuid,
+				"DoctorGuid": signupDetails.doctorGuid,
+				"ClinicGuid": signupDetails.clinicGuid,
+				"Data": { "PatientGuid": item.patientGuid }
+			}
+			actions.callLogin('V11/FuncForDrAppToGetPatientDetailsById', 'post', params, signupDetails.accessToken, 'getData');
 		}
-		actions.callLogin('V11/FuncForDrAppToGetPatientDetailsById', 'post', params, signupDetails.accessToken, 'getData');
+
 	}
 	openCamera = () => {
 		ImagePicker.openCamera({
@@ -387,8 +395,8 @@ class AddNewPatients extends React.Component {
 			this.setState({ fnameAlert: 'Please enter first name' });
 			this.refs.fname.focus();
 		}
-		else if (!Validator.isNameAcceptDot(this.state.fname)) {
-			this.setState({ fnameAlert: 'Name should contain only alphabets,number,dot and hyphen' });
+		else if (!Validator.isNameValidate(this.state.fname)) {
+			this.setState({ fnameAlert: 'Name should contain only alphabets' });
 			this.refs.fname.focus();
 		} else if (this.state.fname.length < 1) {
 			this.setState({ fnameAlert: 'First name minimum 1 character' });
@@ -583,8 +591,6 @@ class AddNewPatients extends React.Component {
 					if (data.patientDetailsList) {
 						this.setState({ parentName: data.patientDetailsList.firstName + ' ' + data.patientDetailsList.lastName, mobile: data.patientDetailsList.phoneNumber })
 					}
-
-
 				} else {
 					let age = 0;
 					if (item.dob) {
@@ -830,10 +836,10 @@ class AddNewPatients extends React.Component {
 										style={[styles.createInputStyle, { borderColor: this.state.fld1 }]} placeholder="Enter Name" placeholderTextColor={Color.placeHolderColor} onChangeText={fname => {
 											fname = fname;
 											this.setState({ fname, showDiscard: true })
-											if (!fname || Validator.isNameAcceptDot(fname)) {
+											if (!fname || Validator.isNameValidate(fname)) {
 												this.setState({ fnameAlert: '', fld1: Color.inputErrorBorder })
 											} else {
-												this.setState({ fnameAlert: 'Name should contain only alphabets,number,dot and hyphen', fld1: Color.inputErrorBorder })
+												this.setState({ fnameAlert: 'Name should contain only alphabets', fld1: Color.inputErrorBorder })
 											}
 										}} ref='fname' onSubmitEditing={() => this.refs.lname.focus()} value={this.state.fname} onFocus={() => this.setState({ keyboardAvoiding: responsiveHeight(-50), fld1: Color.primary })} />
 									{this.state.fnameAlert ? <Text style={{ marginLeft: 5, fontSize: CustomFont.font12, color: Color.red }}>{this.state.fnameAlert}</Text> : null}
@@ -844,10 +850,10 @@ class AddNewPatients extends React.Component {
 										style={[styles.createInputStyle, { borderColor: this.state.fld2, borderWidth: 1 }]} placeholder="Last Name" placeholderTextColor={Color.placeHolderColor} onChangeText={lname => {
 											lname = lname;
 											this.setState({ lname, showDiscard: true })
-											if (!lname || Validator.isNameAcceptDot(lname)) {
+											if (!lname || Validator.isNameValidate(lname)) {
 												this.setState({ lnameAlert: '', fld2: Color.inputErrorBorder })
 											} else {
-												this.setState({ lnameAlert: 'Name should contain only alphabets,number,dot and hyphen', fld2: Color.inputErrorBorder })
+												this.setState({ lnameAlert: 'name should contain only alphabets', fld2: Color.inputErrorBorder })
 											}
 										}} ref='lname' onSubmitEditing={() => this.refs.age.focus()} value={this.state.lname} onFocus={() => this.setState({ keyboardAvoiding: responsiveHeight(-40), fld2: Color.primary })} />
 									{this.state.lnameAlert ? <Text style={{ marginLeft: 5, fontSize: CustomFont.font12, color: Color.red }}>{this.state.lnameAlert}</Text> : null}
@@ -984,10 +990,10 @@ class AddNewPatients extends React.Component {
 									onChangeText={referedName => {
 										referedName = referedName;
 										this.setState({ referedName, showDiscard: true })
-										if (!referedName || Validator.isNameAcceptDot(referedName)) {
+										if (!referedName || Validator.isNameValidate(referedName)) {
 											this.setState({ referedNameAlert: '', fld2: Color.inputErrorBorder })
 										} else {
-											this.setState({ referedNameAlert: 'Name should contain only alphabets,number,dot and hyphen', fld2: Color.inputErrorBorder })
+											this.setState({ referedNameAlert: 'name should contain only alphabets', fld2: Color.inputErrorBorder })
 										}
 									}} ref='referedName' onSubmitEditing={() => this.refs.age.focus()} value={this.state.referedName} onFocus={() => this.setState({ keyboardAvoiding: responsiveHeight(-40), fld2: Color.primary })} />
 								{this.state.referedNameAlert ? <Text style={{ marginLeft: 5, fontSize: CustomFont.font12, color: Color.red }}>{this.state.referedNameAlert}</Text> : null}

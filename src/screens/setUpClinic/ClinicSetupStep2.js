@@ -367,12 +367,12 @@ class ClinicSetupStep2 extends React.Component {
 
 		let { actions, signupDetails } = this.props;
 		timeRange = Trace.getTimeRange();
-		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.drSpeciality, signupDetails.firebaseUserType +'Consultation_Timing_Setup', signupDetails.firebaseLocation)
-		Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Consultation_Timing_Setup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.drSpeciality })
+		Trace.startTrace(timeRange, signupDetails.firebasePhoneNumber, signupDetails.firebaseDOB, signupDetails.firebaseSpeciality, signupDetails.firebaseUserType +'Consultation_Timing_Setup', signupDetails.firebaseLocation)
+		Trace.setLogEventWithTrace(signupDetails.firebaseUserType +"Consultation_Timing_Setup", { 'TimeRange' : timeRange , 'Mobile' : signupDetails.firebasePhoneNumber,'Age' : signupDetails.firebaseDOB, 'Speciality' :  signupDetails.firebaseSpeciality })
 		let params = {
 			"RoleCode": signupDetails.roleCode ? signupDetails.roleCode : 10,
 			"UserGuid": signupDetails.UserGuid,
-			"ClinicGuid": DRONA.getClinicGuid(),//DRONA.getClinicGuid() signupDetails.clinicGuid
+			"ClinicGuid": signupDetails.clinicGuid,//DRONA.getClinicGuid()
 			"DoctorGuid": signupDetails.doctorGuid,
 			"Data": null
 		}
@@ -511,7 +511,7 @@ class ClinicSetupStep2 extends React.Component {
 		let objParams = {
 			"RoleCode": signupDetails.roleCode,
 			"UserGuid": signupDetails.UserGuid,
-			"ClinicGuid": DRONA.getClinicGuid(),//DRONA.getClinicGuid() signupDetails.clinicGuid
+			"ClinicGuid": signupDetails.clinicGuid,//DRONA.getClinicGuid()
 			"DoctorGuid": signupDetails.doctorGuid,
 			"data": {
 				"editConsent": false,

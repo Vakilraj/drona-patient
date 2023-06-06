@@ -626,9 +626,8 @@ class NewBill extends React.Component {
                     `
                     temp.push(htmlCode)
                 }
-                return temp
             }
-
+            return temp
         }
         else {
             if (value) {
@@ -697,7 +696,7 @@ class NewBill extends React.Component {
 				<td width="50%" style="vertical-align:top; ">			
 					  <h2>`+ this.showOriginalValueView(clinicInfo.clinicName) + `</h2>
 					  <p>`+ this.showOriginalValueView(clinicInfo.clinicAddress) + `</p>
-					  `+ `Clinic Ph. No. : ` + this.showOriginalValueView(clinicInfo.clinicNumber) + `
+					  `+ this.showOriginalValueView(clinicInfo.clinicNumber) + `
 				</td>
 				<td width="30%" style="vertical-align:top;">
 						<h2> `+ `Dr.` + this.showOriginalValueView(doctorInfo.firstName) + ` ` + this.showOriginalValueView(doctorInfo.lastName) + `</h2>

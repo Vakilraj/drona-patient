@@ -547,40 +547,40 @@ class PreviewRx extends React.Component {
     MedicineList = (item, index) => {
         return (
             <View style={{ flex: 1, flexDirection: 'row' }}>
-                <View style={{ flex: 1, borderColor: '#ddd', borderWidth: 1 }}>
+                <View style={{ flex: 1, borderColor: '#ddd', borderWidth: 1,  justifyContent: 'center' }}>
                     <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, marginRight: responsiveWidth(2) }}><Text>{index + 1}</Text></Text>
                 </View>
-                <View style={{ flex: 4, borderColor: '#ddd', borderWidth: 1 }}>
-                    <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, marginRight: responsiveWidth(2) }}><Text style={{ fontWeight: 'bold' }}>{item.medicineName + ' ' + item?.strength + '\n'}</Text> <Text style={{ fontStyle: 'italic' }}>({item.medicineDesc})</Text></Text>
+                <View style={{ flex: 4, borderColor: '#ddd', borderWidth: 1, justifyContent: 'center' }}>
+                    <Text style={{  color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, marginRight: responsiveWidth(2) }}><Text style={{ fontWeight: 'bold' }}>{item.medicineName + ' ' + item?.strength + '\n'}</Text> <Text style={{ fontStyle: 'italic' }}>({item.medicineDesc})</Text></Text>
                 </View>
-                <View style={{ flex: 2, borderColor: '#ddd', borderWidth: 1 }}>
+                <View style={{ flex: 2, borderColor: '#ddd', borderWidth: 1, height: responsiveHeight(27) }}>
                     {
                         item.values.map((val, index) => {
                             return (
-                                <View style={{ marginBottom: responsiveHeight(1) }}>
+                                <View style={{ flex: 1, borderBottomWidth: 1, borderColor: '#ddd' }}>
                                     <Text style={{ color: Color.black, marginLeft: 5, fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: 5 }}>{val.dosagePattern}</Text>
                                 </View>
                             )
                         })
                     }
                 </View>
-                <View style={{ flex: 3, borderColor: '#ddd', borderWidth: 1 }}>
+                <View style={{ flex: 3, borderColor: '#ddd', borderWidth: 1, height: responsiveHeight(27) }}>
                     {
                         item.values.map((val, index) => {
                             return (
-                                <View style={{ marginBottom: responsiveHeight(1) }}>
-                                    <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(2) }}>{this.getMedicineFormat(val)}</Text>
+                                <View style={{ flex: 1, borderBottomWidth: 1, borderColor: '#ddd' }}>
+                                    <Text style={{ color: Color.black, marginLeft: 5, fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: 5 }}>{this.getMedicineFormat(val)}</Text>
                                 </View>
                             )
                         })
                     }
                 </View>
-                <View style={{ flex: 2, borderColor: '#ddd', borderWidth: 1 }}>
+                <View style={{ flex: 2, borderColor: '#ddd', borderWidth: 1, height: responsiveHeight(27) }}>
                     {
                         item.values.map((val, index) => {
                             return (
-                                <View style={{ marginBottom: responsiveHeight(1) }}>
-                                    <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(2) }}>{val.note}</Text>
+                                <View style={{ flex: 1, borderBottomWidth: 1, borderColor: '#ddd'}}>
+                                    <Text style={{ color: Color.black, marginLeft: 5, fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: 5 }}>{val.note}</Text>
                                 </View>
                             )
                         })
@@ -693,7 +693,6 @@ class PreviewRx extends React.Component {
                                             <Text style={{ padding: 5, color: Color.black, marginLeft: 5, fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: 5 }}>{noteStr}</Text>
                                         </View>
                                     </View>
-                                    {console.log('==========>>>> ==========>>>> medicineList <<<<======== <<<<========', JSON.stringify(medicineList))}
                                     <FlatList
                                         data={medicineList}
                                         renderItem={({ item, index }) => this.MedicineList(item, index)}

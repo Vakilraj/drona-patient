@@ -2524,8 +2524,12 @@ class Consultation extends React.Component {
 			tempStr += tempStr ? ', ' + item.dosagePattern : item.dosagePattern;
 		if (item.medicineTimingFrequency)
 			tempStr += tempStr ? ', ' + item.medicineTimingFrequency : item.medicineTimingFrequency;
-		if (item.durationType)
-			tempStr += ', ' + item.durationType + ' ';
+			if (item.durationType)
+			tempStr += tempStr ? ', ' + item.durationType : item.durationType;
+			
+			if(item.startFrom  && item.to){
+				tempStr += tempStr ? ', ' +  'From '+ item.startFrom + ' to ' + item.to : 'From '+ item.startFrom + ' to ' + item.to
+			 }
 		if (tempStr)
 			tempStr = '(' + tempStr + ')'
 		tempStr = item.medicineName + ' ' + tempStr

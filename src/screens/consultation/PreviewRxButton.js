@@ -501,8 +501,8 @@ class PreviewRxButton extends React.Component {
 		if (item.medicineType)
 			tempStr = item.medicineType;
 
-		// if (item.dosagePattern)
-		// 	tempStr += tempStr ? '- ' + item.dosagePattern : item.dosagePattern;
+		if (item.dosagePattern)
+			tempStr += tempStr ? '- ' + item.dosagePattern : item.dosagePattern;
 		if (item.medicineTimingFrequency)
 			tempStr += tempStr ? '- ' + item.medicineTimingFrequency : item.medicineTimingFrequency;
 		if (item.durationType)
@@ -521,13 +521,6 @@ class PreviewRxButton extends React.Component {
 					 <tr>
 					 <td style="width:8%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;">`+ index + `</td>
 					 <td style="width:35%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;text-transform: capitalize;"><b>`+ medicineList[j].medicineName + ` ` + medicineList[j].strength + `</b></br>` + `(<i>` + medicineList[j].medicineDesc + `</i>)` + `</td>
-					 <td style="width:25%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;text-transform: capitalize;">
-					 ${
-					medicineList[j].values.map((val) => {
-						return (`<div > `+ val.dosagePattern + ` </div>`)
-					})	
-					 }
-					 </td>
 					 <td style="width:40%, padding: 8px;line-height: 1.42857143;vertical-align: top;border: 1px solid #ddd;text-transform: capitalize;">
 					 ${
 					medicineList[j].values.map((val) => {
@@ -554,8 +547,6 @@ class PreviewRxButton extends React.Component {
 		  border-left: 1px solid #f1f1f1; padding: 8px;line-height: 1.42857143;" rowspan="2">`+ Rx + ` :</th>
 			<th width="35%" style="background-color: #14091529;color: #000;text-align: left;font-size: 12px;font-weight: 700;
 		  border-left: 1px solid #f1f1f1; padding: 8px;line-height: 1.42857143;" rowspan="2">`+ medicine + ` :</th>
-		  <th width="25%" style="background-color: #14091529;color: #000;text-align: left;font-size: 12px;font-weight: 700;
-		  border-left: 1px solid #f1f1f1; padding: 8px;line-height: 1.42857143;" rowspan="2">`+ `Dosage` + ` :</th>
 			<th width="40%" style="background-color: #14091529;color: #000;text-align: letf;font-size: 12px;font-weight: 700;
 		  border-left: 1px solid #f1f1f1; padding: 8px;line-height: 1.42857143;" rowspan="2">`+ timingAndDur + `</th>
 			<th width="25%" style="background-color: #14091529;color: #000;text-align: left;font-size: 12px;font-weight: 700;
@@ -805,35 +796,27 @@ class PreviewRxButton extends React.Component {
 		// let medicineList = prescriptionDataFullArray.medicineList != null ? prescriptionDataFullArray.medicineList : []
 		let temp = prescriptionDataFullArray.medicineList != null ? prescriptionDataFullArray.medicineList : []
 		let medicineList = [];
-		try {
-			if(temp && temp.length>0){
-				let groupedData = Object.values(temp.reduce((acc, obj, idx) => {
-					const key = obj.medicineName.trim();
-					const strength = obj?.strength;
-							const medicineDesc = obj?.medicineDesc
-					if (!acc[key]) {
-						if (!obj.values) {
-							acc[key] = { medicineName: key, strength: strength, medicineDesc: medicineDesc, values: [] };
-						}
-					}
-					if (!obj.values) {
-						if (obj.medicineType) {
-							acc[key].values.push(obj);
-						}
-					} else {
-						medicineList.push(obj)
-					}
-					return acc;
-				}, {}));
-				medicineList = medicineList.concat(Object.values(groupedData));
+		let groupedData = Object.values(temp.reduce((acc, obj, idx) => {
+			const key = obj.medicineName.trim();
+			const strength = obj?.strength;
+                    const medicineDesc = obj?.medicineDesc
+			if (!acc[key]) {
+				if (!obj.values) {
+					acc[key] = { medicineName: key, strength: strength, medicineDesc: medicineDesc, values: [] };
+				}
 			}
-			
-		} catch (error) {
-			
-		}
-		
+			if (!obj.values) {
+				if (obj.medicineType) {
+					acc[key].values.push(obj);
+				}
+			} else {
+				medicineList.push(obj)
+			}
+			return acc;
+		}, {}));
+		medicineList = medicineList.concat(Object.values(groupedData));
 
-		//console.log('======= medicineList =======', JSON.stringify(medicineList))
+		console.log('======= medicineList =======', JSON.stringify(medicineList))
 
 		let prescriptionNote = prescriptionDataFullArray.prescriptionNote != null ? prescriptionDataFullArray.prescriptionNote : []
 		let instructionsList = prescriptionDataFullArray.instructionsList != null ? prescriptionDataFullArray.instructionsList : []

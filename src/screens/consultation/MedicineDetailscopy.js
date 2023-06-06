@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import {
 	KeyboardAvoidingView,
 	ScrollView,
@@ -26,12 +26,14 @@ import Trace from '../../service/Trace'
 import _ from 'lodash';
 let prevIndexTimings = 0, prevIndexDoase = 0, prevIndexDuration = 1, medicineType = '', medicineTypeGuid = '', durationType = 'days', DurationTypeValue = '5', MedicineDoasesGuId = '', doasestype = '', Dosages = '', TimingTypeGuid = '', dosagePattern = '';
 let doasagesPatterArr = [{ label: '1-0-0', value: '1-0-0', isSelect: true }, { label: '0-1-0', value: '0-1-0', isSelect: false }, { label: '0-0-1', value: '0-0-1', isSelect: false }, { label: '1-1-0', value: '1-1-0', isSelect: false }, { label: '0-1-1', value: '0-1-1', isSelect: false }, { label: '1-0-1', value: '1-0-1', isSelect: false }, { label: '1-1-1', value: '1-1-1', isSelect: false }, { label: '6 Hourly', value: '6 Hourly', isSelect: false }, { label: 'Alternate Day', value: 'Alternate Day', isSelect: false }, { label: 'Weekly', value: 'Weekly', isSelect: false }, { label: 'Monthly', value: 'Monthly', isSelect: false }, { label: 'SOS', value: 'SOS', isSelect: false }]
-let clickFlag = 0, isEdit = false, prvLength = -1, InputTxtLengthDosage = 15, InputTxtLengthDuration = 5, InputTxtLengthUnit = 5;
+let clickFlag = 0, isEdit = false, prvLength = -1, InputTxtLengthDosage = 15, InputTxtLengthDuration = 5, InputTxtLengthUnit = 5, fromDayMaxLength = 5;
 let medicineTimingFrequency = 'Empty Stomach';
 let medicineDosasesType;
 let fromDaysData = [{ value: 'days' }, { value: 'weeks' }, { value: 'months' }, { value: 'years' }]
 let fullArrayUnit = [];
 let doctorNotes = [];
+let toDropDownIndexArr =  [];
+let fromDropDownIndexArr =  [];
 let whenToTakeData = [
 	{ label: 'Before Food', value: 'Before Food' },
 	{ label: 'After Food', value: 'After Food' },
@@ -54,10 +56,7 @@ let durationData = [
 	{ label: 'Monthly', value: 'Monthly' },
 	{ label: 'SOS', value: 'SOS' },
 	{ label: 'Weekly', value: 'Weekly' },
-];
-let toDropDownIndexArr =  [];
-let fromDropDownIndexArr =  [];
-
+]
 class MedicineDetails extends React.Component {
 	constructor(props) {
 		super(props);
@@ -97,12 +96,13 @@ class MedicineDetails extends React.Component {
 			fromDaysTxt: '',
 			showFromDayTxtDropDown: false,
 			fromDaysDataArr: fromDaysData,
+			toDaysDataArr: fromDaysData,
 			showToDayTxtDropDown: false,
 			showDoctorNotesdropDown: false,
 			doctorNoteTxt: '',
 			// noteDatas: temp,
 			doctorNotesDataArr: [],
-			toDaysDataArr: fromDaysData,
+			// DurationDropdownArr: durationData,
 
 
 
@@ -132,94 +132,127 @@ class MedicineDetails extends React.Component {
 			}
 		});
 		let item = this.props.navigation.state.params.item;
-		// console.log('===----===', JSON.stringify(item))
-		if (!Array.isArray(item)) {
-			item=[item];
-			//this.setState({ taperedData: item });
+		// console.log('===this.props.navigation.state.params===', JSON.stringify(this.props.navigation.state.params.medicineUnitVal))
+		if (Array.isArray(item)) {
+			this.setState({ taperedData: item });
 		}
-		// if (Array.isArray(item)) {
-		// 	this.setState({ taperedData: item });
-		// }
-		// else {
-		// 	let tempArr = [];
-		// 	tempArr.push(item);
-		// 	this.setState({ taperedData: tempArr })
-		// }
-		
-		for(let i=0;i<item.length;i++){
-			let itemObj=item[i];
-			if(itemObj.medicineDosasesTypeGuid){
-				if(itemObj.medicineDosasesType){
-					for(let j=0;j<itemObj.medicineDosasesType.length;j++){
-		
-						if(itemObj.medicineDosasesType[j].medicineDoasesGuId=itemObj.medicineDosasesTypeGuid){
-							itemObj.medicineType=itemObj.medicineDosasesType[j].doasestype;
-							break;
-						}
-					}
-				}
-			}else{
-				if(itemObj.medicineDosasesType){
-					itemObj.medicineType=itemObj.medicineDosasesType[0].doasestype;
-					itemObj.medicineDosasesTypeGuid=itemObj.medicineDosasesType[0].medicineDoasesGuId;
-		
-				}
-			}
-			item[i]=itemObj
+		else {
+			let tempArr = [];
+			tempArr.push(item);
+			this.setState({ taperedData: tempArr })
 		}
-		// console.log('===--after--===', JSON.stringify(item))
-		this.setState({ taperedData: item })
-		fullArrayUnit = item[0].medicineDosasesType;
-		// else {
-		// 	let tempArr = [];
-		// 	tempArr.push(item);
-		// 	this.setState({ taperedData: tempArr })
-		// }
-		// doctorNotes = this.props.navigation.state.params.doctorNotes;
-		// this.setState({ doctorNotesDataArr: doctorNotes })
-		// medicineTypeGuid = item.medicineTypeGuid;
-//comment now 
+		doctorNotes = this.props.navigation.state.params.doctorNotes;
+		this.setState({ doctorNotesDataArr: doctorNotes })
+		medicineTypeGuid = item.medicineTypeGuid;
+		// medicineType = item.medicineType;
 
-		// if (item.medicineDosasesType && item.medicineDosasesType.length > 0) {
-		// 	medicineTypeGuid = item.medicineDosasesType[0].medicineTypeGuid;
-		// 	MedicineDoasesGuId = item.medicineDosasesType[0].medicineDoasesGuId;
-		// 	doasestype = item.medicineDosasesType[0].doasestype;
-		// 	fullArrayUnit = item.medicineDosasesType;
-		// 	console.log('----fullArrayUnit-----' + JSON.stringify(fullArrayUnit))
+		if (item.medicineDosasesType && item.medicineDosasesType.length > 0) {
+			// let tempDoaseArr = [];
+			// for (let i = 0; i < item.medicineDosasesType.length; i++) {
+			// 	tempDoaseArr.push({ label: item.medicineDosasesType[i].doasestype, value: item.medicineDosasesType[i].medicineTypeGuid, medicineDoasesGuId: item.medicineDosasesType[i].medicineDoasesGuId })
+			// }
+			medicineTypeGuid = item.medicineDosasesType[0].medicineTypeGuid;
+			MedicineDoasesGuId = item.medicineDosasesType[0].medicineDoasesGuId;
+			doasestype = item.medicineDosasesType[0].doasestype;
+			fullArrayUnit = item.medicineDosasesType;
+			// console.log('----fullArrayUnit-----' + JSON.stringify(fullArrayUnit))
+			//this.setState({ DosageTitleArr: tempDoaseArr });
+			// if (doasestype === 'Tablet') {
+			// 	let tmpArr = [{ label: '1/2', value: '1/2', isSelect: false }, { label: '3/4', value: '3/4', isSelect: false }, { label: '1', value: '1', isSelect: true }, { label: '2', value: '2', isSelect: false }];
+			// 	// for (let i = 2; i < 3; i++) {
+			// 	// 	tmpArr.push({ label: i + '', value: i + '', isSelect: false })
+			// 	// }
+			// 	this.setState({ DosageArr: tmpArr, doaseUnit: doasestype })
+			// 	prevIndexDoase = 2;
+			// } else {
+			// 	this.setState({ DosageArr: [{ label: '1', value: '1', isSelect: true }, { label: '2', value: '2', isSelect: false }, { label: '3', value: '3', isSelect: false }, { label: '4', value: '4', isSelect: false }], doaseUnit: doasestype })
+			// }
+		}
+		// let medTiming = this.props.navigation.state.params.medTiming;
+		// if (medTiming) {
+		// 	let tempTimingArr = [];
+		// 	prevIndexTimings = 0;
+		// 	for (let i = 0; i < medTiming.length; i++) {
+		// 		// if (i == 0)
+		// 		// 	tempTimingArr.push({ label: medTiming[i].medicineTiming, value: medTiming[i].medicineTimingGuId, isSelect: true })
+		// 		// else
+		// 		if (medTiming[i].medicineTimingGuId == item.timingTypeGuid)
+		// 			prevIndexTimings = i;
+		// 		tempTimingArr.push({ label: medTiming[i].medicineTiming, value: medTiming[i].medicineTimingGuId, isSelect: medTiming[i].medicineTimingGuId == item.timingTypeGuid })
+		// 	}
+		// 	TimingTypeGuid = medTiming[0].medicineTimingGuId
+		// 	if (item.timingTypeGuid) {
+		// 		TimingTypeGuid = item.timingTypeGuid;
+		// 	} else {
+		// 		tempTimingArr[0].isSelect = true;
+		// 	}
+		// 	this.setState({ TimingTitleArr: tempTimingArr, defaultTimingTitle: TimingTypeGuid });
+
 		// }
+
 		//prefilled
-		// setTimeout(() => {
-		// 	try {
+		setTimeout(() => {
+			try {
+				// let index = this.state.DosageArr.findIndex(x => x.value == item.dosages);
+				// if (index > -1) {
+				// 	this.state.DosageArr[prevIndexDoase].isSelect = false;
+				// 	prevIndexDoase = index;
+				// 	this.state.DosageArr[index].isSelect = true;
+				// 	this.setState({ DosageArr: this.state.DosageArr })
+				// } else {
+				// 	if (item.dosages && item.dosages != 0)
+				// 		this.state.DosageArr[prevIndexDoase].isSelect = false;
+				// 	this.setState({ doaseValue: item.dosages ? item.dosages : '', DosageArr: this.state.DosageArr })
+				// }
 
-		// 		Dosages = item.dosages ? item.dosages : 1;
-		// 		durationType = item.durationType ? item.durationType : 'days';
-		// 		if (item.durationType)
-		// 			DurationTypeValue = item.durationType;
-		// 		if (item.medicineTimingFrequency)
-		// 			medicineTimingFrequency = item.medicineTimingFrequency;
+				Dosages = item.dosages ? item.dosages : 1;
+				durationType = item.durationType ? item.durationType : 'days';
+				if (item.durationType)
+					DurationTypeValue = item.durationType;
+				if (item.medicineTimingFrequency)
+					medicineTimingFrequency = item.medicineTimingFrequency;
 
-		// 		this.setState({ noteData: item.note ? item.note : '' })
+				this.setState({ noteData: item.note ? item.note : '' })
 
-		// 		if (item.dosagePattern) {
-		// 			dosagePattern = item.dosagePattern;
-		// 			InputTxtLengthDosage = dosagePattern.length;
-		// 			if (dosagePattern && dosagePattern.indexOf('.')) {
-		// 				this.setState({ CustomInput: true })
-		// 			}
-		// 			this.setState({ dosageSearchTxt: dosagePattern })
-		// 		}
-		// 		let durationRefileedTxt = DurationTypeValue + ' ' + durationType;
-		// 		InputTxtLengthDuration = durationRefileedTxt.length;
+				if (item.dosagePattern) {
+					dosagePattern = item.dosagePattern;
+					InputTxtLengthDosage = dosagePattern.length;
+					if (dosagePattern && dosagePattern.indexOf('.')) {
+						this.setState({ CustomInput: true })
+					}
+					this.setState({ dosageSearchTxt: dosagePattern })
+				}
+				let durationRefileedTxt = DurationTypeValue + ' ' + durationType;
+				InputTxtLengthDuration = durationRefileedTxt.length;
 
-		// 		let unitRefileedTxt = Dosages + ' ' + doasestype;
-		// 		InputTxtLengthUnit = unitRefileedTxt.length;
+				let unitRefileedTxt = Dosages + ' ' + doasestype;
+				InputTxtLengthUnit = unitRefileedTxt.length;
 
-		// 		this.setState({ dutaionTxt: durationRefileedTxt, unitTxt: unitRefileedTxt })
+				this.setState({ dutaionTxt: durationRefileedTxt, unitTxt: unitRefileedTxt })
 
-		// 	} catch (e) { }
+				// let indexDuratuion = this.state.DurationArr.findIndex(x => x.value == item.durationType);
+				// if (indexDuratuion > -1) {
+				// 	this.state.DurationArr[prevIndexDuration].isSelect = false;
+				// 	prevIndexDuration = indexDuratuion;
+				// 	this.state.DurationArr[indexDuratuion].isSelect = true;
+				// 	this.setState({ DurationArr: this.state.DurationArr })
+				// } else {
+				// 	if (item.durationType && item.durationType != 0)
+				// 		this.state.DurationArr[prevIndexDuration].isSelect = false;
+				// 	this.setState({ durationType: item.durationType ? item.durationType + '' : '', DurationArr: this.state.DurationArr })
+				// }
+				// if (item.durationType)
+				// 	DurationTypeValue = item.durationType;
+				//this.setState({ takingTimeIndex: timings == "Empty Stomach" ? 0 : timings == "Before Food" ? 1 : timings == "After Food" ? 2 : timings == "No Preference" ? 3 : 0 });
+
+				//this.setState({ defaultTimingTitle: TimingTypeGuid })
 
 
-		// }, 1000)
+
+			} catch (e) { }
+
+
+		}, 1000)
 	}
 
 	// getDurationAndUnit = (item) => {
@@ -274,6 +307,8 @@ class MedicineDetails extends React.Component {
 	// }
 
 	saveData = () => {
+		console.log('======== toDropDownIndexArr =====', toDropDownIndexArr)
+		console.log('======== fromDropDownIndexArr =====', fromDropDownIndexArr)
 		clickFlag = 1;
 		let { signupDetails } = this.props;
 		let timeRange = Trace.getTimeRange();
@@ -283,19 +318,15 @@ class MedicineDetails extends React.Component {
 		let saveData = [...this.state.taperedData];
 		let savevalue = {}
 		// console.log('========= saveData1 ========', JSON.stringify(saveData))
-		console.log('========= fromDropDownIndexArr ========', fromDropDownIndexArr)
-		console.log('========= toDropDownIndexArr ========', toDropDownIndexArr)
-		// console.log('========= saveData1 ========', JSON.stringify(saveData))
-		if(fromDropDownIndexArr?.length > 0){
-			fromDropDownIndexArr?.forEach((val, index) => {
-				saveData[val].startFrom = null
+
+		if(toDropDownIndexArr?.length > 0){
+			toDropDownIndexArr?.forEach((val, index) => {
 				saveData[val].to = null
 			})
 		}
-		if(toDropDownIndexArr?.length > 0){
+		if(fromDropDownIndexArr?.length > 0){
 			toDropDownIndexArr?.forEach((val, index) => {
 				saveData[val].startFrom = null
-				saveData[val].to = null
 			})
 		}
 		saveData.forEach((_item, index) => {
@@ -317,29 +348,32 @@ class MedicineDetails extends React.Component {
 			// 	}
 			// })
 			// delete saveData[index].medicineDosasesType
+			// if(this.state.showToDayTxtDropDown){
+			// 	saveData
+			// }
 		})
 
 		console.log('========= saveData ========', JSON.stringify(saveData))
-		// let data = {
-		// 	appointmentGuid: signupDetails.appoinmentGuid,
-		// 	medicineGuid: item.medicineGuid,
-		// 	medicineName: item.medicineName + ' ' + item.strength, //+ ' ' + item.medicineDesc
-		// 	medicineDesc: item.medicineDesc,
-		// 	strength: item.strength,
-		// 	medicineTypeGuid: medicineTypeGuid,
-		// 	medicineType: medicineType,
-		// 	// durationType: durationType,
-		// 	durationType: DurationTypeValue,
-		// 	yellowFlag: true,
-		// 	timingTypeGuid: TimingTypeGuid,
-		// 	medicineTimingShift: null,
-		// 	medicineTimingFrequency: medicineTimingFrequency,
-		// 	dosages: Dosages,
-		// 	dosagePattern: dosagePattern,
-		// 	note: this.state.noteData,
-		// 	patientAppointmentMedicineGuId: item.patientAppointmentMedicineGuId,
-		// 	medicineDosasesType: [{ medicineDoasesGuId: MedicineDoasesGuId, doasestype: doasestype }] //"medicineTypeGuid":medicineTypeGuid
-		// }
+		let data = {
+			appointmentGuid: signupDetails.appoinmentGuid,
+			medicineGuid: item.medicineGuid,
+			medicineName: item.medicineName + ' ' + item.strength, //+ ' ' + item.medicineDesc
+			medicineDesc: item.medicineDesc,
+			strength: item.strength,
+			medicineTypeGuid: medicineTypeGuid,
+			medicineType: medicineType,
+			// durationType: durationType,
+			durationType: DurationTypeValue,
+			yellowFlag: true,
+			timingTypeGuid: TimingTypeGuid,
+			medicineTimingShift: null,
+			medicineTimingFrequency: medicineTimingFrequency,
+			dosages: Dosages,
+			dosagePattern: dosagePattern,
+			note: this.state.noteData,
+			patientAppointmentMedicineGuId: item.patientAppointmentMedicineGuId,
+			medicineDosasesType: [{ medicineDoasesGuId: MedicineDoasesGuId, doasestype: doasestype }] //"medicineTypeGuid":medicineTypeGuid
+		}
 		isEdit = true;
 		const { navigation } = this.props;
 		navigation.goBack();
@@ -359,7 +393,7 @@ class MedicineDetails extends React.Component {
 	callIsFucused2 = (index) => {
 		this.setState({ InpborderColor2: Color.primary, selectedIndex: index });
 		if (!this.state.CustomInput)
-			this.setState({ showStateDosage: true });
+			this.setState({ showStateDosage: true, showDurationDropDown: true, showDoctorNotesdropDown: false, showFromDayTxtDropDown: false, showToDayTxtDropDown: false, showUnitDropDown: false });
 	}
 	callIsBlur2 = () => {
 		this.setState({ InpborderColor2: Color.inputdefaultBorder, }) // showStateDosage: false
@@ -369,7 +403,7 @@ class MedicineDetails extends React.Component {
 		this.setState({ showStateDosage: false });
 	}
 	callIsFucusedDuration = (index) => {
-		this.setState({ InpborderColorDuration: Color.primary, selectedIndex: index, showDurationDropDown: true })
+		this.setState({ InpborderColorDuration: Color.primary, selectedIndex: index, showDurationDropDown: true, showDoctorNotesdropDown: false, showFromDayTxtDropDown: false, showToDayTxtDropDown: false, showUnitDropDown: false, showStateDosage: false })
 	}
 	callIsBlurDuration = () => {
 		this.setState({ InpborderColorDuration: Color.inputdefaultBorder, });
@@ -481,7 +515,6 @@ class MedicineDetails extends React.Component {
 	}
 
 	clickOnDuration = (item, index) => {
-		// console.log('======== before this.state.taperedData===========', JSON.stringify(this.state.taperedData))
 		let tempData = this.state.taperedData;
 		if (this.state.selectedIndex == index)
 			if (item.label) {
@@ -492,7 +525,6 @@ class MedicineDetails extends React.Component {
 			}
 
 		tempData[index].durationType = item.label;
-		// console.log('======== after this.state.taperedData===========', JSON.stringify(this.state.taperedData))
 		this.setState({ dutaionTxt: item.label, showDurationDropDown: false })
 	}
 
@@ -516,7 +548,8 @@ class MedicineDetails extends React.Component {
 				UnitDropdownArr: fullArrayUnit
 			});
 		}
-		//this.setState({ unitTxt: text });
+
+		this.setState({ unitTxt: text });
 
 	}
 
@@ -541,45 +574,50 @@ class MedicineDetails extends React.Component {
 		if(!fromDropDownIndexArr.includes(index)){
 			fromDropDownIndexArr.push(index);
 		}
-		//let tempData = [...this.state.taperedData];
+		let tempData = [...this.state.taperedData];
 		let isValOne = (item == 1) ? true : false ;
 		let temp = [{ value: isValOne ? 'day' :'days' }, { value: isValOne ? 'week' : 'weeks' }, { value: isValOne ? 'month' : 'months' }, { value: isValOne ? 'year' : 'years' }]
 		if (item && Validator.isMobileValidate(item)) {
+		    tempData[index].startFrom = item
 			temp.forEach((ele) => {
 				ele.value = item + ' ' + `${ele.value}`
 			})
 			this.setState({ fromDaysTxt: item, showFromDayTxtDropDown: true, selectedIndex: index, fromDaysDataArr: temp })
-		}else{
-			this.setState({ showFromDayTxtDropDown: false,  fromDaysDataArr: [] })
+		} else {
+		    tempData[index].startFrom = item
+			this.setState({ fromDaysTxt: item, showFromDayTxtDropDown: false, selectedIndex: index, fromDaysDataArr: [] })
 		}
-		this.state.taperedData[index].startFrom = item
 
 	}
 
 	clickOnFromDays = (item, index) => {
 		if(fromDropDownIndexArr.length > 0){
-		    fromDropDownIndexArr.splice(index, 1);
+			fromDropDownIndexArr.splice(index, 1);
 		}
-		let tempData = this.state.taperedData;
+		let tempData = [...this.state.taperedData];
 		tempData[index].startFrom = item.value
-		//let temp = [{ value: 'days' }, { value: 'weeks' }, { value: 'months' }, { value: 'years' }]
-		this.setState({ fromDaysTxt: item.value, showFromDayTxtDropDown: false, taperedData: tempData})//toDaysDataArr: temp
+		let temp = [{ value: 'days' }, { value: 'weeks' }, { value: 'months' }, { value: 'years' }]
+		fromDayMaxLength = item.length;
+		this.setState({ fromDaysTxt: item.value, showFromDayTxtDropDown: false, fromDaysDataArr: temp, taperedData: tempData})
 	}
 	handleToDaysData = (item, index) => {
 		if(!toDropDownIndexArr.includes(index)){
 			toDropDownIndexArr.push(index);
 		}
+		let tempData = [...this.state.taperedData];
 		let isValOne = (item == 1) ? true : false ;
 		let temp = [{ value: isValOne ? 'day' :'days' }, { value: isValOne ? 'week' : 'weeks' }, { value: isValOne ? 'month' : 'months' }, { value: isValOne ? 'year' : 'years' }]
 		if (item && Validator.isMobileValidate(item)) {
+		    tempData[index].to = item
 			temp.forEach((ele) => {
 				ele.value = item + ' ' + `${ele.value}`
 			})
 			this.setState({ toDaysTxt: item, showToDayTxtDropDown: true, selectedIndex: index, toDaysDataArr: temp })
-		}else{
-			this.setState({ showToDayTxtDropDown: false,  toDaysDataArr: [] });
+		} else{
+		    tempData[index].to = item
+			this.setState({ toDaysTxt: item, showToDayTxtDropDown: false, selectedIndex: index, toDaysDataArr: [] })
 		}
-         this.state.taperedData[index].to = item
+
 	}
 
 	clickOnToDays = (item, index) => {
@@ -589,13 +627,12 @@ class MedicineDetails extends React.Component {
 		const tempData = this.state.taperedData;
 		tempData[index].to = item.value
 		let temp = [{ value: 'days' }, { value: 'weeks' }, { value: 'months' }, { value: 'years' }]
-		this.setState({ toDaysTxt: item.value, showToDayTxtDropDown: false, fromDaysDataArr: temp })
+		this.setState({ toDaysTxt: item.value, showToDayTxtDropDown: false, toDaysDataArr: temp })
 	}
 
 	renderTaperedItem = ({ item, index }) => {
-		 let medicineName = this.state.taperedData;
-		
-		 //console.log('-----lll  '+JSON.stringify(item));
+		let medicineName = [...this.state.taperedData];
+		// console.log('======= medicineName ======', JSON.stringify(medicineName))
 		return (
 			<View>
 				<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flex: 1, borderTopWidth: index !== 0 ? 2 : null, borderColor: index !== 0 ? '#D2D7F3' : null }}>
@@ -633,7 +670,7 @@ class MedicineDetails extends React.Component {
 						style={[styles.createInputStyle, { borderColor: this.state.selectedIndex === index ? this.state.InpborderColorUnit : Color.inputdefaultBorder }]} placeholder={'Enter Unit'}
 						placeholderTextColor={Color.placeHolderColor}
 						defaultValue={item?.medicineType ? item?.medicineType : ''}
-						 //value={item?.medicineType }
+						// value={item?.medicineType }
 						// maxLength={InputTxtLengthUnit}
 						onChangeText={(text) => this.handleUnitData(text, index)}
 						ref='search' returnKeyType='done' />
@@ -656,8 +693,7 @@ class MedicineDetails extends React.Component {
 						<FlatList style={{ backgroundColor: '#fafafa' }}
 							data={this.state.UnitDropdownArr}
 							renderItem={({ item, _index }) => (
-								<TouchableOpacity style={{ zIndex: 999, height: responsiveHeight(7), justifyContent: 'flex-start', }}
-								 onPress={() => this.clickOnUnit(item, index)}>
+								<TouchableOpacity style={{ zIndex: 999, height: responsiveHeight(7), justifyContent: 'flex-start', }} onPress={() => this.clickOnUnit(item, index)}>
 									<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }} >{item.doasestype}</Text>
 								</TouchableOpacity>
 							)}
@@ -763,9 +799,8 @@ class MedicineDetails extends React.Component {
 							keyExtractor={(item, index) => index.toString()}
 						/>
 					</View> : null}
-				{/* ---------	Start and to section------- */}
 				{
-					this.state.taperedData.length > 1 ?
+					medicineName.length > 1 ?
 						<View style={{ flexDirection: 'row', flex: 1 }}>
 							<View style={{ flex: 1, }}>
 								<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>Start From</Text>
@@ -776,11 +811,11 @@ class MedicineDetails extends React.Component {
 									style={[styles.createInputStyle, { borderColor: this.state.selectedIndex === index ? this.state.InpborderColorFrom : Color.inputdefaultBorder, marginRight: responsiveWidth(2) }]}
 									placeholder={'From Days'}
 									placeholderTextColor={Color.placeHolderColor}
+									// defaultValue={item?.startFrom}
 									value={item?.startFrom}
 									onChangeText={(text) => this.handleFromDaysData(text, index)}
-									ref='search' returnKeyType='done' maxLength={12}/>
+									ref='search' returnKeyType='done' />
 							</View>
-
 							<View style={{ flex: 1, }}>
 								<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>To</Text>
 								<TextInput
@@ -790,15 +825,15 @@ class MedicineDetails extends React.Component {
 									style={[styles.createInputStyle, { borderColor: this.state.selectedIndex === index ? this.state.InpborderColorTo : Color.inputdefaultBorder, marginRight: responsiveWidth(2) }]}
 									placeholder={'To Days'}
 									placeholderTextColor={Color.placeHolderColor}
-									value={item?.to}
+									defaultValue={item?.to}
 									onChangeText={(text) => this.handleToDaysData(text, index)}
-									ref='search' returnKeyType='done' maxLength={12}/>
+									ref='search' returnKeyType='done' />
 							</View>
 						</View> : null
 
 				}
 				<View style={{ flexDirection: 'row', flex: 1 }}>
-					{this.state.fromDaysTxt && this.state.showFromDayTxtDropDown && this.state.selectedIndex == index ?
+					{this.state.showFromDayTxtDropDown && this.state.selectedIndex == index ?
 						<View style={{
 							borderBottomLeftRadius: 4, borderBottomRightRadius: 4, borderWidth: 1, borderLeftColor: Color.createInputBorder, borderRightColor: Color.createInputBorder,
 							borderBottomColor: Color.createInputBorder, borderTopColor: Color.white, marginTop: responsiveHeight(-.8), marginRight: responsiveWidth(2), flex: 1
@@ -899,7 +934,9 @@ class MedicineDetails extends React.Component {
 		let item = this.props.navigation.state.params.item;
 		return (
 			<SafeAreaView style={{ flex: 1, backgroundColor: Color.white, marginTop: 20, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} onStartShouldSetResponder={() => this.dismissDialog()}>
+				<KeyboardAvoidingView behavior={Platform.OS === "ios" ? 'padding' : null}>
 					<View style={{ margin: responsiveWidth(5) }}>
+						<View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 							<TouchableOpacity onPress={() => {
 								this.props.navigation.goBack();
 								try {
@@ -911,11 +948,13 @@ class MedicineDetails extends React.Component {
 							}}>
 								<Image source={arrow_grey} style={{ height: responsiveWidth(4.5), width: responsiveWidth(5), margin: 7, marginTop: 10 }} />
 							</TouchableOpacity>
+
+						</View>
 						<FlatList
 							style={{ height: responsiveHeight(73) }}
 							data={this.state.taperedData}
 							renderItem={(item, index) => this.renderTaperedItem(item, index)}
-							extraData={this.state}
+							extraData={this.state.taperedData}
 						/>
 						<TouchableOpacity
 							onPress={() => {
@@ -941,6 +980,7 @@ class MedicineDetails extends React.Component {
 							<Text style={{ fontFamily: CustomFont.fontName, color: Color.white, fontSize: CustomFont.font16, textAlign: 'center', fontFamily: CustomFont.fontName }}>Add</Text>
 						</TouchableOpacity>
 					</View>
+				</KeyboardAvoidingView>
 			</SafeAreaView>
 		);
 	}

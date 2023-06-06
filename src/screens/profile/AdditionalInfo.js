@@ -1093,10 +1093,10 @@ class AdditionalInfo extends React.Component {
 									</TouchableOpacity>:null
 
 									}
-									
-									<View style={{ flex: 1,margin:10 }}>
+									{this.state.selectedSpecializationTxt ? <View style={{ flex: 1,margin:10 }}>
 										<Text style={{fontSize: CustomFont.font14, color: Color.fontColor,}}>{this.state.selectedSpecializationTxt}</Text>
-									</View>
+									</View>:null}
+									
 								</View>
 							</View>
 
@@ -1134,10 +1134,12 @@ class AdditionalInfo extends React.Component {
 										/>
 										<Text style={{ fontSize: CustomFont.font12, color: Color.fontColor, marginLeft: 10 }}>Make this your ERx display services</Text>
 									</TouchableOpacity> :null}
-									
-									<View style={{ flex: 1,margin:10 }}>
+									{
+										this.state.selectedServiceTxt ? <View style={{ flex: 1,margin:10 }}>
 										<Text style={{fontSize: CustomFont.font14, color: Color.fontColor,}}>{this.state.selectedServiceTxt}</Text>
-									</View>
+									</View> :null
+									}
+									
 								</View>
 							</View>
 

@@ -86,12 +86,9 @@ class PreviewRx extends React.Component {
             showNormalPrescription: true,
         };
         flag == 0;
-        this.clearArr();
-    }
-
-    clearArr = () => {
         medicineList = [];
     }
+
     getFuncForDrAppToConsulatationBillingPreview = () => {
         let { actions, signupDetails } = this.props;
         let params = {
@@ -160,6 +157,8 @@ class PreviewRx extends React.Component {
             if (tagname === 'consulatationBillingPreviewDataVIEW') {
 
                 let data = newProps.responseData.data;
+
+
                 let billingDetailsFullArray = data.billingDetails;
                 let prescriptionDataFullArray = data.prescriptionData;
 
@@ -172,37 +171,31 @@ class PreviewRx extends React.Component {
                 month = month < 10 ? '0' + month : '' + month
                 year = new Date().getFullYear();
                 let temp = prescriptionDataFullArray.medicineList;
-                if (temp && temp.length > 0) {
-                    try {
-                        let dividedData = [];
-                        let groupedData = Object.values(temp.reduce((acc, obj, idx) => {
-                            const key = obj.medicineName.trim();
-                            const strength = obj?.strength;
-                            const medicineDesc = obj?.medicineDesc
-                            if (!acc[key]) {
-                                if (!obj.values) {
-                                    acc[key] = { medicineName: key, strength: strength, medicineDesc: medicineDesc, values: [] };
-                                }
-                            }
-                            if (!obj.values) {
-                                if (obj.medicineType) {
-                                    acc[key].values.push(obj);
-                                }
-                            } else {
-                                dividedData.push(obj)
-                            }
-                            return acc;
-                        }, {}));
-                        dividedData = dividedData.concat(Object.values(groupedData));
 
-                        console.log('======= dividedData =======', JSON.stringify(dividedData))
-
-                        medicineList = dividedData;
-                    } catch (error) {
-
+                let dividedData = [];
+                let groupedData = Object.values(temp.reduce((acc, obj, idx) => {
+                    const key = obj.medicineName.trim();
+                    const strength = obj?.strength;
+                    const medicineDesc = obj?.medicineDesc
+                    if (!acc[key]) {
+                        if (!obj.values) {
+                            acc[key] = { medicineName: key, strength: strength, medicineDesc: medicineDesc, values: [] };
+                        }
                     }
-                }
+                    if (!obj.values) {
+                        if (obj.medicineType) {
+                            acc[key].values.push(obj);
+                        }
+                    } else {
+                        dividedData.push(obj)
+                    }
+                    return acc;
+                }, {}));
+                dividedData = dividedData.concat(Object.values(groupedData));
 
+                console.log('======= dividedData =======', JSON.stringify(dividedData))
+
+                medicineList = dividedData;
 
                 vitalList = prescriptionDataFullArray.vitalList != null ? prescriptionDataFullArray.vitalList : [];
                 medicalHistoryList = prescriptionDataFullArray != null ? prescriptionDataFullArray : [];
@@ -465,7 +458,7 @@ class PreviewRx extends React.Component {
         }
         return temp
     }
-    doctorEducationViewWithoutAddress = (doctorInfo) => {
+     doctorEducationViewWithoutAddress = (doctorInfo) => {
         let temp = []
         if (doctorInfo.doctorEducation != null && doctorInfo.doctorEducation.length > 0) {
             for (var i = 0; i < doctorInfo.doctorEducation.length; i++) {
@@ -476,7 +469,7 @@ class PreviewRx extends React.Component {
                 temp.push(tmpStr)
             }
         }
-        return temp && temp.length > 0 ? temp.join() : '';
+        return temp && temp.length >0 ? temp.join():'';
     }
 
     selectedList = (selectedConditions, selectedMedications, selectedAllergies, selectedFamilyHistory) => {
@@ -508,79 +501,68 @@ class PreviewRx extends React.Component {
                 const parentName = selectedFamilyHistory[i].familyHistoryName;
                 const patientConditionArr = selectedFamilyHistory[i].patientCondition
                 let tempVarOne = '';
-                if (patientConditionArr && patientConditionArr.length > 0)
-                    for (var j = 0; j < patientConditionArr.length; j++) {
-                        if (j == 0)
-                            tempVarOne = patientConditionArr[j].conditionName;
-                        else
-                            tempVarOne += ', ' + patientConditionArr[j].conditionName;
-                    }
+                if(patientConditionArr && patientConditionArr.length>0)
+                for (var j = 0; j < patientConditionArr.length; j++) {
+                    if (j == 0)
+                        tempVarOne = patientConditionArr[j].conditionName;
+                    else
+                        tempVarOne += ', ' + patientConditionArr[j].conditionName;
+                }
                 selFamilyHistoryArr.push(parentName + ': ' + tempVarOne)
             }
         }
-        if (selConditionArr && selConditionArr.length)
-            temp.push(selConditionArr)
-        if (selMedicationArr && selMedicationArr.length)
-            temp.push(selMedicationArr)
-        if (selAllergyArr && selAllergyArr.length)
-            temp.push(selAllergyArr)
-        if (selFamilyHistoryArr && selFamilyHistoryArr.length)
-            temp.push(selFamilyHistoryArr.join("; "))
+        if(selConditionArr && selConditionArr.length)
+        temp.push(selConditionArr)
+        if(selMedicationArr && selMedicationArr.length)
+        temp.push(selMedicationArr)
+        if(selAllergyArr && selAllergyArr.length)
+        temp.push(selAllergyArr)
+        if(selFamilyHistoryArr && selFamilyHistoryArr.length)
+        temp.push(selFamilyHistoryArr.join("; "))
         return temp.join("; ")
     }
     getMedicineFormat = (item) => {
-        let tempStr = '';
-        if (item.medicineType)
-            tempStr = item.medicineType;
+		let tempStr = '';
+		if (item.medicineType)
+			tempStr = item.medicineType;
 
-        // if (item.dosagePattern)
-        // 	tempStr += tempStr ? '- ' + item.dosagePattern : item.dosagePattern;
-        if (item.medicineTimingFrequency)
-            tempStr += tempStr ? '- ' + item.medicineTimingFrequency : item.medicineTimingFrequency;
-        if (item.durationType)
-            tempStr += '- ' + item.durationType + ' ';
-        if (item.startFrom && item.to)
-            tempStr += '- (' + item.startFrom + ' to ' + item.to + ')';
+		if (item.dosagePattern)
+			tempStr += tempStr ? '- ' + item.dosagePattern : item.dosagePattern;
+		if (item.medicineTimingFrequency)
+			tempStr += tempStr ? '- ' + item.medicineTimingFrequency : item.medicineTimingFrequency;
+		if (item.durationType)
+			tempStr += '- ' + item.durationType + ' ';
+            if (item.startFrom && item.to)
+			tempStr += '- (' + item.startFrom + ' to '+item.to+')';
 
-        return tempStr;
-    }
+		return tempStr;
+	}
     MedicineList = (item, index) => {
         return (
             <View style={{ flex: 1, flexDirection: 'row' }}>
-                <View style={{ flex: 1, borderColor: '#ddd', borderWidth: 1,  justifyContent: 'center' }}>
+                <View style={{ flex: 1, borderColor: '#ddd', borderWidth: 1 }}>
                     <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, marginRight: responsiveWidth(2) }}><Text>{index + 1}</Text></Text>
                 </View>
-                <View style={{ flex: 4, borderColor: '#ddd', borderWidth: 1, justifyContent: 'center' }}>
-                    <Text style={{  color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, marginRight: responsiveWidth(2) }}><Text style={{ fontWeight: 'bold' }}>{item.medicineName + ' ' + item?.strength + '\n'}</Text> <Text style={{ fontStyle: 'italic' }}>({item.medicineDesc})</Text></Text>
+                <View style={{ flex: 4, borderColor: '#ddd', borderWidth: 1 }}>
+                    <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, marginRight: responsiveWidth(2) }}><Text style={{ fontWeight: 'bold' }}>{item.medicineName + ' ' + item?.strength + '\n'}</Text> <Text style={{ fontStyle: 'italic' }}>({item.medicineDesc})</Text></Text>
                 </View>
-                <View style={{ flex: 2, borderColor: '#ddd', borderWidth: 1, height: responsiveHeight(27) }}>
+                <View style={{ flex: 3, borderColor: '#ddd', borderWidth: 1}}>
                     {
                         item.values.map((val, index) => {
                             return (
-                                <View style={{ flex: 1, borderBottomWidth: 1, borderColor: '#ddd' }}>
-                                    <Text style={{ color: Color.black, marginLeft: 5, fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: 5 }}>{val.dosagePattern}</Text>
+                                <View style={{marginBottom: responsiveHeight(1), maxHeight: responsiveHeight(30)}}>
+                                    <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(2) }}>{this.getMedicineFormat(val)}</Text>
                                 </View>
                             )
                         })
                     }
                 </View>
-                <View style={{ flex: 3, borderColor: '#ddd', borderWidth: 1, height: responsiveHeight(27) }}>
+                <View style={{ flex: 2, borderColor: '#ddd', borderWidth: 1 }}>
                     {
                         item.values.map((val, index) => {
                             return (
-                                <View style={{ flex: 1, borderBottomWidth: 1, borderColor: '#ddd' }}>
-                                    <Text style={{ color: Color.black, marginLeft: 5, fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: 5 }}>{this.getMedicineFormat(val)}</Text>
-                                </View>
-                            )
-                        })
-                    }
-                </View>
-                <View style={{ flex: 2, borderColor: '#ddd', borderWidth: 1, height: responsiveHeight(27) }}>
-                    {
-                        item.values.map((val, index) => {
-                            return (
-                                <View style={{ flex: 1, borderBottomWidth: 1, borderColor: '#ddd'}}>
-                                    <Text style={{ color: Color.black, marginLeft: 5, fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: 5 }}>{val.note}</Text>
+                                <View style={{marginBottom: responsiveHeight(1)}}>
+                                    <Text style={{ color: Color.black, marginLeft: responsiveWidth(2), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(2) }}>{val.note}</Text>
                                 </View>
                             )
                         })
@@ -639,21 +621,21 @@ class PreviewRx extends React.Component {
                                         <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), marginTop: 0, }}><Text style={{ fontWeight: 'bold' }}>{vitalList && vitalList.length > 0 ? vitalHead : ''}: </Text> {this.vitalView(vitalList)}</Text>
                                     </View>
                                     : null}
-                                {(selectedConditions && selectedConditions.length > 0) || (selectedMedications && selectedMedications.length > 0) || (selectedAllergies && selectedAllergies.length > 0) || (selectedFamilyHistory && selectedFamilyHistory.length > 0) ?
+                                {(selectedConditions && selectedConditions.length>0) ||  (selectedMedications && selectedMedications.length>0) || (selectedAllergies && selectedAllergies.length>0) || (selectedFamilyHistory && selectedFamilyHistory.length>0) ?
                                     <View>
-                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), textTransform: 'capitalize', maxWidth: responsiveWidth(90) }}><Text style={{ fontWeight: 'bold' }}>{medicalHistoryHead}: </Text>{this.selectedList(selectedConditions, selectedMedications, selectedAllergies, selectedFamilyHistory)}</Text>
+                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5),  textTransform: 'capitalize',maxWidth:responsiveWidth(90) }}><Text style={{ fontWeight: 'bold' }}>{medicalHistoryHead}: </Text>{this.selectedList(selectedConditions, selectedMedications, selectedAllergies, selectedFamilyHistory)}</Text>
                                     </View>
                                     : null}
 
                                 {(symptomList && symptomList.length > 0) ?
                                     <View>
-                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), maxWidth: responsiveWidth(90) }}><Text style={{ fontWeight: 'bold' }}>{symptomList && symptomList.length > 0 ? symptomHead : ''}: </Text> {this.symptomsView(symptomList)}</Text>
+                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5),maxWidth:responsiveWidth(90) }}><Text style={{ fontWeight: 'bold' }}>{symptomList && symptomList.length > 0 ? symptomHead : ''}: </Text> {this.symptomsView(symptomList)}</Text>
                                     </View>
                                     : null}
 
                                 {(findingList && findingList.length > 0) ?
                                     <View>
-                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), maxWidth: responsiveWidth(90) }}><Text style={{ fontWeight: 'bold' }}>{findingList && findingList.length > 0 ? findingHead : ''}: </Text> {this.findingView(findingList)}</Text>
+                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5),maxWidth:responsiveWidth(90)}}><Text style={{ fontWeight: 'bold' }}>{findingList && findingList.length > 0 ? findingHead : ''}: </Text> {this.findingView(findingList)}</Text>
                                     </View>
                                     : null}
 
@@ -671,26 +653,23 @@ class PreviewRx extends React.Component {
 
                                 {diagnosisList && diagnosisList.length ?
                                     <View style={{ flexDirection: 'row' }}>
-                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, maxWidth: responsiveWidth(90) }}><Text style={{ fontWeight: 'bold' }}>{diagionsisHead}: </Text> {this.diagnosisView(diagnosisList)}</Text>
+                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName,maxWidth:responsiveWidth(90) }}><Text style={{ fontWeight: 'bold' }}>{diagionsisHead}: </Text> {this.diagnosisView(diagnosisList)}</Text>
                                     </View>
                                     : null}
 
                                 {medicineList && medicineList.length > 0 ? <View style={{ marginLeft: responsiveWidth(5), marginRight: responsiveWidth(5), marginTop: responsiveWidth(2) }}>
                                     <View style={{ backgroundColor: '#14091529', flexDirection: 'row' }}>
                                         <View style={{ flex: 1, borderColor: '#f1f1f1', borderWidth: 1, }}>
-                                            <Text style={{ padding: 5, color: Color.black, marginLeft: 5, fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: 0 }}>{Rx}</Text>
+                                            <Text style={{ padding: 5, color: Color.black, marginLeft: responsiveWidth(1), fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(0) }}>{Rx}</Text>
                                         </View>
                                         <View style={{ flex: 4, borderColor: '#f1f1f1', borderWidth: 1 }}>
-                                            <Text style={{ padding: 5, color: Color.black, marginLeft: 5, fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: 5 }}>{medicine}</Text>
-                                        </View>
-                                        <View style={{ flex: 2, borderColor: '#f1f1f1', borderWidth: 1 }}>
-                                            <Text style={{ padding: 1, color: Color.black, marginLeft: 5, fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: 5 }}>{'Dosage'}</Text>
+                                            <Text style={{ padding: 5, color: Color.black, marginLeft: responsiveWidth(2), fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5) }}>{medicine}</Text>
                                         </View>
                                         <View style={{ flex: 3, borderColor: '#f1f1f1', borderWidth: 1 }}>
-                                            <Text style={{ padding: 2, color: Color.black, marginLeft: 5, fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: 5 }}>{'Timing - Frequency - Duration'}</Text>
+                                            <Text style={{ padding: 5, color: Color.black, marginLeft: responsiveWidth(2), fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5) }}>{timingAndDur}</Text>
                                         </View>
                                         <View style={{ flex: 2, borderColor: '#f1f1f1', borderWidth: 1 }}>
-                                            <Text style={{ padding: 5, color: Color.black, marginLeft: 5, fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: 5 }}>{noteStr}</Text>
+                                            <Text style={{ padding: 5, color: Color.black, marginLeft: responsiveWidth(2), fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5) }}>{noteStr}</Text>
                                         </View>
                                     </View>
                                     <FlatList
@@ -703,24 +682,24 @@ class PreviewRx extends React.Component {
                                 </View> : null}
 
                                 {investigationList && investigationList.length > 0 ? <View style={{ marginTop: 5 }}>
-                                    <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, maxWidth: responsiveWidth(90) }}><Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}>{investigationAdvise}:</Text> {this.investigationsView(investigationList)}</Text>
+                                    <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName,maxWidth:responsiveWidth(90) }}><Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}>{investigationAdvise}:</Text> {this.investigationsView(investigationList)}</Text>
                                 </View> : null}
 
                                 {instructionsList && instructionsList.length > 0 ?
                                     <View style={{ marginTop: 5 }}>
-                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, maxWidth: responsiveWidth(90) }}><Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}>{instructionHead}: </Text>{this.instructionView(instructionsList)}</Text>
+                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName,maxWidth:responsiveWidth(90) }}><Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontWeight: 'bold', fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, }}>{instructionHead}: </Text>{this.instructionView(instructionsList)}</Text>
 
                                     </View> : null}
 
                                 {(procedureList && procedureList.length > 0) ?
                                     <View>
-                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), maxWidth: responsiveWidth(90) }}><Text style={{ fontWeight: 'bold' }}>{procedureList && procedureList.length > 0 ? procedureHead : ''}: </Text> {this.procedureView(procedureList)}</Text>
+                                        <Text style={{ textTransform: 'capitalize', color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5),maxWidth:responsiveWidth(90)}}><Text style={{ fontWeight: 'bold' }}>{procedureList && procedureList.length > 0 ? procedureHead : ''}: </Text> {this.procedureView(procedureList)}</Text>
                                     </View>
                                     : null}
 
                                 {prescriptionNote.prescriptionNoteName ?
                                     <View style={{ marginTop: 5 }}>
-                                        <Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, maxWidth: responsiveWidth(90) }}><Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), fontWeight: 'bold' }}>{notes}:</Text> {prescriptionNote.prescriptionNoteName}</Text>
+                                        <Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName,maxWidth:responsiveWidth(90) }}><Text style={{ color: Color.black, marginLeft: responsiveWidth(5), fontSize: CustomFont.font12, fontFamily: CustomFont.fontName, marginRight: responsiveWidth(5), fontWeight: 'bold' }}>{notes}:</Text> {prescriptionNote.prescriptionNoteName}</Text>
                                     </View> : null}
 
                                 {followUpItem ?

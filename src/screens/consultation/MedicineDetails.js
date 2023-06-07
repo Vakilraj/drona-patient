@@ -55,8 +55,8 @@ let durationData = [
 	{ label: 'SOS', value: 'SOS' },
 	{ label: 'Weekly', value: 'Weekly' },
 ];
-let toDropDownIndexArr =  [];
-let fromDropDownIndexArr =  [];
+let toDropDownIndexArr = [];
+let fromDropDownIndexArr = [];
 
 class MedicineDetails extends React.Component {
 	constructor(props) {
@@ -82,7 +82,7 @@ class MedicineDetails extends React.Component {
 			showUnitDropDown: false,
 			dutaionTxt: '',
 			unitTxt: '',
-			DurationDropdownArr:[
+			DurationDropdownArr: [
 				{ label: 'Daily', value: 'Daily' },
 				{ label: 'Alternate Day', value: 'Alternate Day' },
 				{ label: 'Fort Night', value: 'Fort Night' },
@@ -90,7 +90,7 @@ class MedicineDetails extends React.Component {
 				{ label: 'Monthly', value: 'Monthly' },
 				{ label: 'SOS', value: 'SOS' },
 				{ label: 'Weekly', value: 'Weekly' },
-			] ,
+			],
 			UnitDropdownArr: medicineDosasesType,
 			taperedData: [],
 			selectedIndex: 0,
@@ -134,7 +134,7 @@ class MedicineDetails extends React.Component {
 		let item = this.props.navigation.state.params.item;
 		console.log('===----===', JSON.stringify(item))
 		if (!Array.isArray(item)) {
-			item=[item];
+			item = [item];
 			//this.setState({ taperedData: item });
 		}
 		// if (Array.isArray(item)) {
@@ -145,27 +145,27 @@ class MedicineDetails extends React.Component {
 		// 	tempArr.push(item);
 		// 	this.setState({ taperedData: tempArr })
 		// }
-		
-		for(let i=0;i<item.length;i++){
-			let itemObj=item[i];
-			if(itemObj.medicineDosasesTypeGuid){
-				if(itemObj.medicineDosasesType){
-					for(let j=0;j<itemObj.medicineDosasesType.length;j++){
-		
-						if(itemObj.medicineDosasesType[j].medicineDoasesGuId=itemObj.medicineDosasesTypeGuid){
-							itemObj.medicineType=itemObj.medicineDosasesType[j].doasestype;
+
+		for (let i = 0; i < item.length; i++) {
+			let itemObj = item[i];
+			if (itemObj.medicineDosasesTypeGuid) {
+				if (itemObj.medicineDosasesType) {
+					for (let j = 0; j < itemObj.medicineDosasesType.length; j++) {
+
+						if (itemObj.medicineDosasesType[j].medicineDoasesGuId = itemObj.medicineDosasesTypeGuid) {
+							itemObj.medicineType = itemObj.medicineDosasesType[j].doasestype;
 							break;
 						}
 					}
 				}
-			}else{
-				if(itemObj.medicineDosasesType){
-					itemObj.medicineType=itemObj.medicineDosasesType[0].doasestype;
-					itemObj.medicineDosasesTypeGuid=itemObj.medicineDosasesType[0].medicineDoasesGuId;
-		
+			} else {
+				if (itemObj.medicineDosasesType) {
+					itemObj.medicineType = itemObj.medicineDosasesType[0].doasestype;
+					itemObj.medicineDosasesTypeGuid = itemObj.medicineDosasesType[0].medicineDoasesGuId;
+
 				}
 			}
-			item[i]=itemObj
+			item[i] = itemObj
 		}
 		console.log('===--after--===', JSON.stringify(item))
 		this.setState({ taperedData: item })
@@ -178,7 +178,7 @@ class MedicineDetails extends React.Component {
 		// doctorNotes = this.props.navigation.state.params.doctorNotes;
 		// this.setState({ doctorNotesDataArr: doctorNotes })
 		// medicineTypeGuid = item.medicineTypeGuid;
-//comment now 
+		//comment now 
 
 		// if (item.medicineDosasesType && item.medicineDosasesType.length > 0) {
 		// 	medicineTypeGuid = item.medicineDosasesType[0].medicineTypeGuid;
@@ -295,6 +295,7 @@ class MedicineDetails extends React.Component {
 		// 		saveData[val].to = null
 		// 	})
 		// }
+
 		saveData.forEach((_item, index) => {
 			saveData[index].medicineTypeGuid = saveData[0].medicineTypeGuid;
 			saveData[index].medicineGuid = saveData[0].medicineGuid;
@@ -302,18 +303,20 @@ class MedicineDetails extends React.Component {
 			saveData[index].appointmentGuid = signupDetails.appoinmentGuid;
 			saveData[index].medicineName = saveData[0].medicineName;
 			saveData[index].medicineIndex = index;
-			 //saveData[index].medicineDosasesTypeGuid = 'c7221d1c-8579-11eb-996a-0022486b91c8';
+			//saveData[index].medicineDosasesTypeGuid = 'c7221d1c-8579-11eb-996a-0022486b91c8';
 			saveData[index].durationValue = 0;
 			saveData[index].dosages = null;
 			saveData[index].route = null;
 			saveData[index].strength = item[0]?.strength ? item[0]?.strength : null;
-			// saveData[0]?.medicineDosasesType && saveData[0]?.medicineDosasesType.forEach((val) => {
-			// 	if (val.doasestype === _item.medicineType) {
-			// 		//saveData[index].medicineDosasesType = val.medicineDoasesGuId;
-			// 		saveData[index].medicineDosasesTypeGuid = val.medicineDoasesGuId;
-			// 	}
-			// })
-			// delete saveData[index].medicineDosasesType
+
+			if (this.state.DurationDropdownArr.length > 0) {
+				this.state.DurationDropdownArr.forEach((ele) => {
+					if (ele.label !== saveData[index].durationType) {
+						saveData[index].durationType = null;
+					}
+				})
+			}
+
 		})
 
 		console.log('========= saveData ========', JSON.stringify(saveData))
@@ -369,7 +372,7 @@ class MedicineDetails extends React.Component {
 	}
 	callIsFucusedDuration = (index) => {
 		this.setState({ InpborderColorDuration: Color.primary, selectedIndex: index, showDurationDropDown: true })
-		this.setState({ showUnitDropDown: false, showStateDosage: false,   showDoctorNotesdropDown: false, });
+		this.setState({ showUnitDropDown: false, showStateDosage: false, showDoctorNotesdropDown: false, });
 	}
 	callIsBlurDuration = () => {
 		this.setState({ InpborderColorDuration: Color.inputdefaultBorder, });
@@ -377,7 +380,7 @@ class MedicineDetails extends React.Component {
 
 	callIsFucusedUnit = (index) => {
 		this.setState({ InpborderColorUnit: Color.primary, selectedIndex: index, showUnitDropDown: true })
-		this.setState({  showStateDosage: false, showDurationDropDown: false, showDoctorNotesdropDown: false, });
+		this.setState({ showStateDosage: false, showDurationDropDown: false, showDoctorNotesdropDown: false, });
 	}
 	callIsBlurUnit = () => {
 		this.setState({ InpborderColorUnit: Color.inputdefaultBorder, });
@@ -395,7 +398,7 @@ class MedicineDetails extends React.Component {
 		this.setState({ InpborderColorTo: Color.primary, selectedIndex: index })
 	}
 	isOpen = () => {
-		{this.setState({showUnitDropDown: false, showStateDosage: false, showDurationDropDown: false,showDoctorNotesdropDown: false,})}
+		{ this.setState({ showUnitDropDown: false, showStateDosage: false, showDurationDropDown: false, showDoctorNotesdropDown: false, }) }
 	}
 	SearchFilterFunctionDosage = (text, index) => {
 		const tempData = [...this.state.taperedData]
@@ -454,33 +457,24 @@ class MedicineDetails extends React.Component {
 	}
 	clickOnState = (item, index) => {
 		const tempData = this.state.taperedData
-			dosagePattern = item.value;
-			//if(dosagePattern && dosagePattern.length>4)
-			InputTxtLengthDosage = dosagePattern.length;
-			tempData[index].dosagePattern = item.label
-			this.setState({ dosageSearchTxt: item.label, showStateDosage: false, CustomInput: false })
+		dosagePattern = item.value;
+		//if(dosagePattern && dosagePattern.length>4)
+		InputTxtLengthDosage = dosagePattern.length;
+		tempData[index].dosagePattern = item.label
+		this.setState({ dosageSearchTxt: item.label, showStateDosage: false, CustomInput: false })
 	}
 
 	handleDurationData = (text, index) => {
 		this.setState({ selectedIndex: index })
 		let ans = [];
 		//let temp = [...this.state.DurationDropdownArr]
-		if (text && text.length>0) {
+		if (text && text.length > 0) {
 			ans = durationData.filter((val) => val.label.toLowerCase().includes(text.toLowerCase()))
-			this.setState({ dutaionTxt: text, DurationDropdownArr: text.length === 0 ? durationData : ans })
-		}else{
-			this.setState({dutaionTxt: text,  DurationDropdownArr:  durationData})
+			this.setState({ dutaionTxt: text, DurationDropdownArr: ans, showDurationDropDown: true })
+		} else {
+			this.setState({ dutaionTxt: text, DurationDropdownArr: durationData, showDurationDropDown: true })
 		}
-		// if (text && Validator.isMobileValidate(text)) {
-		// 	for (let i = 0; i < duationTypeArr.length; i++) {
-		// 		if (text == 1)
-		// 			duationTypeArr[i].label = text + ' ' + duationTypeArr[i].label;
-		// 		else
-		// 			duationTypeArr[i].label = text + ' ' + duationTypeArr[i].label + 's';
-		// 	}
-		// 	this.setState({ DurationDropdownArr: duationTypeArr, showDurationDropDown: true })
-		// }
-		// this.setState({ dutaionTxt: text });
+		this.state.taperedData[index].durationType = text;
 	}
 
 	clickOnDuration = (item, index) => {
@@ -517,12 +511,13 @@ class MedicineDetails extends React.Component {
 				UnitDropdownArr: fullArrayUnit
 			});
 		}
+		this.state.taperedData[index].medicineType = text;
 		//this.setState({ unitTxt: text });
 
 	}
 
 	clickOnUnit = (item, index) => {
-		this.state.taperedData[index].medicineDosasesTypeGuid=item.medicineDoasesGuId;
+		this.state.taperedData[index].medicineDosasesTypeGuid = item.medicineDoasesGuId;
 		let tempData = this.state.taperedData;
 		doasestype = item.doasestype;
 		// medicineType = item.doasestype;
@@ -532,6 +527,13 @@ class MedicineDetails extends React.Component {
 		// InputTxtLengthUnit = str.length;
 		tempData[index].medicineType = item.doasestype
 		this.setState({ unitTxt: item.doasestype, showUnitDropDown: false })
+		this.state.taperedData.forEach((val, index) => {
+			if (index > 0) {
+				tempData[index].medicineType = tempData[0].medicineType;
+				tempData[index].medicineDosasesTypeGuid = tempData[0].medicineDosasesTypeGuid;
+			}
+
+		})
 	}
 
 	clickOnDosege = (item, index) => {
@@ -539,54 +541,54 @@ class MedicineDetails extends React.Component {
 	}
 
 	handleFromDaysData = (item, index) => {
-		if(!fromDropDownIndexArr.includes(index)){
+		if (!fromDropDownIndexArr.includes(index)) {
 			fromDropDownIndexArr.push(index);
 		}
 		//let tempData = [...this.state.taperedData];
-		let isValOne = (item == 1) ? true : false ;
-		let temp = [{ value: isValOne ? 'day' :'days' }, { value: isValOne ? 'week' : 'weeks' }, { value: isValOne ? 'month' : 'months' }, { value: isValOne ? 'year' : 'years' }]
+		let isValOne = (item == 1) ? true : false;
+		let temp = [{ value: isValOne ? 'day' : 'days' }, { value: isValOne ? 'week' : 'weeks' }, { value: isValOne ? 'month' : 'months' }, { value: isValOne ? 'year' : 'years' }]
 		if (item && Validator.isMobileValidate(item)) {
 			temp.forEach((ele) => {
 				ele.value = item + ' ' + `${ele.value}`
 			})
 			this.setState({ fromDaysTxt: item, showFromDayTxtDropDown: true, selectedIndex: index, fromDaysDataArr: temp })
-		}else{
-			this.setState({ showFromDayTxtDropDown: false,  fromDaysDataArr: [] })
+		} else {
+			this.setState({ showFromDayTxtDropDown: false, fromDaysDataArr: [] })
 		}
 		this.state.taperedData[index].startFrom = item
 
 	}
 
 	clickOnFromDays = (item, index) => {
-		if(fromDropDownIndexArr.length > 0){
+		if (fromDropDownIndexArr.length > 0) {
 			fromDropDownIndexArr.splice(index, 1);
 		}
 		let tempData = this.state.taperedData;
 		tempData[index].startFrom = item.value
 		//let temp = [{ value: 'days' }, { value: 'weeks' }, { value: 'months' }, { value: 'years' }]
-		this.setState({ fromDaysTxt: item.value, showFromDayTxtDropDown: false, taperedData: tempData})//toDaysDataArr: temp
+		this.setState({ fromDaysTxt: item.value, showFromDayTxtDropDown: false, taperedData: tempData })//toDaysDataArr: temp
 	}
 	handleToDaysData = (item, index) => {
-		if(!toDropDownIndexArr.includes(index)){
+		if (!toDropDownIndexArr.includes(index)) {
 			toDropDownIndexArr.push(index);
 		}
 		//let tempData = [...this.state.taperedData];
 
-		let isValOne = (item == 1) ? true : false ;
-		let temp = [{ value: isValOne ? 'day' :'days' }, { value: isValOne ? 'week' : 'weeks' }, { value: isValOne ? 'month' : 'months' }, { value: isValOne ? 'year' : 'years' }]
+		let isValOne = (item == 1) ? true : false;
+		let temp = [{ value: isValOne ? 'day' : 'days' }, { value: isValOne ? 'week' : 'weeks' }, { value: isValOne ? 'month' : 'months' }, { value: isValOne ? 'year' : 'years' }]
 		if (item && Validator.isMobileValidate(item)) {
 			temp.forEach((ele) => {
 				ele.value = item + ' ' + `${ele.value}`
 			})
 			this.setState({ toDaysTxt: item, showToDayTxtDropDown: true, selectedIndex: index, toDaysDataArr: temp })
-		}else{
-			this.setState({ showToDayTxtDropDown: false,  toDaysDataArr: [] });
+		} else {
+			this.setState({ showToDayTxtDropDown: false, toDaysDataArr: [] });
 		}
-this.state.taperedData[index].to = item
+		this.state.taperedData[index].to = item
 	}
 
 	clickOnToDays = (item, index) => {
-		if(toDropDownIndexArr.length > 0){
+		if (toDropDownIndexArr.length > 0) {
 			toDropDownIndexArr.splice(index, 1);
 		}
 		const tempData = this.state.taperedData;
@@ -596,9 +598,9 @@ this.state.taperedData[index].to = item
 	}
 
 	renderTaperedItem = ({ item, index }) => {
-		 let medicineName = this.state.taperedData;
-		
-		 //console.log('-----lll  '+JSON.stringify(item));
+		let medicineName = this.state.taperedData;
+
+		//console.log('-----lll  '+JSON.stringify(item));
 		return (
 			<View>
 				<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flex: 1, borderTopWidth: index !== 0 ? 2 : null, borderColor: index !== 0 ? '#D2D7F3' : null }}>
@@ -633,10 +635,11 @@ this.state.taperedData[index].to = item
 				<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>Units</Text>
 				<View >
 					<TextInput onBlur={this.callIsBlurUnit} onFocus={() => this.callIsFucusedUnit(index)}
-						style={[styles.createInputStyle, { borderColor: this.state.selectedIndex === index ? this.state.InpborderColorUnit : Color.inputdefaultBorder }]} placeholder={'Enter Unit'}
+						style={[styles.createInputStyle, { color: index == 0 ? Color.fontColor : Color.disabledBtn, borderColor: this.state.selectedIndex === index ? this.state.InpborderColorUnit : Color.inputdefaultBorder }]} placeholder={'Enter Unit'}
 						placeholderTextColor={Color.placeHolderColor}
-						defaultValue={item?.medicineType ? item?.medicineType : ''}
-						 //value={item?.medicineType }
+						value={item?.medicineType ? item?.medicineType : ''}
+						editable={index === 0 ? true : false}
+						//value={item?.medicineType }
 						// maxLength={InputTxtLengthUnit}
 						onChangeText={(text) => this.handleUnitData(text, index)}
 						ref='search' returnKeyType='done' />
@@ -660,7 +663,7 @@ this.state.taperedData[index].to = item
 							data={this.state.UnitDropdownArr}
 							renderItem={({ item, _index }) => (
 								<TouchableOpacity style={{ zIndex: 999, height: responsiveHeight(7), justifyContent: 'flex-start', }}
-								 onPress={() => this.clickOnUnit(item, index)}>
+									onPress={() => this.clickOnUnit(item, index)}>
 									<Text style={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16, marginTop: responsiveHeight(1.3), marginLeft: responsiveWidth(3) }} >{item.doasestype}</Text>
 								</TouchableOpacity>
 							)}
@@ -714,7 +717,7 @@ this.state.taperedData[index].to = item
 				<Text style={{ color: Color.patientSearch, fontSize: CustomFont.font14, fontWeight: CustomFont.fontWeight700, fontFamily: CustomFont.fontName, marginTop: responsiveHeight(3) }}>When</Text>
 				<DropDownPicker zIndex={10}
 					items={this.state.whenToTakeArr}
-					onOpen={()=>this.isOpen()}
+					onOpen={() => this.isOpen()}
 					containerStyle={{ borderRadius: responsiveWidth(2), height: responsiveHeight(6), marginTop: responsiveHeight(1.6) }}
 					style={{ backgroundColor: '#ffffff', color: Color.textGrey }}
 					textStyle={{ fontFamily: CustomFont.fontName, color: Color.black, fontSize: CustomFont.font16 }} itemStyle={{
@@ -736,7 +739,7 @@ this.state.taperedData[index].to = item
 				<View>
 					<TextInput onBlur={this.callIsBlurDuration} onFocus={() => this.callIsFucusedDuration(index)}
 						style={[styles.createInputStyle, { borderColor: this.state.selectedIndex === index ? this.state.InpborderColorDuration : Color.inputdefaultBorder }]} placeholder={'Enter duration'} placeholderTextColor={Color.placeHolderColor}
-						defaultValue={item?.durationType}
+						value={item?.durationType}
 						// maxLength={InputTxtLengthDuration}
 						onChangeText={(text) => this.handleDurationData(text, index)}
 						ref='search' returnKeyType='done' />
@@ -749,7 +752,7 @@ this.state.taperedData[index].to = item
 						right: 15,
 						tintColor: Color.fontColor
 					}}
-					source={this.state.showDurationDropDown && this.state.selectedIndex == index ? upArrow : downarrow} />
+						source={this.state.showDurationDropDown && this.state.selectedIndex == index ? upArrow : downarrow} />
 				</View>
 
 				{this.state.selectedIndex == index && this.state.showDurationDropDown && this.state.DurationDropdownArr?.length > 0 ?
@@ -782,7 +785,7 @@ this.state.taperedData[index].to = item
 									placeholderTextColor={Color.placeHolderColor}
 									value={item?.startFrom}
 									onChangeText={(text) => this.handleFromDaysData(text, index)}
-									ref='search' returnKeyType='done' maxLength={12}/>
+									ref='search' returnKeyType='done' maxLength={12} />
 							</View>
 
 							<View style={{ flex: 1, }}>
@@ -796,7 +799,7 @@ this.state.taperedData[index].to = item
 									placeholderTextColor={Color.placeHolderColor}
 									value={item?.to}
 									onChangeText={(text) => this.handleToDaysData(text, index)}
-									ref='search' returnKeyType='done' maxLength={12}/>
+									ref='search' returnKeyType='done' maxLength={12} />
 							</View>
 						</View> : null
 
@@ -903,48 +906,51 @@ this.state.taperedData[index].to = item
 		let item = this.props.navigation.state.params.item;
 		return (
 			<SafeAreaView style={{ flex: 1, backgroundColor: Color.white, marginTop: 20, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} onStartShouldSetResponder={() => this.dismissDialog()}>
-					<View style={{ margin: responsiveWidth(5) }}>
-							<TouchableOpacity onPress={() => {
-								this.props.navigation.goBack();
-								try {
-									this.props.navigation.state.params.Refresh({ isEdit: isEdit, data: null });
-								} catch (error) {
+				<View style={{ margin: responsiveWidth(5) }}>
+					<TouchableOpacity onPress={() => {
+						this.props.navigation.goBack();
+						try {
+							this.props.navigation.state.params.Refresh({ isEdit: isEdit, data: null });
+						} catch (error) {
 
-								}
+						}
 
-							}}>
-								<Image source={arrow_grey} style={{ height: responsiveWidth(4.5), width: responsiveWidth(5), margin: 7, marginTop: 10 }} />
-							</TouchableOpacity>
-						<FlatList
-							style={{ height: responsiveHeight(73) }}
-							data={this.state.taperedData}
-							renderItem={(item, index) => this.renderTaperedItem(item, index)}
-							extraData={this.state}
-						/>
-						<TouchableOpacity
-							onPress={() => {
-								let tempArr = this.state.taperedData;
-								let tempObj = {};//tempArr[0];
-								tempArr.push(tempObj);
-								this.setState({ taperedData: tempArr });
-							}}>
-							<Text
-								style={{
-									fontSize: CustomFont.font14,
-									fontWeight: CustomFont.fontWeight600,
-									color: Color.primaryBlue,
-									marginBottom: responsiveHeight(4)
-								}}
-							>+ Add Tapered Dose</Text>
-						</TouchableOpacity>
-
-						<TouchableOpacity style={{ alignItems: 'center', marginBottom: responsiveHeight(2.5), justifyContent: 'center', borderRadius: 5, height: responsiveHeight(7), width: '100%', backgroundColor: Color.primary }} onPress={() => {
-							if (clickFlag == 0)
-								this.saveData();
+					}}>
+						<Image source={arrow_grey} style={{ height: responsiveWidth(4.5), width: responsiveWidth(5), margin: 7, marginTop: 10 }} />
+					</TouchableOpacity>
+					<FlatList
+						style={{ height: responsiveHeight(73) }}
+						data={this.state.taperedData}
+						renderItem={(item, index) => this.renderTaperedItem(item, index)}
+						extraData={this.state}
+					/>
+					<TouchableOpacity
+						onPress={() => {
+							let tempArr = this.state.taperedData;
+							let tempObj = {
+								medicineType: tempArr[0].medicineType,
+								medicineDosasesTypeGuid: tempArr[0].medicineDosasesTypeGuid
+							};//tempArr[0];
+							tempArr.push(tempObj);
+							this.setState({ taperedData: tempArr });
 						}}>
-							<Text style={{ fontFamily: CustomFont.fontName, color: Color.white, fontSize: CustomFont.font16, textAlign: 'center', fontFamily: CustomFont.fontName }}>Add</Text>
-						</TouchableOpacity>
-					</View>
+						<Text
+							style={{
+								fontSize: CustomFont.font14,
+								fontWeight: CustomFont.fontWeight600,
+								color: Color.primaryBlue,
+								marginBottom: responsiveHeight(4)
+							}}
+						>+ Add Tapered Dose</Text>
+					</TouchableOpacity>
+
+					<TouchableOpacity style={{ alignItems: 'center', marginBottom: responsiveHeight(2.5), justifyContent: 'center', borderRadius: 5, height: responsiveHeight(7), width: '100%', backgroundColor: Color.primary }} onPress={() => {
+						if (clickFlag == 0)
+							this.saveData();
+					}}>
+						<Text style={{ fontFamily: CustomFont.fontName, color: Color.white, fontSize: CustomFont.font16, textAlign: 'center', fontFamily: CustomFont.fontName }}>Add</Text>
+					</TouchableOpacity>
+				</View>
 			</SafeAreaView>
 		);
 	}
